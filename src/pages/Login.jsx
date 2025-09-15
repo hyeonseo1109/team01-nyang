@@ -23,7 +23,9 @@ export function Login() {
           </div>
 
           <div className="bg-blue-600 rounded-lg p-6 flex items-center justify-center">
-            <span className="text-lg font-medium text-white">버튼</span>
+            <span className="text-lg font-medium text-white">
+              
+            </span>
           </div>
         </div>
       </main>
