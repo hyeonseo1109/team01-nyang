@@ -18,7 +18,7 @@ function App() {
           </PrivateRoute>
         }
       />
-      <Route path="/Mypage" element={<MyPage />} />
+      {/* <Route path="/Mypage" element={<MyPage />} /> */}
     </Routes>
   );
 }

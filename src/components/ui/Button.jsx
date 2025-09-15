@@ -14,9 +14,12 @@ export default function Button ({
   };
 
   const sizes = {
-    sm: "w-24 px-2 py-1 text-sm rounded-[0.4rem]",
-    md: "w-32 px-4 py-2 text-base rounded-[0.6rem]",
-    lg: "w-40 px-6 py-3 text-lg rounded-[0.7rem]",
+    sm: "px-2 py-1 text-sm rounded-[0.4rem] w-full min-w-24",
+    // w-24 
+    md: "px-4 py-2 text-base rounded-[0.6rem] w-full min-w-32",
+    // w-32
+    lg: "px-6 py-3 text-lg rounded-[0.7rem] w-full min-w-40",
+    //w-40 
   };
 
   const disabledClasses = disabled ? "cursor-not-allowed opacity-70" : "";
@@ -29,3 +32,4 @@ export default function Button ({
     </button>
   );
 }
+
