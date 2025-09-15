@@ -3,7 +3,7 @@ import { SignIn } from "./components/SignIn";
 import Button from "./components/ui/Button";
 import { Input } from "./components/ui/Input";
 import Modal from "./components/ui/Modal";
-import { useOpenModal } from "./zustand/store";
+import { useOpenModal } from "./Store/useOpenModal";
 
 
 export default function MainPage() {
