@@ -3,6 +3,7 @@ import { useOpenAdminPage } from "../../store/useOpenAdminPage";
 import PinkCard from "../Mypage/common/PinkCard";
 import Button from "../ui/Button";
 import { useOpenAdminDashboard } from "../../store/useOpenAdminDashboard";
+import { VscChromeClose } from "react-icons/vsc";
 
 export default function AdminMypage () {
   const { openAdminPage, setOpenAdminPage } = useOpenAdminPage();
@@ -19,7 +20,7 @@ export default function AdminMypage () {
           }}
           aria-label="close"
         >
-          ✕
+          <VscChromeClose size={30}/>
         </button>
       <div className="flex flex-col justify-start h-full gap-15">
         <div className="flex flex-col gap-10 w-full items-center  border-b pb-10">

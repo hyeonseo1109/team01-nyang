@@ -6,6 +6,7 @@ import Contact from './Contact';
 import MypageEdit from './MypageEdit';
 import Leave from './Leave';
 import { useNavigate } from 'react-router-dom';
+import { VscChromeClose } from "react-icons/vsc";
 
 export default function MypageOverlay() {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export default function MypageOverlay() {
           onClick={() => setOpenMyPage(false)}
           aria-label="close"
         >
-          ✕
+          <VscChromeClose size={30}/>
         </button>
       </div>
 
