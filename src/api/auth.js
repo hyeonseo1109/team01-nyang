@@ -111,17 +111,17 @@ export function useLogout () {
 
 
 
-// !- - - - 인증 메일 재발송 - - - - 
-export async function resend () {
+// !- - - - 인증 메일 발송 - - - - 
+export async function emailSend () {
   const res = await api.post("/auth/email/resend");
   return res.data;
 }
-export function useResend () {
+export function useEmailSend () {
   const {
     mutate: resendMutate,
     error: resendError,
     ...rest
-  } =  useMutation ({ mutationFn: resend });
+  } =  useMutation ({ mutationFn: emailSend });
   return { resendMutate, resendError, ...rest };
 }
 // const { resendMutate, resendError } = useResend();
@@ -141,14 +141,21 @@ export function useResend () {
 
 
 
-// !- - - - 이메일 인증 완료 - - - -
+// !- - - - 이메일 인증 완료 - - - - (인증번호 담아서 보내기)
 export async function verify (payload) {
   const res = await api.post("/auth/email/verify", payload);
   return res.data;
 }
 export function useVerify () {
-  return useMutation ({ mutationFn: verify });
+  const {
+    mutate: verifyMutate,
+    error: verifyError,
+    ...rest
+  } = useMutation ({ mutationFn: verify });
+  return { verifyMutate, verifyError, ...rest };
 }
+// const { verifyMutate, verifyError } = useVerify();
+// verifyMutate(form)
 
 
 
@@ -158,8 +165,21 @@ export async function passwordChange (payload) {
   return res.data;
 }
 export function usePasswordChange () {
-  return useMutation ({ mutationFn: passwordChange });
+  const {
+    mutate: passwordChangeMutate,
+    error: passwordChangeError,
+    ...rest
+  } = useMutation ({ mutationFn: passwordChange });
+  return { passwordChangeMutate, passwordChangeError, ...rest };
 }
+// const { passwordChangeMutate, passwordChangeError } = usePasswordChange();
+// const handleChangePassword =()=> {
+//   passwordChangeMutate(
+//     { old_password: oldPassword,
+//       new_password: newPassword,
+//     },
+//   )
+// }
 
 
 
@@ -169,8 +189,15 @@ export async function passwordReset (payload) {
   return res.data;
 }
 export function usePasswordReset () {
-  return useMutation ({ mutationFn: passwordReset });
+  const {
+    mutate: passwordResetMutate,
+    error: passwordResetError,
+    ...rest
+  } = useMutation ({ mutationFn: passwordReset });
+  return { passwordResetMutate, passwordResetError, ...rest };
 }
+// const { passwordResetMutate, passwordResetError } = usePasswordReset();
+// passwordResetMutate({ email });
 
 
 
@@ -180,5 +207,12 @@ export async function confirmPasswordReset (payload) {
   return res.data;
 }
 export function useConfirmPasswordReset () {
-  return useMutation ({ mutationFn: confirmPasswordReset });
+  const {
+    mutate: confirmPasswordResetMutate, 
+    error: confirmPasswordResetError,
+    ...rest
+  } = useMutation ({ mutationFn: confirmPasswordReset });
+  return { confirmPasswordResetMutate, confirmPasswordResetError, ...rest };
 }
+// const { confirmPasswordResetMutate, confirmPasswordResetError } = useConfirmPasswordReset();
+// confirmPasswordResetMutate({ new_password });

@@ -28,7 +28,7 @@ api.interceptors.response.use(
       // retry라는 속성을 만들어서 그 값을 true로 만들겠다. = 재시도 한 요청이구나!
 
       try {
-        await api.post("/auth/refresh");
+        await api.post("/auth/token/refresh");
         // 새로운 액세스 토큰 등록
         return api(originalRequest);
         // 리프레시 하면 원래 실패했던 요청을 다시 호출함. 

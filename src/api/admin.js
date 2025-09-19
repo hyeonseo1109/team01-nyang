@@ -5,6 +5,9 @@ import { api } from "./client";
 // 2. TanStack Query 훅
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
+const adminInquiries = "adminInquiries";
+const adminUsers = "adminUsers";
+
 
 // !- - - - 유저 목록 검색 - - - -
 export async function getUsers (params) {
@@ -36,7 +39,7 @@ export function useUsers (params) {
     isError: usersIsError, 
     ...rest
   } = useQuery ({
-    queryKey: ["adminUsers", params],
+    queryKey: adminUsers [adminUsers, params],
     queryFn: () => getUsers(params),
     staleTime: 1000 * 60 * 5,
     // 유저 목록은 자주 바뀌지 않으니 짧게 캐싱해 두었음.
@@ -63,7 +66,7 @@ export function useUpdateUser() {
     // useMutation에서 실행할 함수 별칭을 미리 지정해두기 
     mutationFn: ({ userId, payload }) => updateUser(userId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
+      queryClient.invalidateQueries({ queryKey: adminUsers [adminUsers] });
     },
   });
   return { updateUserMutate, updateUserError, ...rest }
@@ -92,7 +95,7 @@ export function useDeleteUser () {
   } = useMutation ({
     mutationFn: deleteUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
+      queryClient.invalidateQueries({ queryKey: adminUsers [adminUsers] });
     },
   });
   return { deleteUserMutate, deleteUserError, ...rest };
@@ -114,7 +117,7 @@ export function useAllInquiries() {
     isError: allInquiriesIsError,
     ...rest
   } = useQuery({
-    queryKey: ["adminInquiries"],
+    queryKey: [adminInquiries],
     queryFn: getAllInquiries,
   });
   return { allInquiriesData, allInquiriesIsLoading, allInquiriesIsError, ...rest };
@@ -138,7 +141,7 @@ export function useUpdateInquiry () {
   } = useMutation ({
     mutationFn: ({ id, payload }) => updateInquiryStatus(id, payload), 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminInquiries"] });
+      queryClient.invalidateQueries({ queryKey: [adminInquiries] });
     },
   });
   return { updateInquiryMutate, updateInquiryError, ...rest};

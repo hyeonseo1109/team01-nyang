@@ -5,6 +5,8 @@ import { api } from "./client";
 // 2. TanStack Query 훅
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
+const myProfile = "myProfile";
+const myLocation = "myLocation";
 
 // !- - - - 내 프로필 조회 - - - -
 export async function getMyProfile () {
@@ -13,13 +15,14 @@ export async function getMyProfile () {
 }
 export function useGetMyProfile () {
   return useQuery ({ 
-    queryKey: ["myProfile"], 
+    queryKey: [myProfile], 
     queryFn: getMyProfile,
     staleTime: 1000 * 60 * 5,
   });
   //useQuery: 서버에서 데이터 가져올 때. (GET 요청 보낼 때)
   //queryKey: 호출에 이름을 지음, 같은 호출을 두 번 할 때 새롭게 불러오지 않고 기존에 있던 호출 결과를 불러옴. 
 }
+
 
 
 // !- - - - 내 프로필 수정 - - - - 
@@ -34,9 +37,10 @@ export function useUpdateMyProfile () {
     mutationFn: updateMyProfile,
     onSuccess: () => 
     // mutation(요청)이 성공했을 때 실행되는 콜백 함수.
-      queryClient.invalidateQueries({ queryKey: ["myProfile"] }),
+      queryClient.invalidateQueries({ queryKey: [myProfile] }),
   });
 }
+
 
 
 // !- - - - 사용자 상세 (관리자/본인) - - - -
@@ -55,6 +59,7 @@ export function useUserDetail(userId) {
 }
 
 
+
 // !- - - - 사용자 삭제 - - - -
 export async function deleteMyAccount() {
   const res = await api.delete("/users/me");
@@ -65,6 +70,7 @@ export function useDeleteMyAccount() {
 }
 
 
+
 // !- - - - 위치 조회 - - - -
 export async function getMyLocation () {
   const res = api.get("/users/me/location");
@@ -72,7 +78,7 @@ export async function getMyLocation () {
 }
 export function useGetMyLocation () {
   return useQuery({ 
-    queryKey: ["myLocation"],
+    queryKey: [myLocation],
     queryFn: getMyLocation
   });
 }
@@ -88,6 +94,6 @@ export function useUpdateMyLocation () {
   return useMutation({
     queryFn: updateMyLocation,
     onSuccess: () => 
-      queryClient.invalidateQueries({ queryKey: ["myLocation"] }),
+      queryClient.invalidateQueries({ queryKey: [myLocation] }),
   });
 }

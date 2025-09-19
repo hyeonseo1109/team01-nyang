@@ -5,6 +5,7 @@ import api from "./apiClient";
 // 2. TanStack Query 훅
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
+const todos = "todos";
 
 // !- - - - 할 일 목록 조회 - - - - 
 export async function getTodos(params = {}) {
@@ -14,7 +15,7 @@ export async function getTodos(params = {}) {
 }
 export function useTodos(params) {
   return useQuery({
-    queryKey: ["todos", params],
+    queryKey: [todos, params],
     queryFn: () => getTodos(params),
   });
 }
@@ -30,7 +31,7 @@ export function useCreateTodo() {
   return useMutation({
     mutationFn: createTodo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: [todos] });
     },
   });
 }
@@ -44,7 +45,7 @@ export async function getTodoById(id) {
 }
 export function useTodo(id) {
   return useQuery({
-    queryKey: ["todos", id],
+    queryKey: [todos, id],
     queryFn: () => getTodoById(id),
     enabled: !!id,
   });
@@ -62,7 +63,7 @@ export function useUpdateTodo() {
   return useMutation({
     mutationFn: ({ id, payload }) => updateTodo(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: [todos] });
     },
   });
 }
@@ -79,7 +80,7 @@ export function useDeleteTodo() {
   return useMutation({
     mutationFn: deleteTodo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: [todos] });
     },
   });
 }
@@ -96,7 +97,7 @@ export function useToggleTodoComplete() {
   return useMutation({
     mutationFn: ({ id, payload }) => toggleTodoComplete(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: [todos] });
     },
   });
 }

@@ -6,6 +6,9 @@ import api from "./apiClient";
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 
+const inquiries = "inquiries";
+
+
 // !- - - - 내 문의 목록 조회 (쿼리: status=pending 등) - - - - 
 export async function getInquiries(params = {}) {
   const res = await api.get("/inquiries", { params });
@@ -13,7 +16,7 @@ export async function getInquiries(params = {}) {
 }
 export function useInquiries(params) {
   return useQuery({
-    queryKey: ["inquiries", params],
+    queryKey: [inquiries, params],
     queryFn: () => getInquiries(params),
     staleTime: 1000 * 60 * 5,
     // 문의 달았을 때 createInquiry에서 캐시 초기화가 발생하기 때문에 새로고침돼서 바로바로 잘 나타나고, 그렇기에 오래 캐싱할 필요도 없음. 
@@ -32,7 +35,7 @@ export function useCreateInquiry() {
   return useMutation({
     mutationFn: createInquiry,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inquiries"] });
+      queryClient.invalidateQueries({ queryKey: [inquiries] });
     },
   });
 }
@@ -46,7 +49,7 @@ export async function getInquiryById(id) {
 }
 export function useInquiry(id) {
   return useQuery({
-    queryKey: ["inquiries", id],
+    queryKey: [inquiries, id],
     queryFn: () => getInquiryById(id),
     enabled: !!id,
   });
@@ -64,7 +67,7 @@ export function useUpdateInquiry() {
   return useMutation({
     mutationFn: ({ id, payload }) => updateInquiry(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inquiries"] });
+      queryClient.invalidateQueries({ queryKey: [inquiries] });
     },
   });
 }
@@ -81,7 +84,7 @@ export function useDeleteInquiry() {
   return useMutation({
     mutationFn: deleteInquiry,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inquiries"] });
+      queryClient.invalidateQueries({ queryKey: [inquiries] });
     },
   });
 }

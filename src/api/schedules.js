@@ -5,6 +5,7 @@ import api from "./apiClient";
 // 2. TanStack Query 훅
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
+const schedules = "schedules";
 
 // !- - - - 일정 목록 조회 - - - - 
 export async function getSchedules() {
@@ -13,7 +14,7 @@ export async function getSchedules() {
 }
 export function useSchedules() {
   return useQuery({
-    queryKey: ["schedules"],
+    queryKey: [schedules],
     queryFn: getSchedules,
   });
 }
@@ -29,7 +30,7 @@ export function useCreateSchedule() {
   return useMutation({
     mutationFn: createSchedule,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: [schedules] });
     },
   });
 }
@@ -43,7 +44,7 @@ export async function getScheduleById(id) {
 }
 export function useSchedule(id) {
   return useQuery({
-    queryKey: ["schedules", id],
+    queryKey: [schedules, id],
     queryFn: () => getScheduleById(id),
     enabled: !!id, // id가 있을 때만 실행
   });
@@ -61,7 +62,7 @@ export function useUpdateSchedule() {
   return useMutation({
     mutationFn: ({ id, payload }) => updateSchedule(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: [schedules] });
     },
   });
 }
@@ -78,7 +79,7 @@ export function useDeleteSchedule() {
   return useMutation({
     mutationFn: deleteSchedule,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: [schedules] });
     },
   });
 }
@@ -92,7 +93,7 @@ export async function getScheduleTodos(id) {
 }
 export function useScheduleTodos(id) {
   return useQuery({
-    queryKey: ["schedules", id, "todos"],
+    queryKey: [schedules, id, "todos"],
     queryFn: () => getScheduleTodos(id),
     enabled: !!id,
   });
