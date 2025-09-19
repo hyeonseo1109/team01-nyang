@@ -6,7 +6,7 @@ import { api } from "./client";
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 
-// - - - - 내 프로필 조회 - - - -
+// !- - - - 내 프로필 조회 - - - -
 export async function getMyProfile () {
   const res = await api.get("/users/me");
   return res.data;
@@ -14,7 +14,7 @@ export async function getMyProfile () {
 export function useGetMyProfile () {
   return useQuery ({ 
     queryKey: ["myProfile"], 
-    qeuryFn: getMyProfile,
+    queryFn: getMyProfile,
     staleTime: 1000 * 60 * 5,
   });
   //useQuery: 서버에서 데이터 가져올 때. (GET 요청 보낼 때)
@@ -22,7 +22,7 @@ export function useGetMyProfile () {
 }
 
 
-// - - - - 내 프로필 수정 - - - - 
+// !- - - - 내 프로필 수정 - - - - 
 export async function updateMyProfile (payload) {
   const res = await api.patch("/users/me", payload);
   return res.data;
@@ -39,7 +39,7 @@ export function useUpdateMyProfile () {
 }
 
 
-// - - - - 사용자 상세 (관리자/본인) - - - -
+// !- - - - 사용자 상세 (관리자/본인) - - - -
 export async function getUserDetail (userId) {
   const res = await api.get(`/users/${userId}`);
   return res.data;
@@ -55,7 +55,7 @@ export function useUserDetail(userId) {
 }
 
 
-// - - - - 사용자 삭제 - - - -
+// !- - - - 사용자 삭제 - - - -
 export async function deleteMyAccount() {
   const res = await api.delete("/users/me");
   return res.data;
@@ -65,7 +65,7 @@ export function useDeleteMyAccount() {
 }
 
 
-// - - - - 위치 조회 - - - -
+// !- - - - 위치 조회 - - - -
 export async function getMyLocation () {
   const res = api.get("/users/me/location");
   return res.data;
@@ -78,7 +78,7 @@ export function useGetMyLocation () {
 }
 
 
-// - - - - 위치 수정 - - - -
+// !- - - - 위치 수정 - - - -
 export async function updateMyLocation (payload) {
   const res = await api.patch("/users/me/location", payload);
   return res.data;

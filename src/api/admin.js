@@ -6,7 +6,7 @@ import { api } from "./client";
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 
-// - - - - 유저 목록 검색 - - - -
+// !- - - - 유저 목록 검색 - - - -
 export async function getUsers (params) {
   const res = await api.get("/users", { params });
   // params: 쿼리스트링으로 url 뒤에 붙는 형태. (주로 GET 요청에서 사용)
@@ -48,7 +48,7 @@ export function useUsers (params) {
 
 
 
-// - - - - 특정 유저 수정 (관리자) - - - -
+// !- - - - 특정 유저 수정 (관리자) - - - -
 export async function updateUser(userId, payload) {
   const res = await api.patch(`/users/${userId}`, payload);
   return res.data;
@@ -78,7 +78,7 @@ export function useUpdateUser() {
 
 
 
-// - - - - 특정 유저 삭제 (관리자) - - - -
+// !- - - - 특정 유저 삭제 (관리자) - - - -
 export async function deleteUser(userId) {
   const res = await api.delete(`/users/${userId}`);
   return res.data;
@@ -102,7 +102,7 @@ export function useDeleteUser () {
 
 
 
-// - - - - 전체 문의 검색 - - - -
+// !- - - - 전체 문의 검색 - - - -
 export async function getAllInquiries () {
   const res = await api.get("/admin/inquiries");
   return res.data;
@@ -123,7 +123,8 @@ export function useAllInquiries() {
 
 
 
-// - - - - 문의 상태 변경 - - - -
+
+// !- - - - 문의 상태 변경 - - - -
 export async function updateInquiryStatus (id, payload) {
   const res = await api.patch(`/admin/inquiries/${id}/status`, payload);
   return res.data;
@@ -143,4 +144,30 @@ export function useUpdateInquiry () {
   return { updateInquiryMutate, updateInquiryError, ...rest};
 }
 // const { updateInquiryMutate, updateInquiryError } = useUpdateInquiry();
+// const handleUpdateInquiry =()=> { updateInquiryMutate({
+//   id: inquiryId,
+//   payload: { status: "in_progress" },
+// })}
 
+
+
+// !- - - - 관리자 답변 등록 / 수정 - - - - 
+export async function adminInquiriesReply (id, payload) {
+  const res = await api.post(`/admin/inquiries/${id}/reply`, payload);
+  return res.data;
+}
+export function useAdminInquiriesReply () {
+  const queryClient = useQueryClient();
+  const {
+    mutate: adminInquiriesReplyMutate,
+    error: adminInquiriesReplyError,
+    ...rest
+  } = useMutation ({
+    mutationFn: ({ id, payload }) => adminInquiriesReply(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminInquiriesReply"] });
+    },
+  });
+  return { adminInquiriesReplyMutate, adminInquiriesReplyError, ...rest };
+}
+// const { adminInquiriesMutate, adminInquiriesError } = useAdminInquiriesReply()

@@ -6,36 +6,39 @@ import api from "./apiClient";
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 
-// - - - - 뉴스 조회 - - - - 
-export async function getNews() {
-  const res = await api.get("/news");
+
+// !- - - - 카테고리별 최신 뉴스 헤드라인 및 링크 가져오기 - - - -
+export async function getNews(category) {
+  const res = await api.get(`/news/${category}`);
   return res.data;
 }
-export function useNews() {
-  return useQuery({
-    queryKey: ["news"],
-    queryFn: getNews,
-    staleTime: 1000 * 60 * 5,
+export function useNews(category) {
+  return useQuery ({
+    queryKey: ["news", category],
+    queryFn: () => getNews(category),
+     staleTime: 1000 * 60 * 5,
     //5분 동안은 캐시가 살아있어서, news를 재호출했을 때 캐시를 불러옴. 
-  });
+  })
 }
 
 
 
-// - - - - 퀴즈 조회 - - - - 
+// !- - - - 퀴즈 - - - -
 export async function getQuiz() {
   const res = await api.get("/quiz");
   return res.data;
 }
 export function useQuiz() {
-  return useQuery({
+  return useQuery ({
     queryKey: ["quiz"],
-    queryFn: getQuiz,
+    queryFn: () => getQuiz(),
     //얘는 매번 랜덤으로 새로 문제 뽑아오게 staleTime: 0 기본값으로 두었음.
-  });
+  })
 }
 
-// - - - - 브리핑 조회 (morning/evening) - - - - 
+
+
+// !- - - - 브리핑 조회 (morning/evening) - - - - 
 export async function getBriefings() {
   const res = await api.get("/briefings");
   return res.data;
@@ -49,19 +52,23 @@ export function useBriefings() {
   });
 }
 
-// - - - - 일정/할일 요약 대화 - - - - 
-export async function getConversations(params = {}) {
-  const res = await api.get("/conversations", { params });
+
+
+// !- - - - 일정/할일 요약 대화 - - - - 
+export async function getConversations() {
+  const res = await api.get("/conversations");
   return res.data;
 }
-export function useConversations(params) {
+export function useConversations() {
   return useQuery({
-    queryKey: ["conversations", params],
-    queryFn: () => getConversations(params),
+    queryKey: ["conversations"],
+    queryFn: () => getConversations(),
   });
 }
 
-// - - - - 운세 조회 - - - - 
+
+
+// !- - - - 운세 조회 - - - - 
 export async function getFortune(params) {
   const res = await api.get("/fortune", { params });
   return res.data;
@@ -73,11 +80,12 @@ export function useFortune(params) {
     enabled: !!params?.birthday, 
     // 생일이 있을 때만 실행
     // staleTime: 1000 * 60 * 60 * 12,
-    // 오늘의 운세는 하루 단위로 바뀌니 12시간을 고민하였으나, 자정이 지날 때 queryClient.inavalidateQueries({queryKey: ["fortune"]})을 해줘야 함. (useEffect로 초기화함수를 Timeout 지정해서..)
+    // 오늘의 운세는 하루 단위로 바뀌니 12시간을 고민하였으나, 자정이 지날 때 queryClient.invalidateQueries({queryKey: ["fortune"]})을 해줘야 함. (useEffect로 초기화함수를 Timeout 지정해서..)
   });
 }
 
-// - - - - 현재 날씨 조회 - - - - 
+
+// !- - - - 현재 날씨 조회 - - - - 
 export async function getWeather() {
   const res = await api.get("/weather");
   return res.data;
@@ -90,7 +98,8 @@ export function useWeather() {
   });
 }
 
-// - - - - 5일 날씨 예보 조회 - - - - 
+
+// !- - - - 5일 날씨 예보 조회 - - - - 
 export async function getWeatherForecast() {
   const res = await api.get("/weather/forecast");
   return res.data;

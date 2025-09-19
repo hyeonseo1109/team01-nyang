@@ -6,7 +6,7 @@ import api from "./apiClient";
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 
-// - - - - 일정 목록 조회 - - - - 
+// !- - - - 일정 목록 조회 - - - - 
 export async function getSchedules() {
   const res = await api.get("/schedules");
   return res.data;
@@ -18,7 +18,8 @@ export function useSchedules() {
   });
 }
 
-//  - - - - 일정 생성 - - - - 
+
+// ! - - - - 일정 생성 - - - - 
 export async function createSchedule(payload) {
   const res = await api.post("/schedules", payload);
   return res.data;
@@ -33,7 +34,9 @@ export function useCreateSchedule() {
   });
 }
 
-// - - - - 일정 상세 조회 - - - - 
+
+
+// !- - - - 일정 상세 조회 - - - - 
 export async function getScheduleById(id) {
   const res = await api.get(`/schedules/${id}`);
   return res.data;
@@ -46,7 +49,9 @@ export function useSchedule(id) {
   });
 }
 
-//  - - - - 일정 수정 - - - - 
+
+
+//  !- - - - 일정 수정 - - - - 
 export async function updateSchedule(id, payload) {
   const res = await api.patch(`/schedules/${id}`, payload);
   return res.data;
@@ -61,7 +66,9 @@ export function useUpdateSchedule() {
   });
 }
 
-//  - - - - 일정 삭제 - - - - 
+
+
+// ! - - - - 일정 삭제 - - - - 
 export async function deleteSchedule(id) {
   const res = await api.delete(`/schedules/${id}`);
   return res.data;
@@ -76,7 +83,9 @@ export function useDeleteSchedule() {
   });
 }
 
-//  - - - - 일정 연계 할 일 조회 - - - - 
+
+
+//  !- - - - 일정 연계 할 일 조회 - - - - 
 export async function getScheduleTodos(id) {
   const res = await api.get(`/schedules/${id}/todos`);
   return res.data;

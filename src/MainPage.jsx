@@ -72,7 +72,7 @@ export default function MainPage() {
           </div>
 
           <div className="relative flex flex-col gap-5 bg-blue-600 rounded-lg p-6 items-center justify-center">
-            <span className="text-lg font-medium text-white flex flex-col gap-10">
+            <span className="text-lg font-medium text-white flex flex-col gap-3">
               <Button size="lg" variant="common">
                 Todo List
               </Button>

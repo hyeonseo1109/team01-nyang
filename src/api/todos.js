@@ -6,7 +6,7 @@ import api from "./apiClient";
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 
-// - - - - 할 일 목록 조회 - - - - 
+// !- - - - 할 일 목록 조회 - - - - 
 export async function getTodos(params = {}) {
   // 쿼리: is_completed, schedule_id
   const res = await api.get("/todos", { params });
@@ -19,7 +19,8 @@ export function useTodos(params) {
   });
 }
 
-// - - - - 할 일 생성 - - - - 
+
+// !- - - - 할 일 생성 - - - - 
 export async function createTodo(payload) {
   const res = await api.post("/todos", payload);
   return res.data;
@@ -34,7 +35,9 @@ export function useCreateTodo() {
   });
 }
 
-// - - - - 할 일 상세 조회 - - - - 
+
+
+// !- - - - 할 일 상세 조회 - - - - 
 export async function getTodoById(id) {
   const res = await api.get(`/todos/${id}`);
   return res.data;
@@ -47,7 +50,9 @@ export function useTodo(id) {
   });
 }
 
-// - - - - 할 일 수정 - - - - 
+
+
+// !- - - - 할 일 수정 - - - - 
 export async function updateTodo(id, payload) {
   const res = await api.patch(`/todos/${id}`, payload);
   return res.data;
@@ -62,7 +67,9 @@ export function useUpdateTodo() {
   });
 }
 
-// - - - - 할 일 삭제 - - - - 
+
+
+// !- - - - 할 일 삭제 - - - - 
 export async function deleteTodo(id) {
   const res = await api.delete(`/todos/${id}`);
   return res.data;
@@ -77,7 +84,9 @@ export function useDeleteTodo() {
   });
 }
 
-// - - - - 할 일 완료 처리 토글 - - - - 
+
+
+// !- - - - 할 일 완료 처리 토글 - - - - 
 export async function toggleTodoComplete(id, payload) {
   const res = await api.post(`/todos/${id}/complete`, payload);
   return res.data;
