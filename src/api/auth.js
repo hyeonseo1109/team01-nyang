@@ -33,7 +33,7 @@ export function useRegisterUser() {
 // !- - - - 로그인(JWT 발급) - - - - 
 export async function login (payload) {
   const res = await api.post("/auth/login", payload);
-  // 로그인 정보 
+  // 넘겨야 되는 로그인 정보 자체가 객체임. 그래서 따로 여기서 객체로 씌우지 않음. 
   return res.data;
 }
 export function useLogin () {
@@ -63,6 +63,7 @@ export function useSocialLogin () {
   return { socialLoginMutate, socialLoginError, ...rest };
 }
 // const { socialLoginMutate, socialLoginError } = useSocialLogin();
+// socialLoginMutate(form)
 
 
 

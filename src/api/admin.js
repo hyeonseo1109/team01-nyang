@@ -9,9 +9,10 @@ const adminInquiries = "adminInquiries";
 const adminUsers = "adminUsers";
 
 
-// !- - - - 유저 목록 검색 - - - -
+// !- - - - 유저 목록 검색(관리자용) - - - -
 export async function getUsers (params) {
   const res = await api.get("/users", { params });
+  //?-- 객체로 전달해줘야 함. 
   // params: 쿼리스트링으로 url 뒤에 붙는 형태. (주로 GET 요청에서 사용)
   // getUsers ({ email: "abc@test.com", is_active; true }); 
   // 라는 요청을 보내면
@@ -46,7 +47,13 @@ export function useUsers (params) {
   });
   return { usersData, usersIsLoading, usersIsError, ...rest };
 }
-// const  { usersData, usersIsLoading, usersIsError } = useUsers();
+// const  { usersData, usersIsLoading, usersIsError } = useUsers();   :   전체 목록
+
+// const { usersData } = useUsers({ email: "search@example.com" });   :   이메일로 찾기 
+// --이렇게 params로 넘겨야 할 때는 객체 형태로 넘김. 
+// GET요청 시의 useQuery에서는 params를  api요청함수를 호출하는 TanStack Query 훅 자체에서 넘겨줌.
+// 그 외 요청의 useMutation에서는 params를  생성된 mutate에서 넘겨줌. 
+
 // if (usersIsLoading) return <p>불러오는 중...</p>;
 
 
@@ -84,6 +91,7 @@ export function useUpdateUser() {
 // !- - - - 특정 유저 삭제 (관리자) - - - -
 export async function deleteUser(userId) {
   const res = await api.delete(`/users/${userId}`);
+  //얘는 객체로 넘기지 않고 있음. 숫자로 넣어도 됨.
   return res.data;
 }
 export function useDeleteUser () {
@@ -94,6 +102,9 @@ export function useDeleteUser () {
     ...rest
   } = useMutation ({
     mutationFn: deleteUser,
+    // mutationFn이 단일 인자를 받게 만들어졌으면, mutate도 단일 인자를 넘기면 됨. 
+    // deleteUser를 호출하면서 params로 id만 받음 => mutate로 넘겨서 받는 것도 id뿐.
+    // 즉 객체로 쓰지 않고 숫자 id 자체를 넘기면 됨. 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminUsers [adminUsers] });
     },
@@ -140,6 +151,7 @@ export function useUpdateInquiry () {
     ...rest
   } = useMutation ({
     mutationFn: ({ id, payload }) => updateInquiryStatus(id, payload), 
+    //얘는 updateUser와 달리 id와 payload를 받으니, 넘겨줄 때도 객체 형태로 id와 payload를 모두 넘겨줘야 함. 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [adminInquiries] });
     },
@@ -147,10 +159,10 @@ export function useUpdateInquiry () {
   return { updateInquiryMutate, updateInquiryError, ...rest};
 }
 // const { updateInquiryMutate, updateInquiryError } = useUpdateInquiry();
-// const handleUpdateInquiry =()=> { updateInquiryMutate({
+// updateInquiryMutate({
 //   id: inquiryId,
 //   payload: { status: "in_progress" },
-// })}
+// })
 
 
 
@@ -174,3 +186,9 @@ export function useAdminInquiriesReply () {
   return { adminInquiriesReplyMutate, adminInquiriesReplyError, ...rest };
 }
 // const { adminInquiriesMutate, adminInquiriesError } = useAdminInquiriesReply()
+// adminInquiriesMutate({
+//  "id": 3,
+//  "payload": {
+//      "admin_reply": "오류 수정"
+//    } 
+//  })

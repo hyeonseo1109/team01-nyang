@@ -15,13 +15,22 @@ export async function getInquiries(params = {}) {
   return res.data;
 }
 export function useInquiries(params) {
-  return useQuery({
+  const {
+    data: inquiriesData,
+    isLoading: inquiriesIsLoading,
+    isError: inquiriesIsError,
+    ...rest
+  } = useQuery({
     queryKey: [inquiries, params],
     queryFn: () => getInquiries(params),
     staleTime: 1000 * 60 * 5,
     // 문의 달았을 때 createInquiry에서 캐시 초기화가 발생하기 때문에 새로고침돼서 바로바로 잘 나타나고, 그렇기에 오래 캐싱할 필요도 없음. 
   });
+  return { inquiriesData, inquiriesIsLoading, inquiriesIsError, ...rest };
 }
+// const { inquiriesData, inquiriesIsLoading, inquiriesIsError } = useInquiries();   :   전체 조회
+// const { inquiriesData, inquiriesIsLoading, inquiriesIsError } = useInquiries({ status: "pending" });   :    pending 상태인 문의만 보여줌. 
+
 
 
 
@@ -32,13 +41,20 @@ export async function createInquiry(payload) {
 }
 export function useCreateInquiry() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const {
+    mutate: createInquiryMutate,
+    error: createInquiryError,
+    ...rest
+  } = useMutation({
     mutationFn: createInquiry,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [inquiries] });
     },
   });
+  return { createInquiryMutate, createInquiryError, ...rest };
 }
+// const { createInquiryMutate, createInquiryError } = useCreateInquiry();
+// createInquiryMutate({ "title": "문의 등록", "message": "문의 등록하겠습니다."})
 
 
 
@@ -48,12 +64,19 @@ export async function getInquiryById(id) {
   return res.data;
 }
 export function useInquiry(id) {
-  return useQuery({
+  const {
+    data: inquiryByIdData,
+    isLoading: inquiryByIdIsLoading,
+    isError: inquiryByIdIsError,
+    ...rest
+  } = useQuery({
     queryKey: [inquiries, id],
     queryFn: () => getInquiryById(id),
     enabled: !!id,
   });
+  return { inquiryByIdData, inquiryByIdIsLoading, inquiryByIdIsError, ...rest };
 }
+// const { inquiryByIdData, inquiriesIsLoading, inquiriesIsError } = useInquiry(3);
 
 
 
@@ -64,13 +87,20 @@ export async function updateInquiry(id, payload) {
 }
 export function useUpdateInquiry() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const {
+    mutate: updateInquiryMutate,
+    error: updateInquiryError,
+    ...rest
+  } = useMutation({
     mutationFn: ({ id, payload }) => updateInquiry(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [inquiries] });
     },
   });
+  return { updateInquiryMutate, updateInquiryError, ...rest };
 }
+// const { updateInquiryMutate, updateInquiryError } = useUpdateInquiry();
+// updateInquiryMutate({ "title": "문의 수정", "message": "문의 수정하겠습니다."})
 
 
 
@@ -81,11 +111,17 @@ export async function deleteInquiry(id) {
 }
 export function useDeleteInquiry() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const {
+    mutate: deleteInquiryMutate,
+    error: deleteInquiryError,
+    ...rest
+  } = useMutation({
     mutationFn: deleteInquiry,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [inquiries] });
     },
   });
+  return { deleteInquiryMutate, deleteInquiryError, ...rest };
 }
-
+// const { deleteInquiryMutate, deleteInquiryError } = useDeleteInquiry();
+// deleteInquiryMutate(id)
