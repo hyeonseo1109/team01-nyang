@@ -9,11 +9,12 @@ export default function Button({
 
   const variants = {
     common: 'bg-[#3456AF] hover:bg-[#24469d] disabled:bg-[#214294]',
-    cancle: 'bg-[#636e8b] hover:bg-[#505b78] disabled:bg-[#495060]',
+    cancel: 'bg-[#636e8b] hover:bg-[#505b78] disabled:bg-[#495060]',
     confirm: 'bg-[#3058bd] hover:bg-[#1f45a5] disabled:bg-[#1c3063]',
   };
 
   const sizes = {
+    vsm: 'px-1 py-0.5 text-sm rounded-[0.3rem] w-full min-w-12',
     sm: 'px-2 py-1 text-sm rounded-[0.4rem] w-full min-w-24',
     // w-24 
     md: 'px-4 py-2 text-base rounded-[0.6rem] w-full min-w-32',

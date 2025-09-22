@@ -54,7 +54,7 @@ export function SignUp() {
       <div className="flex flex-col buttons w-full gap-2 pt-6">
         <LoginButton
           type="submit"
-          variant={onButton ? 'common' : 'cancle'}
+          variant={onButton ? 'common' : 'cancel'}
           size="md"
           disabled={!onButton}
           form="signupForm"

@@ -9,7 +9,7 @@ export default function LoginButton({
 
   const variants = {
     common: 'bg-[#3456AF] hover:bg-[#24469d] disabled:bg-[#214294]',
-    cancle: 'bg-[#636e8b] hover:bg-[#505b78] disabled:bg-[#495060]',
+    cancel: 'bg-[#636e8b] hover:bg-[#505b78] disabled:bg-[#495060]',
     confirm: 'bg-[#3058bd] hover:bg-[#1f45a5] disabled:bg-[#1c3063]',
   };
 
