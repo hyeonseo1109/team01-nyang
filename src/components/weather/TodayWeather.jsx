@@ -1,8 +1,11 @@
 import { todayWeatherDummy } from '../../api/dummyData/dummyWeather';
+import { weatherIconMap, mapIconCode } from '../../utils/weatherIcons';
 
 export default function TodayWeather() {
   const d = todayWeatherDummy;
-  const iconUrl = `https://openweathermap.org/img/wn/${d.weather_icon}@4x.png`;
+
+  const iconKey = mapIconCode(d.weather_icon);
+  const Icon = weatherIconMap[iconKey] || weatherIconMap.cloudy;
 
   return (
     <div className="flex flex-col gap-4 w-full h-full min-h-0">
@@ -10,7 +13,7 @@ export default function TodayWeather() {
         <div className="w-full h-full p-3 grid grid-rows-[1fr_auto] gap-4 ">
           <div className="flex flex-col lg:flex-row items-center gap-3 min-w-0 transition-all duration-300 ease-in-out">
             <div className="relative shrink-0">
-              <img src={iconUrl} alt="weather" className="w-28 sm:w-32 h-auto object-contain" />
+              <Icon className="w-20 h-20 text-blue-300" strokeWidth={1.5} />
               <div className="absolute top-1 left-1 text-[11px] px-2 py-0.5 rounded bg-black/50 border border-white/10">
                 내 현재 위치
               </div>
