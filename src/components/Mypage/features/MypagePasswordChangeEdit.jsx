@@ -1,5 +1,6 @@
 // src/components/Mypage/features/PasswordChangeBox.jsx
 import { useEffect, useRef, useState } from 'react';
+import { usePasswordChange } from '../../../api/auth';
 import { LoginInputPassword } from '../../ui/LoginInputPassword';
 import Modal from '../../ui/Modal';
 
@@ -9,6 +10,7 @@ export default function PasswordChangeBox() {
   const [newPw, setNewPw] = useState('');
   const [newPw2, setNewPw2] = useState('');
   const [savingPw, setSavingPw] = useState(false);
+  const { passwordChangeMutate } = usePasswordChange();
 
   // 모달 상태
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,13 +32,23 @@ export default function PasswordChangeBox() {
     if (newPw !== newPw2) return openModal('안내', '비밀번호 확인이 일치하지 않습니다.');
     if (!curPw || !newPw) return openModal('안내', '비밀번호를 입력해 주세요.');
     setSavingPw(true);
-    setTimeout(() => {
-      setSavingPw(false);
-      setCurPw('');
-      setNewPw('');
-      setNewPw2('');
-      openModal('완료', '비밀번호 변경 처리되었습니다.');
-    }, 300);
+    passwordChangeMutate(
+      { old_password: curPw, new_password: newPw },
+      {
+        onSuccess: () => {
+          setCurPw('');
+          setNewPw('');
+          setNewPw2('');
+          openModal('완료', '비밀번호가 변경되었습니다.');
+        },
+        onError: (err) => {
+          const msg =
+            err?.response?.data?.message || err?.message || '비밀번호 변경에 실패했습니다.';
+          openModal('오류', msg);
+        },
+        onSettled: () => setSavingPw(false),
+      },
+    );
   }
 
   const label = savingPw ? '적용 중…' : '적용';

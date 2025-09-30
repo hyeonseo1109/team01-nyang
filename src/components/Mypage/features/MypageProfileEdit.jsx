@@ -3,12 +3,12 @@ import EditNicknameField from './EditNicknameField';
 import EditBirthdateField from './EditBirthdateField';
 import EditProfileImageField from './EditProfileImageField';
 // import ApplyAllRow from './ApplyAllRow';
-import { updateMeMock } from '../../../mockData';
-import { useUser } from '../../../store/useUser';
-import { useLogout } from '../../../api/auth';
+import { useUpdateMyProfile, useDeleteMyAccount } from '../../../api/users';
 
-export default function MypageProfileEdit({ me, onChange, onLogout, onLeave, onNotify }) {
+export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) {
   const nameRef = useRef(null);
+  const { updateMyProfileMutate } = useUpdateMyProfile();
+  const { deleteMyAccountMutate } = useDeleteMyAccount();
 
   const [username, setUsername] = useState('');
   const [birthdate, setBirthdate] = useState('');
@@ -29,31 +29,19 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onLeave, onN
     }
   }, []);
 
-  const { clearUser } = useUser();
-  const { logoutMutate } = useLogout();
-
-  const handleLogout = () => {
-    logoutMutate(undefined, {
-      onSuccess: () => {
-        clearUser();
-      },
-      onError: () => {
-        alert('오류');
-      },
-    });
-  };
-
   async function safeUpdate(payload, okMsg) {
     setSavingProfile(true);
-    try {
-      const next = await updateMeMock(payload);
-      if (onChange) onChange(next);
-      if (onNotify) onNotify(okMsg, '완료');
-    } catch (e) {
-      if (onNotify) onNotify(e?.message || '오류가 발생했습니다.', '오류');
-    } finally {
-      setSavingProfile(false);
-    }
+    updateMyProfileMutate(payload, {
+      onSuccess: (next) => {
+        if (onChange) onChange(next);
+        if (onNotify) onNotify(okMsg, '완료');
+      },
+      onError: (err) => {
+        const msg = err?.response?.data?.message || err?.message || '오류가 발생했습니다.';
+        if (onNotify) onNotify(msg, '오류');
+      },
+      onSettled: () => setSavingProfile(false),
+    });
   }
 
   const applyNickname = () => safeUpdate({ username }, '닉네임이 적용되었습니다.');
@@ -91,8 +79,19 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onLeave, onN
       <div className="flex items-center justify-between gap-2">
         <button
           className="btn-secondary bg-red-900/40 hover:bg-red-900/60 border-red-500/30"
-          onClick={onLeave}
           type="button"
+          onClick={() =>
+            deleteMyAccountMutate(undefined, {
+              onSuccess: () => {
+                if (onNotify) onNotify('회원탈퇴가 완료되었습니다.', '완료');
+                if (onLogout) onLogout();
+              },
+              onError: (err) => {
+                const msg = err?.response?.data?.message || err?.message || '탈퇴에 실패했습니다.';
+                if (onNotify) onNotify(msg, '오류');
+              },
+            })
+          }
         >
           회원탈퇴
         </button>
