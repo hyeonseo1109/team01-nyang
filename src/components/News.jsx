@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import dummyNews from '../api/dummyData/dummyNews';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchNews } from '../api/dummyData/news';
 
 const CATEGORY_LABELS = {
   politics: '정치',
@@ -12,22 +13,24 @@ const CATEGORY_LABELS = {
 
 export default function News() {
   const [category, setCategory] = useState('life');
-  const [newsData, setNewsData] = useState([]);
 
-  useEffect(() => {
-    const allNews = dummyNews[category] || [];
+  const {
+    data: newsData = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['news', category],
+    queryFn: () => fetchNews(category),
+    staleTime: 1000 * 60 * 5,
+  });
 
-    const shuffled = [...allNews].sort(() => Math.random() - 0.5);
-    const limited = shuffled.slice(0, 6);
-
-    setNewsData(limited);
-  }, [category]);
+  const limitedNews = Array.isArray(newsData) ? newsData.slice(0, 6) : [];
 
   return (
     <div className="flex flex-col gap-4 h-full min-h-0">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-white">뉴스</h2>
-
         <div className="flex-1 ml-3 overflow-x-auto custom-scroll">
           <div className="flex gap-2 w-max">
             {Object.keys(CATEGORY_LABELS).map((cat) => (
@@ -47,12 +50,18 @@ export default function News() {
         </div>
       </div>
 
-      {newsData.length === 0 ? (
+      {isLoading ? (
         <p className="text-sm text-neutral-400">뉴스를 불러오는 중...</p>
+      ) : isError ? (
+        <p className="text-sm text-red-400">
+          뉴스 불러오기 실패: {error?.message || '알 수 없는 에러'}
+        </p>
+      ) : limitedNews.length === 0 ? (
+        <p className="text-sm text-neutral-400">{CATEGORY_LABELS[category]} 뉴스가 없습니다.</p>
       ) : (
         <div className="flex-1 min-h-0 overflow-auto custom-scroll">
           <ul className="space-y-2">
-            {newsData.map((news, idx) => (
+            {limitedNews.map((news, idx) => (
               <li
                 key={`${news.url}-${idx}`}
                 className="rounded-lg bg-neutral-800/60 px-3 py-2 hover:bg-neutral-700 transition-colors"
