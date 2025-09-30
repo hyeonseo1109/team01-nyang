@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchNews } from '../api/dummyData/news';
+import { fetchNews } from '../api/news';
 
 const CATEGORY_LABELS = {
   politics: '정치',
