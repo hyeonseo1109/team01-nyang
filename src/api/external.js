@@ -15,7 +15,7 @@ const WEATHER = 'weather';
 
 // !- - - - 카테고리별 최신 뉴스 헤드라인 및 링크 가져오기 - - - -
 export async function getNews(category) {
-  const res = await api.get(`/news/${category}`);
+  const res = await api.get('/news', { params: { category } });
   return res.data;
 }
 export function useNews(category) {

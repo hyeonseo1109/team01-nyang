@@ -5,8 +5,8 @@ const CATEGORY_LABELS = {
   politics: '정치',
   economy: '경제',
   society: '사회',
-  life: '사회/문화',
-  it: 'IT/과학',
+  life_culture: '사회/문화',
+  it_science: 'IT/과학',
   world: '세계',
 };
 

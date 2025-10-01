@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import { weatherIconMap, mapDescription } from '../../utils/weatherIcons';
 import useLocation from '../../hook/useLocation';
 import { useFiveDayWeather } from '../../api/external';
+import { DEFAULT_LOCATION } from './location';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,9 +32,10 @@ ChartJS.register(
 
 export default function FiveDayWeather() {
   const { location, error } = useLocation();
-  const { data, isLoading, isError, error: apiError } = useFiveDayWeather(location);
+  const coords = location || DEFAULT_LOCATION;
 
-  if (error) return <div className="text-neutral-400">위치 오류: {error}</div>;
+  const { data, isLoading, isError, error: apiError } = useFiveDayWeather(coords);
+
   if (isLoading) return <div className="text-neutral-400">날씨 불러오는 중...</div>;
   if (isError)
     return (
@@ -110,6 +113,12 @@ export default function FiveDayWeather() {
 
   return (
     <div className="flex flex-col items-center w-full">
+      {error && (
+        <div className="text-neutral-400 text-sm mb-2">
+          현재 위치 확인이 어려워 서울 날씨로 대신합니다.
+        </div>
+      )}
+
       <div className="flex w-full max-w-[800px]">
         {data.map((d, i) => (
           <div key={i} className="flex-1 border-r border-neutral-700/50 last:border-r-0">
