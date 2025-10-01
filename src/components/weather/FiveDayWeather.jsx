@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import { fiveDayWeatherDummy } from '../../api/dummyData/dummyWeather';
 import { weatherIconMap, mapDescription } from '../../utils/weatherIcons';
-
+import useLocation from '../../hook/useLocation';
+import { useFiveDayWeather } from '../../hook/useWeather';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,9 +29,13 @@ ChartJS.register(
 );
 
 export default function FiveDayWeather() {
-  const data = fiveDayWeatherDummy;
+  const { location, error } = useLocation();
+  const { data, isLoading } = useFiveDayWeather(location);
 
-  // 라벨 & 데이터 준비
+  if (error) return <div>위치 오류: {error}</div>;
+  if (isLoading) return <div>날씨 불러오는 중...</div>;
+  if (!data) return <div>날씨 정보가 없습니다.</div>;
+
   const labels = data.map((d) => dayjs(d.date).format('MM/DD'));
   const maxTemps = data.map((d) => d.temp_max);
   const minTemps = data.map((d) => d.temp_min);
@@ -47,7 +51,7 @@ export default function FiveDayWeather() {
         tension: 0.3,
         pointBackgroundColor: '#f87171',
         pointBorderColor: '#fff',
-        pointBorderWidth: 3,
+        pointBorderWidth: 2,
         pointRadius: 5,
       },
       {
@@ -58,7 +62,7 @@ export default function FiveDayWeather() {
         tension: 0.3,
         pointBackgroundColor: '#60a5fa',
         pointBorderColor: '#fff',
-        pointBorderWidth: 3,
+        pointBorderWidth: 2,
         pointRadius: 5,
       },
     ],
@@ -66,15 +70,13 @@ export default function FiveDayWeather() {
 
   const annotations = {};
   for (let i = 1; i < labels.length; i++) {
-    if (i < labels.length) {
-      annotations[`divider${i}`] = {
-        type: 'line',
-        xMin: i - 0.5,
-        xMax: i - 0.5,
-        borderColor: 'rgba(64,64,64,0.5)',
-        borderWidth: 1,
-      };
-    }
+    annotations[`divider${i}`] = {
+      type: 'line',
+      xMin: i - 0.5,
+      xMax: i - 0.5,
+      borderColor: 'rgba(64,64,64,0.5)',
+      borderWidth: 1,
+    };
   }
 
   const options = {
@@ -87,21 +89,14 @@ export default function FiveDayWeather() {
         color: '#fff',
         anchor: 'end',
         align: 'bottom',
-        offset: 15,
-        clip: false,
-        font: { weight: 'bold', size: 14 },
-        formatter: (value) => `${value}°`,
+        offset: 6,
+        font: { weight: 'bold', size: 12 },
+        formatter: (v) => `${v}°`,
       },
-      annotation: {
-        annotations,
-      },
+      annotation: { annotations },
     },
     scales: {
-      x: {
-        offset: true,
-        ticks: { display: false },
-        grid: { display: false },
-      },
+      x: { offset: true, ticks: { display: false }, grid: { display: false } },
       y: { display: false },
     },
   };

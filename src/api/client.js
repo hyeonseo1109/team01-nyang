@@ -2,7 +2,7 @@ import axios from 'axios';
 // import { useUser } from '../store/useUser';
 // - - - - axios 인스턴스 생성 - - - -
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: 'http://3.24.190.187:8000',
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true, //쿠키 포함 요청 허용
 });
