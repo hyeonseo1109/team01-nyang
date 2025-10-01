@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchNews } from '../api/news';
+import { useNews } from '../api/external';
 
 const CATEGORY_LABELS = {
   politics: '정치',
@@ -13,17 +12,7 @@ const CATEGORY_LABELS = {
 
 export default function News() {
   const [category, setCategory] = useState('life');
-
-  const {
-    data: newsData = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ['news', category],
-    queryFn: () => fetchNews(category),
-    staleTime: 1000 * 60 * 5,
-  });
+  const { newsData = [], newsIsLoading, newsIsError } = useNews(category);
 
   const limitedNews = Array.isArray(newsData) ? newsData.slice(0, 6) : [];
 
@@ -40,7 +29,7 @@ export default function News() {
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                   cat === category
                     ? 'bg-[#2d5b81] hover:bg-[#1b4567]'
-                    : 'bg-neutral-700 hover:bg-neutral-800 '
+                    : 'bg-neutral-700 hover:bg-neutral-800'
                 }`}
               >
                 {CATEGORY_LABELS[cat]}
@@ -50,12 +39,10 @@ export default function News() {
         </div>
       </div>
 
-      {isLoading ? (
+      {newsIsLoading ? (
         <p className="text-sm text-neutral-400">뉴스를 불러오는 중...</p>
-      ) : isError ? (
-        <p className="text-sm text-red-400">
-          뉴스 불러오기 실패: {error?.message || '알 수 없는 에러'}
-        </p>
+      ) : newsIsError ? (
+        <p className="text-sm text-red-400">뉴스 불러오기 실패</p>
       ) : limitedNews.length === 0 ? (
         <p className="text-sm text-neutral-400">{CATEGORY_LABELS[category]} 뉴스가 없습니다.</p>
       ) : (
@@ -67,7 +54,7 @@ export default function News() {
                 className="rounded-lg bg-neutral-800/60 px-3 py-2 hover:bg-neutral-700 transition-colors"
               >
                 <a
-                  href={news.url}
+                  href={news.url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-sm text-neutral-100 hover:text-[#417eb0]"

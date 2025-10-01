@@ -149,9 +149,9 @@ export function useWeather() {
 }
 // const { weatherData, weatherIsLoading, weatherIsError } = useWeather();
 
-// !- - - - 5일 날씨 예보 조회 - - - -
-export async function getWeatherForecast() {
-  const res = await api.get('/weather/forecast');
+// !- - - - 5일 날씨 예보 조회 (lat/lon 추가) - - - -
+export async function getFiveDayWeather(lat, lon) {
+  const res = await api.get('/weather/forecast', { params: { lat, lon } });
   return res.data;
 }
 export function useWeatherForecast() {

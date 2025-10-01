@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTodayWeather, getFiveDayWeather } from '../api/weather';
+import { getTodayWeather, getFiveDayWeather } from '../api/external';
 
 export function useTodayWeather(location) {
   return useQuery({

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { weatherIconMap, mapDescription } from '../../utils/weatherIcons';
 import useLocation from '../../hook/useLocation';
-import { useFiveDayWeather } from '../../hook/useWeather';
+import { useFiveDayWeather } from '../../api/external';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,11 +30,12 @@ ChartJS.register(
 
 export default function FiveDayWeather() {
   const { location, error } = useLocation();
-  const { data, isLoading } = useFiveDayWeather(location);
+  const { data, isLoading, isError } = useFiveDayWeather(location);
 
   if (error) return <div>위치 오류: {error}</div>;
   if (isLoading) return <div>날씨 불러오는 중...</div>;
-  if (!data) return <div>날씨 정보가 없습니다.</div>;
+  if (isError) return <div>날씨 불러오기 실패</div>;
+  if (!data || data.length === 0) return <div>날씨 정보가 없습니다.</div>;
 
   const labels = data.map((d) => dayjs(d.date).format('MM/DD'));
   const maxTemps = data.map((d) => d.temp_max);
