@@ -105,9 +105,9 @@ export function useConversations() {
 }
 // const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
 
-// !- - - - 운세 조회 - - - -
-export async function getFortune() {
-  const res = await api.get('/gemini/fortune');
+// !- - - - 오늘의 운세 (생일 필요) - - - -
+export async function getFortune(birthdate) {
+  const res = await api.get('/gemini/fortune', { params: { birthdate } });
   return res.data;
 }
 export function useFortune() {
