@@ -12,7 +12,7 @@ const CATEGORY_LABELS = {
 
 export default function News() {
   const [category, setCategory] = useState('life');
-  const { newsData = [], newsIsLoading, newsIsError } = useNews(category);
+  const { newsData = [], newsIsLoading, newsIsError, error } = useNews(category);
 
   const limitedNews = Array.isArray(newsData) ? newsData.slice(0, 6) : [];
 
@@ -42,9 +42,13 @@ export default function News() {
       {newsIsLoading ? (
         <p className="text-sm text-neutral-400">뉴스를 불러오는 중...</p>
       ) : newsIsError ? (
-        <p className="text-sm text-red-400">뉴스 불러오기 실패</p>
+        <p className="text-sm text-red-400">
+          뉴스 불러오기 실패 ({error?.response?.data?.message || error?.message})
+        </p>
       ) : limitedNews.length === 0 ? (
-        <p className="text-sm text-neutral-400">{CATEGORY_LABELS[category]} 뉴스가 없습니다.</p>
+        <p className="text-sm text-neutral-400">
+          {CATEGORY_LABELS[category]} 뉴스 정보가 없습니다.
+        </p>
       ) : (
         <div className="flex-1 min-h-0 overflow-auto custom-scroll">
           <ul className="space-y-2">

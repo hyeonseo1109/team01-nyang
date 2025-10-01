@@ -30,16 +30,22 @@ ChartJS.register(
 
 export default function FiveDayWeather() {
   const { location, error } = useLocation();
-  const { data, isLoading, isError } = useFiveDayWeather(location);
+  const { data, isLoading, isError, error: apiError } = useFiveDayWeather(location);
 
-  if (error) return <div>위치 오류: {error}</div>;
-  if (isLoading) return <div>날씨 불러오는 중...</div>;
-  if (isError) return <div>날씨 불러오기 실패</div>;
-  if (!data || data.length === 0) return <div>날씨 정보가 없습니다.</div>;
+  if (error) return <div className="text-neutral-400">위치 오류: {error}</div>;
+  if (isLoading) return <div className="text-neutral-400">날씨 불러오는 중...</div>;
+  if (isError)
+    return (
+      <div className="text-red-400">
+        날씨 불러오기 실패 ({apiError?.response?.data?.message || apiError?.message})
+      </div>
+    );
+  if (!data || data.length === 0)
+    return <div className="text-neutral-400">날씨 정보가 없습니다.</div>;
 
-  const labels = data.map((d) => dayjs(d.date).format('MM/DD'));
-  const maxTemps = data.map((d) => d.temp_max);
-  const minTemps = data.map((d) => d.temp_min);
+  const labels = data.map((d) => (d?.date ? dayjs(d.date).format('MM/DD') : '-'));
+  const maxTemps = data.map((d) => d?.temp_max ?? null);
+  const minTemps = data.map((d) => d?.temp_min ?? null);
 
   const chartData = {
     labels,
@@ -92,7 +98,7 @@ export default function FiveDayWeather() {
         align: 'bottom',
         offset: 6,
         font: { weight: 'bold', size: 12 },
-        formatter: (v) => `${v}°`,
+        formatter: (v) => (v !== null ? `${v}°` : '-'),
       },
       annotation: { annotations },
     },
@@ -120,19 +126,19 @@ export default function FiveDayWeather() {
 }
 
 function WeatherCard({ d }) {
-  const iconKey = mapDescription(d.description);
+  const iconKey = mapDescription(d?.description || '');
   const Icon = weatherIconMap[iconKey] || weatherIconMap.cloudy;
-  const date = dayjs(d.date).format('MM/DD (ddd)');
+  const date = d?.date ? dayjs(d.date).format('MM/DD (ddd)') : '-';
 
   return (
     <div className="flex flex-col items-center text-center text-sm py-1">
       <div className="font-semibold text-neutral-200">{date}</div>
       <Icon className="w-8 h-8 my-1 text-blue-300" strokeWidth={1.5} />
-      <div className="text-neutral-300 text-xs">{d.description}</div>
-      <div className="text-xs text-red-400 font-bold">{d.temp_max}°</div>
-      <div className="text-xs text-blue-400 font-bold">{d.temp_min}°</div>
+      <div className="text-neutral-300 text-xs">{d?.description ?? '-'}</div>
+      <div className="text-xs text-red-400 font-bold">{d?.temp_max ?? '-'}°</div>
+      <div className="text-xs text-blue-400 font-bold">{d?.temp_min ?? '-'}°</div>
       <div className="text-[11px] text-neutral-400 mt-1">
-        습도 {d.humidity}% <br /> 강수 {d.precipitation}mm
+        습도 {d?.humidity ?? '-'}% <br /> 강수 {d?.precipitation ?? '-'}mm
       </div>
     </div>
   );

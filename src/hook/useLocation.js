@@ -6,7 +6,7 @@ export default function useLocation() {
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setError('위치 권한을 허용해주세요.');
+      setError('이 브라우저에서는 위치 정보를 지원하지 않습니다.');
       return;
     }
 
@@ -19,7 +19,12 @@ export default function useLocation() {
         setLocation(coords);
       },
       (err) => {
-        setError(err.message);
+        const errorMessages = {
+          1: '위치 권한이 거부되었습니다.',
+          2: '위치 정보를 사용할 수 없습니다.',
+          3: '위치 요청이 시간 초과되었습니다.',
+        };
+        setError(errorMessages[err.code] || err.message);
       },
     );
   }, []);
