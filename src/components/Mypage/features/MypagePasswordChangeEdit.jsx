@@ -91,18 +91,6 @@ export default function PasswordChangeBox() {
 
   const label = savingPw ? '적용 중…' : '적용';
 
-  const wrapCls =
-    // 레이아웃 안전장치
-    '[&_div.flex]:flex-wrap sm:[&_div.flex]:flex-nowrap ' + // 초협소 폭에서 줄바꿈
-    '[&_input]:min-w-0 [&_input]:w-0 [&_input]:flex-1 [&_input]:max-w-full ' + // input 축소 허용
-    '[&_button]:shrink-0 [&_button]:!h-10 ' + // 버튼은 줄바꿈 시에도 높이 유지
-    // 스타일 유지
-    '[&_input]:!bg-neutral-900 [&_input]:!text-white [&_input]:!placeholder-white/60 ' +
-    '[&_input]:!border-white/30 [&_input]:!h-10 [&_input]:!rounded-l-md ' +
-    '[&_input:focus]:!outline-none [&_input:focus]:!ring-2 [&_input:focus]:!ring-white [&_input:focus]:!border-white ' +
-    // 에러 문구 보이되 줄바꿈 허용
-    '[&_div.select-none]:break-words [&_div.select-none.text-red-500]:block'; // LoginInputPassword 내부 "123" 숨김
-
   return (
     <>
       <div ref={topRef} className="space-y-6 text-white text-xs sm:text-sm">
@@ -110,7 +98,7 @@ export default function PasswordChangeBox() {
           <div className="font-semibold text-white">비밀번호 변경</div>
 
           <div className="grid gap-2">
-            <div className={wrapCls}>
+            <div className="pw-wrap">
               <LoginInputPassword
                 placeholder="현재 비밀번호"
                 value={curPw}
@@ -121,7 +109,7 @@ export default function PasswordChangeBox() {
               />
             </div>
 
-            <div className={wrapCls}>
+            <div className="pw-wrap">
               <LoginInputPassword
                 placeholder="새로운 비밀번호"
                 value={newPw}
@@ -132,7 +120,7 @@ export default function PasswordChangeBox() {
               />
             </div>
 
-            <div className={`flex-1 ${wrapCls}`}>
+            <div className="flex-1 pw-wrap">
               <LoginInputPassword
                 placeholder="새로운 비밀번호 확인"
                 value={newPw2}
