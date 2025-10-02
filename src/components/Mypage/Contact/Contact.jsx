@@ -39,9 +39,9 @@ export default function Contact({
     setEditBody,
     replyDrafts,
     setReplyDrafts,
-    alert,
-    setAlert,
-  } = useTicketActions();
+    noticeModal,
+    setNoticeModal,
+  } = useTicketActions({ isAdmin });
 
   useEffect(() => {
     if (initialTickets?.length) setTickets(initialTickets);
@@ -88,8 +88,8 @@ export default function Contact({
     applySearch('');
   };
 
-  const handleSubmitAsk = ({ title, body }) => {
-    const newTicket = submitAsk({ title, body });
+  const handleSubmitAsk = async ({ title, body }) => {
+    const newTicket = await submitAsk({ title, body });
     setTab('inbox');
     if (newTicket && newTicket.id != null) {
       setExpandedId(newTicket.id);
@@ -155,20 +155,20 @@ export default function Contact({
       {tab === 'inbox' && renderTicketList(false)}
       {tab === 'reply' && isAdmin && renderTicketList(true)}
       <Modal
-        openModal={alert.open}
-        title={alert.title || '알림'}
-        onClose={() => setAlert((a) => ({ ...a, open: false }))}
+        openModal={noticeModal.open}
+        title={noticeModal.title || '알림'}
+        onClose={() => setNoticeModal((m) => ({ ...m, open: false }))}
         footer={
           <button
             type="button"
             className="btn"
-            onClick={() => setAlert((a) => ({ ...a, open: false }))}
+            onClick={() => setNoticeModal((m) => ({ ...m, open: false }))}
           >
             확인
           </button>
         }
       >
-        <p className="mt-2 text-sm text-white">{alert.message}</p>
+        <p className="mt-2 text-sm text-white">{noticeModal.message}</p>
       </Modal>
       {/* 삭제 확인 모달 */}
       <Modal

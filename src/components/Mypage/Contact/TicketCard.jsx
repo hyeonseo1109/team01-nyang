@@ -24,7 +24,10 @@ export default function TicketCard({
 }) {
   const isOpen = expandedId === ticket.id;
   const isEditing = editingId === ticket.id;
-  const isPending = ticket?.status === '처리중';
+  const STATUS_LABEL = { pending: '처리중', resolved: '완료' };
+  const status = ticket?.status ?? '';
+  const statusLabel = STATUS_LABEL[status] ?? status;
+  const isPending = ticket?.status === 'pending';
   const canUserEdit = !isReplyTab && isPending;
   const canUserDelete = !isReplyTab && isPending;
   const canAdminDelete = !!isAdmin || !!isReplyTab; // 관리자 탭이면 항상 삭제 가능
@@ -59,7 +62,7 @@ export default function TicketCard({
       >
         <div className="flex items-baseline justify-between gap-3">
           <div className="text-sm font-semibold">
-            [{ticket.status}] {titleText}
+            [{statusLabel}] {titleText}
           </div>
           <div className="text-xs shrink-0">{ticket.time}</div>
         </div>
@@ -144,7 +147,7 @@ export default function TicketCard({
                   </div>
 
                   {/* 관리자 답변 영역: 패널 내부에 있어 패널 닫히면 같이 숨김 */}
-                  {isReplyTab && (
+                  {isAdmin && isReplyTab && (
                     <div className="mt-3 p-3 border rounded bg-neutral-900 border-white/10">
                       <div className="text-xs mb-2">관리자 답변</div>
                       <textarea
@@ -160,7 +163,7 @@ export default function TicketCard({
                         onKeyDown={(event) => {
                           if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
                             const trimmed = (replyDrafts[ticket.id] ?? '').trim();
-                            if (trimmed) submitReply(ticket);
+                            if (trimmed) submitReply(ticket.id);
                           }
                         }}
                       />
@@ -176,7 +179,7 @@ export default function TicketCard({
                           type="button"
                           className="btn"
                           disabled={!(replyDrafts[ticket.id] ?? '').trim()}
-                          onClick={() => submitReply(ticket)}
+                          onClick={() => submitReply(ticket.id)}
                         >
                           확인
                         </button>

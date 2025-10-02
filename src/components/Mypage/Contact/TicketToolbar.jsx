@@ -15,8 +15,8 @@ export default function TicketToolbar({
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="all">전체</option>
-          <option value="처리중">처리중</option>
-          <option value="완료">완료</option>
+          <option value="pending">처리중</option>
+          <option value="resolved">완료</option>
         </select>
       </div>
 

@@ -99,7 +99,7 @@ export function useVerify() {
 
 //! - - - - 비밀번호 변경 - - - -
 export async function passwordChange(payload) {
-  const res = await api.post('/auth/password/change', payload);
+  const res = await api.post('/users/password/change', payload);
   return res.data;
 }
 export function usePasswordChange() {

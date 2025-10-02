@@ -68,7 +68,7 @@ export default function PasswordChangeBox() {
 
     setSavingPw(true);
     passwordChangeMutate(
-      { old_password: curPw, new_password: newPw },
+      { new_password: newPw, new_password_check: newPw2, old_password: curPw },
       {
         onSuccess: () => {
           setCurPw('');
