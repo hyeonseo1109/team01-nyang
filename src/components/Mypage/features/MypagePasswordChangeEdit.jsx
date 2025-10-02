@@ -12,6 +12,11 @@ export default function PasswordChangeBox() {
   const [savingPw, setSavingPw] = useState(false);
   const { passwordChangeMutate } = usePasswordChange();
 
+  // 에러 상태
+  const [errCur, setErrCur] = useState('');
+  const [errNew, setErrNew] = useState('');
+  const [errNew2, setErrNew2] = useState('');
+
   // 모달 상태
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
@@ -21,6 +26,25 @@ export default function PasswordChangeBox() {
     topRef.current?.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
   }, []);
 
+  // 비밀번호 규칙: 8~32자, 영문/숫자/특수 중 2종 이상 포함
+  const strong =
+    /^(?=.{8,32}$)(?:(?=.*[A-Za-z])(?=.*\d)|(?=.*[A-Za-z])(?=.*[^A-Za-z0-9])|(?=.*\d)(?=.*[^A-Za-z0-9])).*$/;
+
+  const validateCur = (v) => {
+    if (!v) return '현재 비밀번호를 입력하세요.';
+    return '';
+  };
+  const validateNew = (v) => {
+    if (!v) return '새 비밀번호를 입력하세요.';
+    if (!strong.test(v)) return '8~32자, 영문/숫자/특수 2종 이상 포함';
+    return '';
+  };
+  const validateNew2 = (v) => {
+    if (!v) return '새 비밀번호 확인을 입력하세요.';
+    if (v !== newPw) return '비밀번호 확인이 일치하지 않습니다.';
+    return '';
+  };
+
   const openModal = (title, msg) => {
     setModalTitle(title);
     setModalMsg(msg);
@@ -29,8 +53,19 @@ export default function PasswordChangeBox() {
   const closeModal = () => setModalOpen(false);
 
   function applyPassword() {
-    if (newPw !== newPw2) return openModal('안내', '비밀번호 확인이 일치하지 않습니다.');
-    if (!curPw || !newPw) return openModal('안내', '비밀번호를 입력해 주세요.');
+    const e1 = validateCur(curPw);
+    const e2 = validateNew(newPw);
+    const e3 = validateNew2(newPw2);
+
+    setErrCur(e1);
+    setErrNew(e2);
+    setErrNew2(e3);
+
+    if (e1 || e2 || e3) {
+      openModal('안내', '비밀번호를 다시 확인해 주세요.');
+      return;
+    }
+
     setSavingPw(true);
     passwordChangeMutate(
       { old_password: curPw, new_password: newPw },
@@ -39,6 +74,9 @@ export default function PasswordChangeBox() {
           setCurPw('');
           setNewPw('');
           setNewPw2('');
+          setErrCur('');
+          setErrNew('');
+          setErrNew2('');
           openModal('완료', '비밀번호가 변경되었습니다.');
         },
         onError: (err) => {
@@ -58,7 +96,7 @@ export default function PasswordChangeBox() {
     '[&_input]:!border-white/30 [&_input]:!h-10 [&_input]:!rounded-l-md ' +
     '[&_input:focus]:!outline-none [&_input:focus]:!ring-2 [&_input:focus]:!ring-white [&_input:focus]:!border-white ' +
     '[&_button]:!h-10 ' +
-    '[&_div.select-none]:hidden'; // LoginInputPassword 내부 "123" 숨김
+    '[&_div.select-none]:hidden [&_div.select-none.text-red-500]:block'; // LoginInputPassword 내부 "123" 숨김
 
   return (
     <>
@@ -72,6 +110,8 @@ export default function PasswordChangeBox() {
                 placeholder="현재 비밀번호"
                 value={curPw}
                 onChange={(e) => setCurPw(e.target.value)}
+                onBlur={() => setErrCur(validateCur(curPw))}
+                error={errCur}
                 disabled={savingPw}
               />
             </div>
@@ -81,6 +121,8 @@ export default function PasswordChangeBox() {
                 placeholder="새로운 비밀번호"
                 value={newPw}
                 onChange={(e) => setNewPw(e.target.value)}
+                onBlur={() => setErrNew(validateNew(newPw))}
+                error={errNew}
                 disabled={savingPw}
               />
             </div>
@@ -90,6 +132,8 @@ export default function PasswordChangeBox() {
                 placeholder="새로운 비밀번호 확인"
                 value={newPw2}
                 onChange={(e) => setNewPw2(e.target.value)}
+                onBlur={() => setErrNew2(validateNew2(newPw2))}
+                error={errNew2}
                 disabled={savingPw}
               />
             </div>

@@ -17,19 +17,19 @@ export default function EditProfileImageField({
   }
 
   return (
-    <div className="rounded-xl border border-white/10 p-4 space-y-2">
+    <div className="rounded-xl border border-white/10 p-4 space-y-2 overflow-x-hidden">
       <Label>프로필 이미지</Label>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <input
-          className="input flex-1 min-w-0"
+          className="input min-w-0 flex-1"
           value={value}
           placeholder="https://..."
           onChange={(e) => onChangeValue(e.target.value)}
         />
       </div>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <input
           id="profile-file"
           type="file"
@@ -37,11 +37,15 @@ export default function EditProfileImageField({
           className="sr-only"
           onChange={handleFile}
         />
-        <label htmlFor="profile-file" className="btn cursor-pointer">
+        <label htmlFor="profile-file" className="btn cursor-pointer w-full sm:w-auto">
           파일선택
         </label>
 
-        <button className="btn" onClick={onApply} disabled={saving}>
+        <button
+          className="btn inline-flex items-center h-10 px-4 whitespace-nowrap cursor-pointer max-w-full"
+          onClick={onApply}
+          disabled={saving}
+        >
           적용
         </button>
       </div>

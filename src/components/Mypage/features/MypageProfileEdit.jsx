@@ -76,9 +76,9 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) 
 
       {/* <ApplyAllRow onApplyAll={applyAll} saving={savingProfile} /> */}
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button
-          className="btn-secondary bg-red-900/40 hover:bg-red-900/60 border-red-500/30"
+          className=" h-5 px-1 whitespace-nowrap sm:shrink-0 cursor-pointer bg-transparent text-xs underline underline-offset-2 decoration-1 text-gray-400 hover:text-gray-200"
           type="button"
           onClick={() =>
             deleteMyAccountMutate(undefined, {
@@ -95,8 +95,13 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) 
         >
           회원탈퇴
         </button>
-        <div className="flex items-center gap-2">
-          <button className="btn" onClick={() => handleLogout()} type="button">
+        <div className="flex flex-wrap items-center gap-2 basis-full justify-end sm:ml-auto">
+          <button
+            className="btn h-10 px-4 whitespace-nowrap sm:shrink-0"
+            onClick={onLogout}
+            type="button"
+            disabled={savingProfile}
+          >
             로그아웃
           </button>
         </div>
