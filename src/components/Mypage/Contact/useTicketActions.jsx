@@ -38,7 +38,39 @@ export default function useTicketActions() {
         const response = await getInquiries(); // ← 교체
         if (!isComponentAliveRef.current) return;
         const items = Array.isArray(response) ? response : [];
-        setTickets(items.map(mapApiTicketToUi));
+        // setTickets(items.map(mapApiTicketToUi));
+
+        // 1) API → UI
+        const apiUI = items.map(mapApiTicketToUi);
+
+        // 2) 더미 데이터
+        const DUMMY = [
+          {
+            id: 'dummy-1',
+            status: '처리중',
+            title: '샘플 문의 1',
+            message: '본문 예시 1',
+            answer: null,
+            createdAt: new Date(),
+          },
+          {
+            id: 'dummy-2',
+            status: '완료',
+            title: '샘플 문의 2',
+            message: '본문 예시 2',
+            answer: '처리 완료',
+            createdAt: new Date(Date.now() - 86400000),
+          },
+        ];
+        const dummyUI = DUMMY.map(mapApiTicketToUi);
+
+        // 3) 중복 id 방지 후 합치기(API 우선)
+        const byId = new Map(apiUI.map((t) => [String(t.id), t]));
+        for (const t of dummyUI) {
+          const key = String(t.id);
+          if (!byId.has(key)) byId.set(key, t);
+        }
+        setTickets(Array.from(byId.values())); //여기까지 더미데이터+api
       } catch {
         if (!isComponentAliveRef.current) return;
         showInfo('문의 목록을 불러오지 못했습니다.');
