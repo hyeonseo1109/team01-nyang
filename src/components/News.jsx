@@ -12,9 +12,10 @@ const CATEGORY_LABELS = {
 
 export default function News() {
   const [category, setCategory] = useState('life_culture');
-  const { newsData = [], newsIsLoading, newsIsError, newsError } = useNews(category);
+  const { newsData = {}, newsIsLoading, newsIsError, newsError } = useNews(category);
 
-  const limitedNews = Array.isArray(newsData) ? newsData.slice(0, 6) : [];
+  const newsList = Array.isArray(newsData.data) ? newsData.data : [];
+  const limitedNews = newsList.slice(0, 6);
 
   return (
     <div className="flex flex-col gap-4 h-full min-h-0">
@@ -63,7 +64,7 @@ export default function News() {
                   rel="noopener noreferrer"
                   className="block text-sm text-neutral-100 hover:text-[#417eb0]"
                 >
-                  {news.headline}
+                  {news.title}
                 </a>
               </li>
             ))}
