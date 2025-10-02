@@ -92,16 +92,21 @@ export default function PasswordChangeBox() {
   const label = savingPw ? '적용 중…' : '적용';
 
   const wrapCls =
+    // 레이아웃 안전장치
+    '[&_div.flex]:flex-wrap sm:[&_div.flex]:flex-nowrap ' + // 초협소 폭에서 줄바꿈
+    '[&_input]:min-w-0 [&_input]:w-0 [&_input]:flex-1 [&_input]:max-w-full ' + // input 축소 허용
+    '[&_button]:shrink-0 [&_button]:!h-10 ' + // 버튼은 줄바꿈 시에도 높이 유지
+    // 스타일 유지
     '[&_input]:!bg-neutral-900 [&_input]:!text-white [&_input]:!placeholder-white/60 ' +
     '[&_input]:!border-white/30 [&_input]:!h-10 [&_input]:!rounded-l-md ' +
     '[&_input:focus]:!outline-none [&_input:focus]:!ring-2 [&_input:focus]:!ring-white [&_input:focus]:!border-white ' +
-    '[&_button]:!h-10 ' +
-    '[&_div.select-none]:hidden [&_div.select-none.text-red-500]:block'; // LoginInputPassword 내부 "123" 숨김
+    // 에러 문구 보이되 줄바꿈 허용
+    '[&_div.select-none]:break-words [&_div.select-none.text-red-500]:block'; // LoginInputPassword 내부 "123" 숨김
 
   return (
     <>
-      <div ref={topRef} className="space-y-6 text-white">
-        <div className="rounded-xl border border-white/10 p-4 space-y-3">
+      <div ref={topRef} className="space-y-6 text-white text-xs sm:text-sm">
+        <div className="rounded-xl border border-white/10 p-4 space-y-3 overflow-x-hidden">
           <div className="font-semibold text-white">비밀번호 변경</div>
 
           <div className="grid gap-2">
