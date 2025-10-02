@@ -11,8 +11,8 @@ const CATEGORY_LABELS = {
 };
 
 export default function News() {
-  const [category, setCategory] = useState('life');
-  const { newsData = [], newsIsLoading, newsIsError, error } = useNews(category);
+  const [category, setCategory] = useState('life_culture');
+  const { newsData = [], newsIsLoading, newsIsError, newsError } = useNews(category);
 
   const limitedNews = Array.isArray(newsData) ? newsData.slice(0, 6) : [];
 
@@ -43,7 +43,7 @@ export default function News() {
         <p className="text-sm text-neutral-400">뉴스를 불러오는 중...</p>
       ) : newsIsError ? (
         <p className="text-sm text-red-400">
-          뉴스 불러오기 실패 ({error?.response?.data?.message || error?.message})
+          뉴스 불러오기 실패 ({newsError?.response?.data?.message || newsError?.message})
         </p>
       ) : limitedNews.length === 0 ? (
         <p className="text-sm text-neutral-400">

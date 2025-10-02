@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { useSchedules } from '../api/schedules';
 import { useTodos, useToggleTodoComplete } from '../api/todos';
+import { useBriefings } from '../api/external';
 
 export default function Chatbot() {
   const {
@@ -13,6 +14,8 @@ export default function Chatbot() {
   const { todoData = [], todoIsLoading, todoIsError, error: todosError } = useTodos();
 
   const { toggleTodoCompleteMutate } = useToggleTodoComplete();
+
+  const { briefingsData } = useBriefings();
 
   const today = dayjs().format('YYYY-MM-DD');
 
@@ -49,8 +52,19 @@ export default function Chatbot() {
   const hasData = todaySchedules.length > 0 || sortedTodos.length > 0;
   if (!hasData) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p>오늘 일정/할 일이 없습니다.</p>
+      <div className="flex flex-col items-center justify-center h-full gap-4">
+        <p className="text-neutral-400">오늘 일정/할 일이 없습니다.</p>
+
+        {briefingsData?.recommendations && briefingsData.recommendations.length > 0 && (
+          <div className="rounded-xl bg-neutral-800/60 border border-neutral-700 p-4 w-[80%]">
+            <h3 className="text-lg font-semibold text-white mb-2">추천 활동 ✨</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-neutral-200">
+              {briefingsData.recommendations.map((rec, idx) => (
+                <li key={idx}>{rec}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   }
