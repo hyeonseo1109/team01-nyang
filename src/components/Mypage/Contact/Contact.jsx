@@ -24,6 +24,10 @@ export default function Contact({
     tickets,
     setTickets,
     submitAsk,
+    confirm,
+    askDelete,
+    cancelDelete,
+    confirmDelete,
     startEdit,
     cancelEdit,
     saveEdit,
@@ -114,6 +118,8 @@ export default function Contact({
               key={ticket.id}
               ticket={ticket}
               isReplyTab={isReplyTab}
+              isAdmin={isAdmin}
+              onDeleteTicket={(ticket) => askDelete(ticket)}
               expandedId={expandedId}
               setExpandedId={setExpandedId}
               editingId={isReplyTab ? null : editingId}
@@ -146,11 +152,8 @@ export default function Contact({
       {tab === 'ask' && !adminOnlyReply && (
         <AskForm onCancel={handleClose} onSubmit={handleSubmitAsk} />
       )}
-
       {tab === 'inbox' && renderTicketList(false)}
-
       {tab === 'reply' && isAdmin && renderTicketList(true)}
-
       <Modal
         openModal={alert.open}
         title={alert.title || '알림'}
@@ -166,6 +169,32 @@ export default function Contact({
         }
       >
         <p className="mt-2 text-sm text-white">{alert.message}</p>
+      </Modal>
+      {/* 삭제 확인 모달 */}
+      <Modal
+        openModal={confirm.open}
+        title="삭제 확인"
+        onClose={cancelDelete}
+        footer={
+          <div className="flex justify-end gap-2">
+            <button type="button" className="btn-secondary" onClick={cancelDelete}>
+              취소
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                // 열린 카드 닫기
+                if (confirm.target && expandedId === confirm.target.id) setExpandedId(null);
+                confirmDelete();
+              }}
+            >
+              삭제
+            </button>
+          </div>
+        }
+      >
+        <p className="mt-2 text-sm text-white">이 문의를 삭제하시겠습니까?</p>
       </Modal>
     </ContactModal>
   );

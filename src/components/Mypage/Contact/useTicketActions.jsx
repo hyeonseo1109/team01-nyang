@@ -134,6 +134,19 @@ export default function useTicketActions() {
     }
   };
 
+  // 삭제 확인 모달
+  const [confirm, setConfirm] = useState({ open: false, target: null });
+  const askDelete = (ticket) => setConfirm({ open: true, target: ticket });
+  const cancelDelete = () => setConfirm({ open: false, target: null });
+  const confirmDelete = () => {
+    const t = confirm.target;
+    if (t) {
+      setTickets((prev) => prev.filter((x) => x.id !== t.id));
+      showInfo('문의가 삭제되었습니다.');
+    }
+    cancelDelete();
+  };
+
   // 답변
   const submitReply = async () => {
     showInfo('답변 API가 제공되지 않습니다.');
@@ -142,6 +155,10 @@ export default function useTicketActions() {
   return {
     tickets,
     setTickets,
+    confirm,
+    askDelete,
+    cancelDelete,
+    confirmDelete,
     submitAsk,
     startEdit,
     cancelEdit,
