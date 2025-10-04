@@ -116,15 +116,6 @@ export function SignUp() {
   };
 
   const codeConfirm = () => {
-    // if (emailCode === code) {
-    //   setModalConfirm('인증되었습니다.');
-    //   setIsModalConfirm(true);
-    //   setIsFormInput(false);
-    // } else {
-    //   setModalConfirm('인증번호가 틀립니다.');
-    //   setIsModalConfirm(true);
-    // }
-
     const payload = { code: emailCode, email: form.email };
     verifyMutate(payload, {
       onSuccess: () => {

@@ -10,6 +10,7 @@ import LoadingPage from './pages/LoadingPage';
 // import Admin from './components/Admin';
 import { useUser } from './store/useUser';
 import { useEffect } from 'react';
+import GoogleCallback from './pages/GoogleCallback';
 
 function App() {
   const { getUser } = useUser();
@@ -22,6 +23,7 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/pwconfirm" element={<PwConfirm />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/auth/google/callback" element={<GoogleCallback />}></Route>
       <Route
         path="/main"
         element={

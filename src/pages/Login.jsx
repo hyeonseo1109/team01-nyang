@@ -25,7 +25,6 @@ export function Login() {
 
   const { loginMutate } = useLogin();
   const { getUser } = useUser();
-  // const { socialLoginMutate, socialLoginError } = useSocialLogin();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,14 +32,6 @@ export function Login() {
       email: true,
       password: true,
     });
-
-    // try {
-    //   await login({ email: form.email, password: form.password });
-    //   navigate('/main');
-    // } catch (err) {
-    //   console.log(err);
-    //   alert('이메일 또는 비밀번호가 올바르지 않습니다.1111');
-    // }
 
     loginMutate(form, {
       onSuccess: async () => {
@@ -62,15 +53,7 @@ export function Login() {
   const onButton = noError && mustFilled;
 
   const googleLogin = () => {
-    // socialLoginMutate(undefined, {
-    //   onSuccess: async () => {
-    //     await getUser();
-    //     navigate('/main');
-    //   },
-    //   onError: () => {
-    //     alert('오류가 발생했습니다.');
-    //   },
-    // });
+    window.location.href = `${import.meta.env.VITE_BASE_URL}/auth/google/login`;
   };
 
   const footer = () => {
