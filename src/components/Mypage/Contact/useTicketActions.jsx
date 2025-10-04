@@ -135,8 +135,20 @@ export default function useTicketActions({ isAdmin = false } = {}) {
       return;
     }
 
-    showInfo('사용자 문의 삭제는 준비 중입니다.');
-    cancelDelete();
+    if (targetTicket.status !== 'pending') {
+      showInfo('완료된 문의는 삭제할 수 없습니다.');
+      return cancelDelete();
+    }
+
+    try {
+      await deleteInquiry(targetTicket.id); // 서버가 소유권/상태 검증
+      setTickets((prev) => prev.filter((item) => item.id !== targetTicket.id));
+      showInfo('문의가 삭제되었습니다.', '완료');
+    } catch {
+      showInfo('삭제에 실패했습니다.');
+    } finally {
+      cancelDelete();
+    }
   };
 
   // 관리자: 상태 변경
