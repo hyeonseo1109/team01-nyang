@@ -32,8 +32,6 @@ export const useSchedule = create((set, get) => ({
       if (!src.title?.trim() || !src.dateStart) return state;
 
       const finalDateEnd = src.dateEnd || src.dateStart;
-      
-      // 시간이 실제로 입력되었는지 확인 (빈 문자열도 체크)
       const hasTimeStart = src.timeStart && src.timeStart.trim() !== '';
       const hasTimeEnd = src.timeEnd && src.timeEnd.trim() !== '';
       const isAllDay = !hasTimeStart && !hasTimeEnd;
@@ -57,9 +55,8 @@ export const useSchedule = create((set, get) => ({
         memo: src.memo || "",
         dateStart: src.dateStart,
         dateEnd: finalDateEnd,
-        timeStart: src.timeStart || "00:00",
-        timeEnd: src.timeEnd || "23:59",
-        start_time,
+        timeStart: isAllDay ? "" : src.timeStart,
+        timeEnd: isAllDay ? "" : src.timeEnd,
         end_time,
         all_day: isAllDay,
       };

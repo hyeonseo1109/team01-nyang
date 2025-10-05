@@ -45,11 +45,12 @@ export default function ScheduleForm({
 
     const { dateStart, timeStart, dateEnd, timeEnd, title, memo } = form;
 
-    if (!dateStart || !dateEnd || !title) {
-      setErrors('날짜와 제목은 필수입니다.');
+    if (!dateStart || !title) {
+      setErrors('시작 날짜와 제목은 필수입니다.');
       return;
     }
 
+    const finalDateEnd = dateEnd || dateStart;
     const isAllDayInput = !timeStart && !timeEnd;
 
     if (!isAllDayInput) {
@@ -59,7 +60,7 @@ export default function ScheduleForm({
       }
 
       const start_time = toISO(dateStart, timeStart);
-      const end_time = toISO(dateEnd, timeEnd);
+      const end_time = toISO(finalDateEnd, timeEnd); // 변경: finalDateEnd 사용
 
       if (new Date(start_time) >= new Date(end_time)) {
         setErrors('종료시간은 시작시간보다 뒤여야 합니다.');
@@ -150,8 +151,8 @@ export default function ScheduleForm({
               name="dateEnd"
               value={form.dateEnd || ''}
               onChange={handleChange}
+              placeholder="미입력시 시작일과 동일"
               className="w-full rounded-xl px-3 py-2 border border-[#555] [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-200 "
-              required
             />
             <input
               type="time"
@@ -194,10 +195,10 @@ export default function ScheduleForm({
         <div className="flex gap-2">
           <button
             type="submit"
-            disabled={!form.dateStart || !form.dateEnd || !form.title}
+            disabled={!form.dateStart || !form.title}
             className={`flex-1 rounded-lg px-4 py-3 font-medium text-sm
               ${
-                !form.dateStart || !form.dateEnd || !form.title
+                !form.dateStart || !form.title
                   ? 'bg-[#555] cursor-not-allowed'
                   : 'bg-[#2d5b81] hover:bg-[#1b4567]'
               }`}

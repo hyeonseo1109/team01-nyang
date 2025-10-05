@@ -22,23 +22,32 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
                           .replace(/. /, '/')
                           .slice(0, -1)}
                     </span>
-                    <span className="whitespace-nowrap">{item.timeStart}</span>
+                    {!item.all_day && item.timeStart && (
+                      <span className="whitespace-nowrap">{item.timeStart}</span>
+                    )}
                   </div>
-                  <div className="text-center font-semibold text-[0.8rem] mx-1">~</div>
-                  {/* 종료 날짜/시간 */}
-                  <div className="flex gap-2 items-center">
-                    <span className="font-medium whitespace-nowrap text-[0.8rem]">
-                      {item.dateEnd &&
-                        new Date(item.dateEnd)
-                          .toLocaleDateString('ko-KR', {
-                            month: 'numeric',
-                            day: 'numeric',
-                          })
-                          .replace(/. /, '/')
-                          .slice(0, -1)}
-                    </span>
-                    <span className="whitespace-nowrap text-[0.8rem]">{item.timeEnd}</span>
-                  </div>
+                  {(item.dateStart !== item.dateEnd || !item.all_day) && (
+                    <>
+                      <div className="text-center font-semibold text-[0.8rem] mx-1">~</div>
+                      <div className="flex gap-2 items-center">
+                        {item.dateStart !== item.dateEnd && (
+                          <span className="font-medium whitespace-nowrap text-[0.8rem]">
+                            {item.dateEnd &&
+                              new Date(item.dateEnd)
+                                .toLocaleDateString('ko-KR', {
+                                  month: 'numeric',
+                                  day: 'numeric',
+                                })
+                                .replace(/. /, '/')
+                                .slice(0, -1)}
+                          </span>
+                        )}
+                        {!item.all_day && item.timeEnd && (
+                          <span className="whitespace-nowrap text-[0.8rem]">{item.timeEnd}</span>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* 제목 */}
@@ -53,7 +62,6 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
                 <button
                   onClick={() => onEdit(item)}
                   className="hover:text-[#1b4567] mr-3"
-                  disabled={item.completed}
                 >
                   수정
                 </button>
