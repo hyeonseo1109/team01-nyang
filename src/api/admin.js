@@ -38,7 +38,10 @@ export function useUsers() {
 
 //! - - - - 특정 유저 조회 - - - -
 export async function getUserSearch(search) {
-  const res = await api.get(`/admin/users/${search}`);
+  const res = await api.get(`/admin/users/search`, {
+    params: { search },
+  });
+  console.log('유저검색:', res.data);
   return res.data;
 }
 export function useUserSearch(search) {
