@@ -24,7 +24,7 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
                     </span>
                     <span className="whitespace-nowrap">{item.timeStart}</span>
                   </div>
-                  <div className="text-center font-semibold -my-2 text-[0.8rem]">~</div>
+                  <div className="text-center font-semibold text-[0.8rem] ml-2">~</div>
                   {/* 종료 날짜/시간 */}
                   <div className="flex gap-2 items-center">
                     <span className="font-medium whitespace-nowrap text-[0.8rem]">
