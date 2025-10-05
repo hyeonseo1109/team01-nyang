@@ -1,15 +1,14 @@
-import { useState } from 'react';
-import { inquiryData } from '../../api/dummyData/dummyInquiries';
+import { useAllInquiries } from '../../api/inquiries';
 
 export function AdminInquiries() {
-  // const { allInquiriesData, allInquiriesIsLoading, allInquiriesIsError } = useAllInquiries();
+  const { allInquiriesData, allInquiriesIsLoading, allInquiriesIsError } = useAllInquiries();
 
   // api 들어오면 주석 풀고 아래 세 줄 지우기
-  const allInquiriesData = inquiryData;
-  const [allInquiriesIsLoading] = useState(false);
-  const [allInquiriesIsError] = useState(false);
+  // const allInquiriesData = inquiryData;
+  // const [allInquiriesIsLoading] = useState(false);
+  // const [allInquiriesIsError] = useState(false);
 
-  const pendingData = allInquiriesData.items.filter((item) => item.status === 'pending');
+  const pendingData = allInquiriesData?.inquiries.filter((item) => item.status === 'pending');
 
   return (
     <>
