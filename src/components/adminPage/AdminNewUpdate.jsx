@@ -25,6 +25,7 @@ ChartJS.register(
 
 export function AdminNewUpdate() {
   const { usersData } = useUsers();
+  console.log(usersData?.total);
 
   // 일주일치 담은 배열
   const weekWhile = Array.from({ length: 7 }, (_, i) => {
@@ -94,7 +95,7 @@ export function AdminNewUpdate() {
     <div className="flex  overflow-x-hidden overflow-y-hidden w-full h-full">
       <div className="flex justify-between items-center w-full h-full">
         <div className="flex items-start h-full">
-          <h2 className="text-lg font-bold w-full">유저 가입 현황</h2>
+          <h2 className="text-lg font-bold w-full [word-break:keep-all]">유저 가입 현황</h2>
         </div>
 
         <div className="flex flex-col items-center justify-center h-full w-full">

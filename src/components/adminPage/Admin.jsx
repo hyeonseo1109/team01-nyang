@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Button from '../ui/Button';
-import { adminData } from './adminData';
 import { Input } from '../ui/Input';
 import { IoSearch } from 'react-icons/io5';
 import { useDebounce } from '../../hook/useDebounce';
@@ -8,25 +7,28 @@ import { useDebounce } from '../../hook/useDebounce';
 import { VscChromeClose } from 'react-icons/vsc';
 import { VscCircleLarge } from 'react-icons/vsc';
 import { formatDate } from '../../hook/useFormatDate';
+import { useUsers, useUserSearch } from '../../api/admin';
 
 export default function Admin() {
   const [mode, setMode] = useState('all');
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue);
 
-  // const { userSearchData, userSearchIsLoading, userSearchIsError } = useUserSearch(debouncedValue);
+  const { userSearchData, userSearchIsLoading, userSearchIsError } = useUserSearch(debouncedValue);
 
-  // api 들어오면 위 주석 풀고 아래 세 줄 지우기
-  const userSearchData = adminData;
-  const { userSearchIsLoading } = useState(false);
-  const { userSearchIsError } = useState(false);
+  // // api 들어오면 위 주석 풀고 아래 세 줄 지우기
+  // const userSearchData = adminData;
+  // const { userSearchIsLoading } = useState(false);
+  // const { userSearchIsError } = useState(false);
+
+  const { usersData } = useUsers();
 
   const filteredUsers =
-    mode === 'connecting' ? userSearchData.users.filter((u) => u.is_active) : userSearchData.users;
+    mode === 'connecting' ? usersData?.users.filter((u) => u.is_active) : usersData?.users;
 
   const searchedUser = debouncedValue ? (userSearchData ?? []) : filteredUsers;
 
-  const tableHead = ['이름', '접속여부', '접속제한', '이름', '이메일', '가입일시', '계정차단'];
+  const tableHead = ['이름', '접속여부', '관리자', '이름', '이메일', '가입일시', '계정차단'];
 
   return (
     <>
@@ -84,7 +86,7 @@ export default function Admin() {
                       error
                     </td>
                   </tr>
-                ) : searchedUser.length === 0 ? (
+                ) : !searchedUser ? (
                   <tr>
                     <td colSpan={7} className="text-center py-4 text-gray-500">
                       조회된 유저가 없습니다.
