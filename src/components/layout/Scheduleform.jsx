@@ -54,10 +54,14 @@ export default function ScheduleForm({
     // 종료날짜가 없으면 시작날짜로 설정
     const finalDateEnd = dateEnd || dateStart;
 
-    const isAllDayInput = !timeStart && !timeEnd;
+    // 시간이 실제로 입력되었는지 체크
+    const hasTimeStart = timeStart && timeStart.trim() !== '';
+    const hasTimeEnd = timeEnd && timeEnd.trim() !== '';
+    const isAllDayInput = !hasTimeStart && !hasTimeEnd;
 
-    if (!isAllDayInput) {
-      if (!timeStart || !timeEnd) {
+    // 시간이 하나라도 입력되었으면 둘 다 입력해야 함
+    if (hasTimeStart || hasTimeEnd) {
+      if (!hasTimeStart || !hasTimeEnd) {
         setErrors('시작/종료 시간을 모두 입력해주세요.');
         return;
       }
@@ -71,7 +75,11 @@ export default function ScheduleForm({
       }
     }
 
-    addSchedule(form);
+    // dateEnd가 없으면 dateStart로 설정해서 전달
+    addSchedule({
+      ...form,
+      dateEnd: finalDateEnd
+    });
   };
 
   const onBack = () => setOpenSchedule(false);

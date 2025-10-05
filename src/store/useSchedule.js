@@ -32,7 +32,11 @@ export const useSchedule = create((set, get) => ({
       if (!src.title?.trim() || !src.dateStart) return state;
 
       const finalDateEnd = src.dateEnd || src.dateStart;
-      const isAllDay = !src.timeStart && !src.timeEnd;
+      
+      // 시간이 실제로 입력되었는지 확인 (빈 문자열도 체크)
+      const hasTimeStart = src.timeStart && src.timeStart.trim() !== '';
+      const hasTimeEnd = src.timeEnd && src.timeEnd.trim() !== '';
+      const isAllDay = !hasTimeStart && !hasTimeEnd;
       
       let start_time, end_time;
       
@@ -40,10 +44,10 @@ export const useSchedule = create((set, get) => ({
         start_time = toISO(src.dateStart, "00:00");
         end_time = toISO(finalDateEnd, "23:59");
       } else {
-        if (!src.timeStart || !src.timeEnd) return state;
+        if (!hasTimeStart || !hasTimeEnd) return state;
         
         start_time = toISO(src.dateStart, src.timeStart);
-        end_time = toISO(src.dateEnd, src.timeEnd);
+        end_time = toISO(finalDateEnd, src.timeEnd);
         
         if (new Date(start_time) >= new Date(end_time)) return state;
       }
@@ -52,8 +56,8 @@ export const useSchedule = create((set, get) => ({
         title: src.title.trim(),
         memo: src.memo || "",
         dateStart: src.dateStart,
+        dateEnd: finalDateEnd,
         timeStart: src.timeStart || "00:00",
-        dateEnd: src.dateEnd,
         timeEnd: src.timeEnd || "23:59",
         start_time,
         end_time,
