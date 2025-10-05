@@ -45,29 +45,21 @@ export default function ScheduleForm({
 
     const { dateStart, timeStart, dateEnd, timeEnd, title, memo } = form;
 
-    // 시작날짜와 제목만 필수
-    if (!dateStart || !title) {
-      setErrors('시작 날짜와 제목은 필수입니다.');
+    if (!dateStart || !dateEnd || !title) {
+      setErrors('날짜와 제목은 필수입니다.');
       return;
     }
 
-    // 종료날짜가 없으면 시작날짜로 설정
-    const finalDateEnd = dateEnd || dateStart;
+    const isAllDayInput = !timeStart && !timeEnd;
 
-    // 시간이 실제로 입력되었는지 체크
-    const hasTimeStart = timeStart && timeStart.trim() !== '';
-    const hasTimeEnd = timeEnd && timeEnd.trim() !== '';
-    const isAllDayInput = !hasTimeStart && !hasTimeEnd;
-
-    // 시간이 하나라도 입력되었으면 둘 다 입력해야 함
-    if (hasTimeStart || hasTimeEnd) {
-      if (!hasTimeStart || !hasTimeEnd) {
+    if (!isAllDayInput) {
+      if (!timeStart || !timeEnd) {
         setErrors('시작/종료 시간을 모두 입력해주세요.');
         return;
       }
 
       const start_time = toISO(dateStart, timeStart);
-      const end_time = toISO(finalDateEnd, timeEnd);
+      const end_time = toISO(dateEnd, timeEnd);
 
       if (new Date(start_time) >= new Date(end_time)) {
         setErrors('종료시간은 시작시간보다 뒤여야 합니다.');
@@ -75,11 +67,7 @@ export default function ScheduleForm({
       }
     }
 
-    // dateEnd가 없으면 dateStart로 설정해서 전달
-    addSchedule({
-      ...form,
-      dateEnd: finalDateEnd
-    });
+    addSchedule(form);
   };
 
   const onBack = () => setOpenSchedule(false);
@@ -162,8 +150,8 @@ export default function ScheduleForm({
               name="dateEnd"
               value={form.dateEnd || ''}
               onChange={handleChange}
-              placeholder="미입력시 시작일과 동일"
               className="w-full rounded-xl px-3 py-2 border border-[#555] [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-200 "
+              required
             />
             <input
               type="time"
@@ -206,10 +194,10 @@ export default function ScheduleForm({
         <div className="flex gap-2">
           <button
             type="submit"
-            disabled={!form.dateStart || !form.title}
+            disabled={!form.dateStart || !form.dateEnd || !form.title}
             className={`flex-1 rounded-lg px-4 py-3 font-medium text-sm
               ${
-                !form.dateStart || !form.title
+                !form.dateStart || !form.dateEnd || !form.title
                   ? 'bg-[#555] cursor-not-allowed'
                   : 'bg-[#2d5b81] hover:bg-[#1b4567]'
               }`}

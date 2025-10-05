@@ -9,7 +9,7 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
             <div key={item.id} className="border-b border-[#555] pb-3 w-full">
               <div className="flex flex-col justify-center items-center gap-[-2rem] w-full">
                 {/* 날짜묶음 */}
-                <div className="flex xl:flex-row flex-col opacity-70">
+                <div className="flex lg:flex-row flex-col opacity-70">
                   {/* 시작 날짜/시간 */}
                   <div className="flex gap-2 items-center text-[0.8rem]">
                     <span className="font-medium whitespace-nowrap">
