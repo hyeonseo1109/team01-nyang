@@ -3,6 +3,8 @@ import { getMyProfile } from '../api/users';
 import { queryClient } from '../queryClient';
 import { useOpenMyPage } from './useOpenMypage';
 import { useOpenAdminPage } from './useOpenAdminPage';
+import { useOpenAdminDashboard } from './useOpenAdminDashboard';
+import { useMainPage } from './useMainPage';
 
 export const useUser = create((set) => ({
   user: null,
@@ -28,5 +30,6 @@ export const useUser = create((set) => ({
     set({ user: null });
     useOpenMyPage.getState().setOpenMyPage(false);
     useOpenAdminPage.getState().setOpenAdminPage(false);
+    useMainPage.getState().setPageMode('main');
   },
 }));
