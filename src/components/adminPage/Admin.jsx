@@ -7,7 +7,7 @@ import { useDebounce } from '../../hook/useDebounce';
 import { VscChromeClose } from 'react-icons/vsc';
 import { VscCircleLarge } from 'react-icons/vsc';
 import { formatDate } from '../../hook/useFormatDate';
-import { useUsers, useUserSearch } from '../../api/admin';
+import { useDeleteUser, useUsers, useUserSearch } from '../../api/admin';
 import { isArray } from 'chart.js/helpers';
 
 export default function Admin() {
@@ -17,19 +17,16 @@ export default function Admin() {
 
   const { userSearchData, userSearchIsLoading, userSearchIsError } = useUserSearch(debouncedValue);
 
-  // // api 들어오면 위 주석 풀고 아래 세 줄 지우기
-  // const userSearchData = adminData;
-  // const { userSearchIsLoading } = useState(false);
-  // const { userSearchIsError } = useState(false);
-
   const { usersData } = useUsers();
+
+  const { deleteUserMutate, deleteUserError } = useDeleteUser();
 
   const filteredUsers =
     mode === 'connecting' ? usersData?.users.filter((u) => u.is_active) : usersData?.users;
 
   const searchedUser = debouncedValue ? (userSearchData ?? []) : filteredUsers;
 
-  const tableHead = ['이름', '접속여부', '관리자', '이름', '이메일', '가입일시', '계정차단'];
+  const tableHead = ['이름', '활성화여부', '관리자', '이름', '이메일', '가입일시', '계정차단'];
 
   return (
     <>
