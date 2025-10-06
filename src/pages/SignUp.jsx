@@ -32,7 +32,6 @@ export function SignUp() {
     confirm: '',
   });
   const [emailCode, setEmailCode] = useState('');
-  // const code = '1q2w3e4r';
 
   const [touched, setTouched] = useState({
     email: false,
@@ -45,10 +44,8 @@ export function SignUp() {
   const [isCodeInput, setIsCodeInput] = useState(true);
   const [isEmailInput, setIsEmailInput] = useState(false);
   const [isFormInput, setIsFormInput] = useState(true);
-  const [isSendModal, setIsSendModal] = useState(false);
-  const [modalConfirm, setModalConfirm] = useState('');
-  const [isModalConfirm, setIsModalConfirm] = useState(false);
-  const [isConsent, setIsConsent] = useState(false);
+  const [modal, setModal] = useState('');
+  const [isModal, setIsModal] = useState(false);
 
   const errors = newError(form);
 
@@ -97,21 +94,24 @@ export function SignUp() {
         navigate('/');
       },
       onError: () => {
-        setModalConfirm('오류');
-        setIsModalConfirm(true);
+        setModal('오류가 발생했습니다.');
+        setIsModal(true);
       },
     });
   }
 
   const emailSend = () => {
-    // const payload = { email: form.email };
     resendMutate(form.email, {
       onSuccess: () => {
         setIsEmailInput(true);
         setIsCodeInput(false);
-        setIsSendModal(true);
+        setIsModal(true);
+        setModal('인증번호를 발송했습니다.');
       },
-      onError: () => alert('실패했당..'),
+      onError: (error) => {
+        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
+        setIsModal(true);
+      },
     });
   };
 
@@ -119,10 +119,16 @@ export function SignUp() {
     const payload = { code: emailCode, email: form.email };
     verifyMutate(payload, {
       onSuccess: () => {
-        alert('인증 성공~');
+        setModal('인증되었습니다.');
+        setIsModal(true);
         setIsFormInput(false);
+        setIsCodeInput(true);
       },
-      onError: () => alert('인증 실패'),
+      onError: (error) => {
+        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
+        setIsModal(true);
+        setIsEmailInput(false);
+      },
     });
   };
 
@@ -155,9 +161,7 @@ export function SignUp() {
           variant="common"
           size="md"
           onClick={() => {
-            setIsSendModal(false);
-            setIsModalConfirm(false);
-            setIsConsent(false);
+            setIsModal(false);
           }}
         >
           닫기
@@ -327,7 +331,10 @@ export function SignUp() {
             <button
               type="button"
               className="text-[12px] text-blue-500"
-              onClick={() => setIsConsent(true)}
+              onClick={() => {
+                setIsModal(true);
+                setModal('consent');
+              }}
             >
               자세히보기
             </button>
@@ -335,21 +342,19 @@ export function SignUp() {
         </form>
       </LoginModal>
 
-      <LoginModal openModal={isSendModal} footer={close()}>
-        인증번호를 발송했습니다.
-      </LoginModal>
-
-      <LoginModal openModal={isModalConfirm} footer={close()}>
-        {modalConfirm}
-      </LoginModal>
-
-      <LoginModal openModal={isConsent} footer={close()}>
-        <h1 className="text-neutral-300 text-[20px] pb-7 font-bold">{CONTENT.title}</h1>
-        <ul className="text-neutral-300 flex flex-col gap-[10px] text-[13px] list-disc ">
-          {CONTENT.items.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
+      <LoginModal openModal={isModal} footer={close()}>
+        {modal === 'consent' ? (
+          <>
+            <h1 className="text-neutral-300 text-[20px] pb-7 font-bold">{CONTENT.title}</h1>
+            <ul className="text-neutral-300 flex flex-col gap-[10px] text-[13px] list-disc ">
+              {CONTENT.items.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <div>{modal}</div>
+        )}
       </LoginModal>
     </div>
   );

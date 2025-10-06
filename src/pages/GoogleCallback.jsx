@@ -2,13 +2,11 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUser } from '../store/useUser';
-// import { useGoogleCallback } from '../api/auth';
 
 export default function GoogleCallback() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { getUser } = useUser();
-  // const { googleCallbackMutate, googleCallbackError } = useGoogleCallback();
 
   useEffect(() => {
     (async () => {
@@ -23,14 +21,6 @@ export default function GoogleCallback() {
       }
     })();
   }, []);
-
-  // if (googleCallbackError) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen text-red-500 text-lg">
-  //       오류 발생: {googleCallbackError.message}
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="flex justify-center items-center h-screen text-white text-lg">

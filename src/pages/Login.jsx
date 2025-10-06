@@ -35,7 +35,6 @@ export function Login() {
 
     loginMutate(form, {
       onSuccess: async () => {
-        alert('로그인 성공');
         queryClient.invalidateQueries({ queryKey: ['myProfile'] });
         await getUser();
         navigate('/main');
@@ -73,7 +72,7 @@ export function Login() {
             className="flex justify-center items-center h-[40px] bg-[#131314] hover:bg-[#e3e3e31f]/[0.08] rounded-[0.6rem]"
             onClick={() => googleLogin()}
           >
-            <img className="w-6" src="../public/pngegg.png" alt="google" />
+            <img className="w-6" src="/pngegg.png" alt="google" />
             구글로 시작하기
           </button>
         </div>
