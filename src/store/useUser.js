@@ -3,7 +3,6 @@ import { getMyProfile } from '../api/users';
 import { queryClient } from '../queryClient';
 import { useOpenMyPage } from './useOpenMypage';
 import { useOpenAdminPage } from './useOpenAdminPage';
-import { useOpenAdminDashboard } from './useOpenAdminDashboard';
 import { useMainPage } from './useMainPage';
 
 export const useUser = create((set) => ({
