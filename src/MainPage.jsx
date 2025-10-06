@@ -5,7 +5,6 @@ import AdminMypage from './components/adminPage/AdminMypage';
 import { useOpenAdminPage } from './store/useOpenAdminPage';
 import { useOpenAdminDashboard } from './store/useOpenAdminDashboard';
 import { useMainPage } from './store/useMainPage';
-import Admin from './components/adminPage/Admin';
 import TodayWeather from './components/weather/TodayWeather';
 import FiveDayWeather from './components/weather/FiveDayWeather';
 import TodayFortune from './components/TodayFortune';
@@ -22,7 +21,7 @@ import { AdminNewUpdate } from './components/adminPage/AdminNewUpdate';
 import GlareEffect from './components/GlareEffect';
 import AnalogClock from './components/AnalogClock';
 import { useUser } from './store/useUser';
-// import AnalogClock from './components/AnalogClock';
+import Admin from './components/adminPage/Admin';
 
 export default function MainPage() {
   const { openAdminPage, setOpenAdminPage } = useOpenAdminPage();

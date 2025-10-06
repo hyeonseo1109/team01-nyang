@@ -1,6 +1,11 @@
-import { useNavigate } from 'react-router-dom';
-
-export default function Button({ children, variant = '', size = 'sm', disabled = false, ...rest }) {
+export default function Button({
+  children,
+  variant = '',
+  size = 'sm',
+  disabled = false,
+  onClick,
+  ...rest
+}) {
   const base = 'flex justify-center items-center transition text-white ';
 
   const variants = {
@@ -25,15 +30,11 @@ export default function Button({ children, variant = '', size = 'sm', disabled =
   };
 
   const disabledClasses = disabled ? 'cursor-not-allowed opacity-70' : '';
-  const navigate = useNavigate();
 
   const classes = `${base} ${variants[variant]} ${sizes[size]} ${disabledClasses}`;
-  const onhandle = () => {
-    navigate('');
-  };
 
   return (
-    <button type="button" onClick={onhandle} className={classes} disabled={disabled} {...rest}>
+    <button type="button" onClick={onClick} className={classes} disabled={disabled} {...rest}>
       {children}
     </button>
   );
