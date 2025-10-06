@@ -48,7 +48,7 @@ export function PwConfirm() {
       onSuccess: () => {
         setModal('비밀번호가 변경되었습니다.');
         setIsModal(true);
-        setTimeout(() => navigate('/'), 1500);
+        setTimeout(() => navigate('/'), 1000);
       },
       onError: (error) => {
         setModal(error.response?.data?.detail || '비밀번호 변경 중 오류가 발생했습니다.');
@@ -69,6 +69,7 @@ export function PwConfirm() {
         setIsModal(true);
         setIsInput(false);
         setIsEmail(true);
+        setTimeout(() => setIsModal(false), 1000);
       },
       onError: (error) => {
         setModal(error.response?.data?.detail || '이메일 확인 중 오류가 발생했습니다.');

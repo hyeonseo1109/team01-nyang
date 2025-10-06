@@ -107,6 +107,7 @@ export function SignUp() {
       onSuccess: () => {
         setIsModal(true);
         setModal('인증번호를 발송했습니다.');
+        setTimeout(() => setIsModal(false), 1000);
         setIsEmailInput(true);
         setIsCodeInput(false);
       },
@@ -122,6 +123,7 @@ export function SignUp() {
     verifyMutate(payload, {
       onSuccess: () => {
         setModal('인증되었습니다.');
+        setTimeout(() => setIsModal(false), 1000);
         setIsModal(true);
         setIsFormInput(false);
         setIsCodeInput(true);
