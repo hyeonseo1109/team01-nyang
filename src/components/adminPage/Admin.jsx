@@ -21,7 +21,15 @@ export default function Admin() {
   const { deleteUserMutate } = useDeleteUser();
 
   const baseData = debouncedValue ? (userSearchData?.users ?? []) : (usersData?.users ?? []);
-  const searchedUser = mode === 'connecting' ? baseData.filter((u) => !u.is_active) : baseData;
+
+  const searchedUser =
+    mode === 'block'
+      ? baseData.filter((u) => !u.is_active)
+      : mode === 'zzz'
+        ? baseData.filter(
+            (u) => new Date(u.last_login_at) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+          )
+        : baseData;
 
   const tableHead = [
     'id',
@@ -49,7 +57,8 @@ export default function Admin() {
                 조건 선택
               </option>
               <option value="all">전체 유저 조회</option>
-              <option value="connecting">차단된 유저 조회</option>
+              <option value="block">차단된 유저 조회</option>
+              <option value="zzz">잠수 유저 조회</option>
             </select>
           </div>
           <div className="flex items-center gap-1">
@@ -88,6 +97,12 @@ export default function Admin() {
                   <tr>
                     <td colSpan={7} className="text-center py-4 text-gray-500">
                       error
+                    </td>
+                  </tr>
+                ) : searchedUser.length === 0 ? (
+                  <tr>
+                    <td colSpan={tableHead.length} className="text-center py-4 text-gray-500">
+                      조회된 유저가 없습니다.
                     </td>
                   </tr>
                 ) : (
