@@ -59,8 +59,11 @@ export function useUserSearch(search) {
 //const {userSearchData, userSearchIsLoading, userSearchIsError } = userUserSearch(userId);
 
 // !- - - - 유저 계정 차단 (관리자) - - - -
-export async function updateUser({ user_Id, is_active }) {
-  const res = await api.patch(`/admin/users/${user_Id}/status`, { params: { is_active } });
+export async function updateUser({ user_id, is_active }) {
+  console.log('user_id:', user_id);
+  console.log('is_active:', is_active);
+  const res = await api.patch(`/admin/users/${user_id}/status`, {}, { params: { is_active } });
+  console.log('Request URL:', res.config.url);
   return res.data;
 }
 export function useUpdateUser() {
