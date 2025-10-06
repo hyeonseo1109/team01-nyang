@@ -53,7 +53,7 @@ export function SignUp() {
 
   const forms =
     form.email.length &&
-    form.password.length &&
+    form.name.length &&
     form.birth.length &&
     form.password.length &&
     form.confirm.length;
@@ -101,16 +101,18 @@ export function SignUp() {
   }
 
   const emailSend = () => {
+    setModal('인증번호 보내는 중...');
+    setIsModal(true);
     resendMutate(form.email, {
       onSuccess: () => {
-        setIsEmailInput(true);
-        setIsCodeInput(false);
         setIsModal(true);
         setModal('인증번호를 발송했습니다.');
+        setIsEmailInput(true);
+        setIsCodeInput(false);
       },
       onError: (error) => {
-        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
         setIsModal(true);
+        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
       },
     });
   };
@@ -342,7 +344,7 @@ export function SignUp() {
         </form>
       </LoginModal>
 
-      <LoginModal openModal={isModal} footer={close()}>
+      <LoginModal openModal={isModal} title={modal === 'consent' ? '' : modal} footer={close()}>
         {modal === 'consent' ? (
           <>
             <h1 className="text-neutral-300 text-[20px] pb-7 font-bold">{CONTENT.title}</h1>
@@ -352,9 +354,7 @@ export function SignUp() {
               ))}
             </ul>
           </>
-        ) : (
-          <div>{modal}</div>
-        )}
+        ) : null}
       </LoginModal>
     </div>
   );

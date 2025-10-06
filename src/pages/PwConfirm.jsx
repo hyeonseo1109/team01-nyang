@@ -23,9 +23,10 @@ export function PwConfirm() {
     confirm: false,
   });
 
-  const [isPopup, setIsPopup] = useState(false);
-  const [isInput, setIsInput] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
+  const [isEmail, setIsEmail] = useState(false);
+  const [isInput, setIsInput] = useState(true);
+  const [modal, setModal] = useState('');
+  const [isModal, setIsModal] = useState(false);
 
   const { passwordResetMutate } = usePasswordReset();
   const { confirmPasswordResetMutate } = useConfirmPasswordReset();
@@ -45,27 +46,34 @@ export function PwConfirm() {
     };
     confirmPasswordResetMutate(payload, {
       onSuccess: () => {
-        alert('성공띠');
-        navigate('/');
+        setModal('비밀번호가 변경되었습니다.');
+        setIsModal(true);
+        setTimeout(() => navigate('/'), 1500);
       },
-      onError: () => alert('실패띠...'),
+      onError: (error) => {
+        setModal(error.response?.data?.detail || '비밀번호 변경 중 오류가 발생했습니다.');
+        setIsModal(true);
+      },
     });
   }
 
   const errors = newError(form);
 
   function emailConfirm() {
+    setModal('이메일 확인하는 중...');
+    setIsModal(true);
     const payload = { email: form.email };
-    if (!payload) {
-      setPopupMessage('이메일을 입력하세요.');
-      return;
-    }
     passwordResetMutate(payload, {
       onSuccess: () => {
-        alert('확인되었습니다.');
-        setIsInput(true);
+        setModal('확인되었습니다.');
+        setIsModal(true);
+        setIsInput(false);
+        setIsEmail(true);
       },
-      onError: () => alert('존재하지않는 이메일 입니다.'),
+      onError: (error) => {
+        setModal(error.response?.data?.detail || '이메일 확인 중 오류가 발생했습니다.');
+        setIsModal(true);
+      },
     });
   }
 
@@ -95,10 +103,16 @@ export function PwConfirm() {
     );
   };
 
-  const emailfooter = () => {
+  const close = () => {
     return (
       <div className="mt-6">
-        <Button variant="common" size="md" onClick={() => setIsPopup(false)}>
+        <Button
+          variant="common"
+          size="md"
+          onClick={() => {
+            setIsModal(false);
+          }}
+        >
           닫기
         </Button>
       </div>
@@ -134,6 +148,7 @@ export function PwConfirm() {
               type={'email'}
               placeholder="이메일을 입력하세요"
               value={form.email}
+              disabled={isEmail}
               onChange={(e) => {
                 setForm((email) => ({ ...email, email: e.target.value }));
               }}
@@ -144,7 +159,7 @@ export function PwConfirm() {
               type="button"
               className="flex justify-center items-center w-auto h-[30px] border-[1px] text-neutral-300
                 rounded-[5px] p-[2px] border-[#3f3f3f] bg-[#3f3f3f90] hover:bg-[#22222295] pr-1 pl-1 disabled:hover:bg-[#3f3f3f90]"
-              disabled={!form.email || errors.email}
+              disabled={!form.email || errors.email || isEmail}
               onClick={() => emailConfirm(form.email)}
             >
               이메일 확인
@@ -154,7 +169,7 @@ export function PwConfirm() {
             label={'비밀번호'}
             placeholder="비밀번호 입력"
             value={form.password}
-            disabled={!isInput}
+            disabled={isInput}
             onChange={(e) => {
               const next = e.target.value;
               setForm((password) => ({ ...password, password: next }));
@@ -166,7 +181,7 @@ export function PwConfirm() {
             label={'비밀번호 확인'}
             placeholder="비밀번호 입력 확인"
             value={form.confirm}
-            disabled={!isInput}
+            disabled={isInput}
             onChange={(e) => {
               const next = e.target.value;
               setForm((confirm) => ({ ...confirm, confirm: next }));
@@ -177,14 +192,7 @@ export function PwConfirm() {
         </form>
       </LoginModal>
 
-      <LoginModal
-        title={'이메일 확인'}
-        openModal={isPopup}
-        footer={emailfooter()}
-        onClose={() => setIsPopup(false)}
-      >
-        {popupMessage}
-      </LoginModal>
+      <LoginModal openModal={isModal} title={modal} footer={close()}></LoginModal>
     </div>
   );
 }

@@ -9,11 +9,14 @@ import { useLogin } from '../api/auth';
 import { LoginInputPassword } from '../components/ui/LoginInputPassword';
 import Header from '../components/ui/Header';
 import { useQueryClient } from '@tanstack/react-query';
+import Button from '../components/ui/Button';
 
 export function Login() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const openModal = true;
+  const [modal, setModal] = useState('');
+  const [isModal, setIsModal] = useState(false);
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -39,11 +42,27 @@ export function Login() {
         await getUser();
         navigate('/main');
       },
-      onError: () => {
-        alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+      onError: (error) => {
+        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
+        setIsModal(true);
       },
     });
   }
+  const close = () => {
+    return (
+      <div className="mt-6">
+        <Button
+          variant="common"
+          size="md"
+          onClick={() => {
+            setIsModal(false);
+          }}
+        >
+          닫기
+        </Button>
+      </div>
+    );
+  };
 
   const errors = newError(form);
 
@@ -52,7 +71,7 @@ export function Login() {
   const onButton = noError && mustFilled;
 
   const googleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_BASE_URL}/auth/google/login`;
+    window.location.href = `${import.meta.env.VITE_BASE_URL}auth/google/login`;
   };
 
   const footer = () => {
@@ -121,8 +140,8 @@ export function Login() {
               value={form.email}
               onChange={(e) => {
                 setForm((email) => ({ ...email, email: e.target.value }));
-              }} //state 업데이트
-              onBlur={() => setTouched((t) => ({ ...t, email: true }))} //유효성검사 메세지 출력
+              }}
+              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
               error={touched.email ? errors.email : ''}
             />
           </div>
@@ -139,6 +158,7 @@ export function Login() {
           />
         </form>
       </LoginModal>
+      <LoginModal openModal={isModal} title={modal} footer={close()}></LoginModal>
     </div>
   );
 }
