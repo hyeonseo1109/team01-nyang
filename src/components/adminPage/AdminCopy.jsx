@@ -6,9 +6,9 @@ import { useDebounce } from '../../hook/useDebounce';
 import { VscChromeClose } from 'react-icons/vsc';
 import { VscCircleLarge } from 'react-icons/vsc';
 import { formatDate } from '../../hook/useFormatDate';
-import { useUpdateUser, useUsers, useUserSearch } from '../../api/admin';
+import { useUsers, useUserSearch } from '../../api/admin';
 
-export default function Admin() {
+export default function AdminCopy() {
   const [mode, setMode] = useState('all');
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue);
@@ -17,22 +17,15 @@ export default function Admin() {
 
   const { usersData } = useUsers();
 
-  const { updateUserMutate } = useUpdateUser();
+  // mode가 all이면 전체 유저를, connecting이면 차단유저를 보여줌.
+  const filteredUsers =
+    mode === 'connecting' ? usersData?.users.filter((u) => !u.is_active) : usersData?.users;
 
-  const baseData = debouncedValue ? (userSearchData?.users ?? []) : (usersData?.users ?? []);
-  const searchedUser = mode === 'connecting' ? baseData.filter((u) => !u.is_active) : baseData;
+  // 검색입력값이 있으면 userSearchData API호출데이터를, 아니면 그냥 전체/차단유저를 보여줌.
+  const searchedUser = debouncedValue ? (userSearchData?.users ?? []) : filteredUsers;
 
-  const tableHead = [
-    'id',
-    '차단여부',
-    '관리자',
-    '이름',
-    '이메일',
-    '가입일시',
-    '최근로그인',
-    '차단',
-    '삭제',
-  ];
+  // const tableHead = ['id', '활성화여부', '관리자', '이름', '이메일', '가입일시', '계정차단'];
+  const tableHead = ['id', '관리자', '이름', '이메일', '가입일시', '계정차단'];
 
   return (
     <>
@@ -96,13 +89,13 @@ export default function Admin() {
                       <td className="border border-table p-2 text-center bg-[#222222] whitespace-nowrap">
                         {user.id}
                       </td>
-                      <td className="border border-table whitespace-nowrap">
+                      {/* <td className="border border-table whitespace-nowrap">
                         {user.is_active ? (
                           <div className="m-auto border  rounded-2xl bg-[#34cf20] w-3.5 h-3.5 shadow-[0_0_5px_#34cf20]"></div>
                         ) : (
                           <div className="m-auto border  rounded-2xl bg-[#cf2020] w-3.5 h-3.5 shadow-[0_0_5px_#909090]"></div>
                         )}
-                      </td>
+                      </td> */}
                       <td
                         className={`border p-2 text-center border-table ${user.is_superuser && 'text-red-500'}`}
                       >
@@ -117,22 +110,9 @@ export default function Admin() {
                       <td className="border border-table p-2 text-center whitespace-nowrap">
                         {formatDate(user.created_at)}
                       </td>
-                      <td className="border border-table p-2 text-center  whitespace-nowrap">
-                        {formatDate(user.last_login_at)}
-                      </td>
                       <td className="border border-table text-center align-middle p-1">
-                        <div className="flex gap-2 mx-2">
-                          <Button size="vsm" variant="common">
-                            차단
-                          </Button>
-                          <Button size="vsm" variant="common">
-                            해제
-                          </Button>
-                        </div>
-                      </td>
-                      <td className="border border-table text-center align-middle px-2">
                         <Button size="vsm" variant="common">
-                          삭제
+                          차단
                         </Button>
                       </td>
                     </tr>
