@@ -6,7 +6,7 @@ import { useDebounce } from '../../hook/useDebounce';
 import { VscChromeClose } from 'react-icons/vsc';
 import { VscCircleLarge } from 'react-icons/vsc';
 import { formatDate } from '../../hook/useFormatDate';
-import { useUpdateUser, useUsers, useUserSearch } from '../../api/admin';
+import { useDeleteUser, useUpdateUser, useUsers, useUserSearch } from '../../api/admin';
 
 export default function Admin() {
   const [mode, setMode] = useState('all');
@@ -18,20 +18,20 @@ export default function Admin() {
   const { usersData } = useUsers();
 
   const { updateUserMutate } = useUpdateUser();
+  const { deleteUserMutate } = useDeleteUser();
 
   const baseData = debouncedValue ? (userSearchData?.users ?? []) : (usersData?.users ?? []);
   const searchedUser = mode === 'connecting' ? baseData.filter((u) => !u.is_active) : baseData;
 
   const tableHead = [
     'id',
-    '차단여부',
-    '관리자',
     '이름',
     '이메일',
     '가입일시',
     '최근로그인',
-    '차단',
-    '삭제',
+    '차단여부',
+    '계정차단',
+    '계정삭제',
   ];
 
   return (
@@ -96,19 +96,9 @@ export default function Admin() {
                       <td className="border border-table p-2 text-center bg-[#222222] whitespace-nowrap">
                         {user.id}
                       </td>
-                      <td className="border border-table whitespace-nowrap">
-                        {user.is_active ? (
-                          <div className="m-auto border  rounded-2xl bg-[#34cf20] w-3.5 h-3.5 shadow-[0_0_5px_#34cf20]"></div>
-                        ) : (
-                          <div className="m-auto border  rounded-2xl bg-[#cf2020] w-3.5 h-3.5 shadow-[0_0_5px_#909090]"></div>
-                        )}
-                      </td>
                       <td
-                        className={`border p-2 text-center border-table ${user.is_superuser && 'text-red-500'}`}
+                        className={`border border-table p-2 text-center whitespace-nowrap ${user.is_superuser && 'text-blue-500'}`}
                       >
-                        {user.is_superuser ? <VscCircleLarge /> : <VscChromeClose />}
-                      </td>
-                      <td className="border border-table p-2 text-center whitespace-nowrap">
                         {user.username}
                       </td>
                       <td className="border border-table p-2 text-center  whitespace-nowrap">
@@ -120,18 +110,34 @@ export default function Admin() {
                       <td className="border border-table p-2 text-center  whitespace-nowrap">
                         {formatDate(user.last_login_at)}
                       </td>
-                      <td className="border border-table text-center align-middle p-1">
-                        <div className="flex gap-2 mx-2">
-                          <Button size="vsm" variant="common">
-                            차단
-                          </Button>
-                          <Button size="vsm" variant="common">
-                            해제
-                          </Button>
-                        </div>
+                      <td className="border border-table whitespace-nowrap">
+                        {user.is_active ? (
+                          <div className="m-auto rounded-2xl flex justify-center">
+                            <VscChromeClose />
+                          </div>
+                        ) : (
+                          <div className="m-auto rounded-2xl text-[#cf2020]  flex justify-center">
+                            <VscCircleLarge />{' '}
+                          </div>
+                        )}
                       </td>
                       <td className="border border-table text-center align-middle px-2">
-                        <Button size="vsm" variant="common">
+                        <Button
+                          size="vsm"
+                          variant="common"
+                          onClick={() =>
+                            updateUserMutate({ user_id: user.id, is_active: !user.is_active })
+                          }
+                        >
+                          {user.is_active ? '차단' : '해제'}
+                        </Button>
+                      </td>
+                      <td className="border border-table text-center align-middle px-2">
+                        <Button
+                          size="vsm"
+                          variant="common"
+                          onClick={() => deleteUserMutate(user.id)}
+                        >
                           삭제
                         </Button>
                       </td>
