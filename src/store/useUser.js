@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { getMyProfile } from '../api/users';
 import { queryClient } from '../queryClient';
+import { useOpenMyPage } from './useOpenMypage';
+import { useOpenAdminPage } from './useOpenAdminPage';
 
 export const useUser = create((set) => ({
   user: null,
@@ -22,5 +24,9 @@ export const useUser = create((set) => ({
     }
   },
 
-  clearUser: () => set({ user: null }),
+  clearUser: () => {
+    set({ user: null });
+    useOpenMyPage.getState().setOpenMyPage(false);
+    useOpenAdminPage.getState().setOpenAdminPage(false);
+  },
 }));
