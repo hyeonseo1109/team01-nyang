@@ -79,7 +79,7 @@ export default function MainPage() {
               {/* 본문 윗부분 왼오 */}
               <div className="grid grid-cols-[3fr_2fr] gap-4 min-h-0 min-w-0">
                 {/* 본문 윗부분 왼 */}
-                <div className="bg-[#22222295] shadow-3d rounded-lg p-6 flex flex-col overflow-y-auto min-w-0">
+                <div className="bg-[#22222295] shadow-3d rounded-lg p-6 flex flex-col overflow-y-auto custom-scroll min-w-0">
                   {openAdminDashboard ? <AdminNewUpdate /> : <News />}
                 </div>
 
