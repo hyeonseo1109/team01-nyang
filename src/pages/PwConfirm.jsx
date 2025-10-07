@@ -8,6 +8,7 @@ import Button from '../components/ui/Button';
 import { LoginInputPassword } from '../components/ui/LoginInputPassword';
 import Header from '../components/ui/Header';
 import { useConfirmPasswordReset, usePasswordReset } from '../api/auth';
+import toast, { Toaster } from 'react-hot-toast';
 
 export function PwConfirm() {
   const navigate = useNavigate();
@@ -46,9 +47,14 @@ export function PwConfirm() {
     };
     confirmPasswordResetMutate(payload, {
       onSuccess: () => {
-        setModal('비밀번호가 변경되었습니다.');
-        setIsModal(true);
-        setTimeout(() => navigate('/'), 2000);
+        toast.success('비밀번호 변경 완료', {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        setTimeout(() => navigate('/'), 1000);
       },
       onError: (error) => {
         setModal(error.response?.data?.detail || '비밀번호 변경 중 오류가 발생했습니다.');
@@ -192,7 +198,6 @@ export function PwConfirm() {
           />
         </form>
       </LoginModal>
-
       <LoginModal openModal={isModal} title={modal} popup={true} footer={close()}></LoginModal>
     </div>
   );

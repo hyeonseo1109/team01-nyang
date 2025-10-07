@@ -10,6 +10,7 @@ import { LoginInputPassword } from '../components/ui/LoginInputPassword';
 import Header from '../components/ui/Header';
 import { useQueryClient } from '@tanstack/react-query';
 import Button from '../components/ui/Button';
+import toast, { Toaster } from 'react-hot-toast';
 
 export function Login() {
   const navigate = useNavigate();
@@ -40,7 +41,14 @@ export function Login() {
       onSuccess: async () => {
         queryClient.invalidateQueries({ queryKey: ['myProfile'] });
         await getUser();
-        navigate('/main');
+        toast.success('로그인 성공', {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        setTimeout(() => navigate('/main'), 1000);
       },
       onError: (error) => {
         setModal(error.response?.data?.detail || '오류가 발생했습니다.');

@@ -11,6 +11,7 @@ import LoadingPage from './pages/LoadingPage';
 import { useUser } from './store/useUser';
 import { useEffect } from 'react';
 import GoogleCallback from './pages/GoogleCallback';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const { getUser } = useUser();
@@ -19,23 +20,26 @@ function App() {
     getUser();
   }, [getUser]);
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/pwconfirm" element={<PwConfirm />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/auth/google/callback" element={<GoogleCallback />}></Route>
-      <Route
-        path="/main"
-        element={
-          <PrivateRoute>
-            <MainPage />
-          </PrivateRoute>
-        }
-      />
+    <>
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/pwconfirm" element={<PwConfirm />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/auth/google/callback" element={<GoogleCallback />}></Route>
+        <Route
+          path="/main"
+          element={
+            <PrivateRoute>
+              <MainPage />
+            </PrivateRoute>
+          }
+        />
 
-      <Route path="/loading" element={<LoadingPage />} />
-      <Route path="/*" element={<ErrorPage />} />
-    </Routes>
+        <Route path="/loading" element={<LoadingPage />} />
+        <Route path="/*" element={<ErrorPage />} />
+      </Routes>
+    </>
   );
 }
 
