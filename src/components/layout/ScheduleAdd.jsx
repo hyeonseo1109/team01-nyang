@@ -9,7 +9,7 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
             <div key={item.id} className="border-b border-[#555] pb-3 w-full">
               <div className="flex flex-col justify-center items-center gap-[-2rem] w-full">
                 {/* 날짜묶음 */}
-                <div className="flex xl:flex-row flex-col opacity-70">
+                <div className="flex lg:flex-row flex-col text-white">
                   {/* 시작 날짜/시간 */}
                   <div className="flex gap-2 items-center text-[0.8rem]">
                     <span className="font-medium whitespace-nowrap">
@@ -22,30 +22,39 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
                           .replace(/. /, '/')
                           .slice(0, -1)}
                     </span>
-                    <span className="whitespace-nowrap">{item.timeStart}</span>
+                    {!item.all_day && item.timeStart && (
+                      <span className="whitespace-nowrap">{item.timeStart}</span>
+                    )}
                   </div>
-                  <div className="text-center font-semibold -my-2 text-[0.8rem]">~</div>
-                  {/* 종료 날짜/시간 */}
-                  <div className="flex gap-2 items-center">
-                    <span className="font-medium whitespace-nowrap text-[0.8rem]">
-                      {item.dateEnd &&
-                        new Date(item.dateEnd)
-                          .toLocaleDateString('ko-KR', {
-                            month: 'numeric',
-                            day: 'numeric',
-                          })
-                          .replace(/. /, '/')
-                          .slice(0, -1)}
-                    </span>
-                    <span className="whitespace-nowrap text-[0.8rem]">{item.timeEnd}</span>
-                  </div>
+                  {(item.dateStart !== item.dateEnd || !item.all_day) && (
+                    <>
+                      <div className="text-center font-semibold text-[0.8rem] mx-1">~</div>
+                      <div className="flex gap-2 items-center">
+                        {item.dateStart !== item.dateEnd && (
+                          <span className="font-medium whitespace-nowrap text-[0.8rem]">
+                            {item.dateEnd &&
+                              new Date(item.dateEnd)
+                                .toLocaleDateString('ko-KR', {
+                                  month: 'numeric',
+                                  day: 'numeric',
+                                })
+                                .replace(/. /, '/')
+                                .slice(0, -1)}
+                          </span>
+                        )}
+                        {!item.all_day && item.timeEnd && (
+                          <span className="whitespace-nowrap text-[0.8rem]">{item.timeEnd}</span>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* 제목 */}
-                <span className="flex justify-center mt-1">{item.title}</span>
+                <span className="flex justify-center mt-1 font-semibold">{item.title}</span>
 
                 {/* 메모 */}
-                {item.memo && <span className="text-[#1b4567] text-mt">{item.memo}</span>}
+                {item.memo && <span className="text-[#888] text-xs">{item.memo}</span>}
               </div>
 
               {/* 수정/삭제 버튼 */}
@@ -53,7 +62,6 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
                 <button
                   onClick={() => onEdit(item)}
                   className="hover:text-[#1b4567] mr-3"
-                  disabled={item.completed}
                 >
                   수정
                 </button>
