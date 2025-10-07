@@ -45,7 +45,7 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) 
   }
 
   const applyNickname = () => safeUpdate({ username }, '닉네임이 적용되었습니다.');
-  const applyBirthdate = () => safeUpdate({ birthdate }, '생년월일이 적용되었습니다.');
+  const applyBirthdate = () => safeUpdate({ birthday: birthdate }, '생년월일이 적용되었습니다.');
   const applyImage = () => safeUpdate({ profile_image: profileImage }, '이미지가 적용되었습니다.');
   // const applyAll = () =>
   //   safeUpdate({ username, birthdate, profile_image: profileImage }, '프로필이 적용되었습니다.');

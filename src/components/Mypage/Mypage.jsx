@@ -173,7 +173,7 @@ export default function MyPage({ open, onClose }) {
               onBack={goMain}
               username={me?.username}
               email={me?.email}
-              birthdate={me?.birthdate ? String(me.birthday).slice(0, 10) : undefined}
+              birthdate={me?.birthday ? String(me.birthday).slice(0, 10) : undefined}
               image={me?.profile_image}
             />
           </div>
