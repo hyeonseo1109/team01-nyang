@@ -4,6 +4,8 @@ import EditBirthdateField from './EditBirthdateField';
 import EditProfileImageField from './EditProfileImageField';
 // import ApplyAllRow from './ApplyAllRow';
 import { useUpdateMyProfile, useDeleteMyAccount } from '../../../api/users';
+import { useUser } from '../../../store/useUser';
+import { useLogout } from '../../../api/auth';
 
 export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) {
   const nameRef = useRef(null);
@@ -28,6 +30,20 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) 
       nameRef.current.focus();
     }
   }, []);
+
+  const { clearUser } = useUser();
+  const { logoutMutate } = useLogout();
+
+  const handleLogout = () => {
+    logoutMutate(undefined, {
+      onSuccess: () => {
+        clearUser();
+      },
+      onError: () => {
+        alert('오류');
+      },
+    });
+  };
 
   async function safeUpdate(payload, okMsg) {
     setSavingProfile(true);
@@ -98,7 +114,7 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) 
         <div className="flex flex-wrap items-center gap-2 basis-full justify-end sm:ml-auto">
           <button
             className="btn h-10 px-4 whitespace-nowrap sm:shrink-0"
-            onClick={onLogout}
+            onClick={() => handleLogout()}
             type="button"
             disabled={savingProfile}
           >
