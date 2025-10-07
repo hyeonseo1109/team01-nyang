@@ -17,10 +17,6 @@ export default function ScheduleSummary() {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    console.log(conversationsData);
-  }, [page]);
-
   return (
     <>
       <div className="w-full h-auto justify-center items-center border border-[#444] px-3 py-5 rounded-xl select-none break-keep text-light">

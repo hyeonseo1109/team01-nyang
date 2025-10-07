@@ -10,7 +10,7 @@ const SCHEDULES = 'schedules';
 
 // !- - - - 일정 목록 조회 - - - -
 export async function getSchedules() {
-  const res = await api.get('/schedules');
+  const res = await api.get('/schedules/me');
   return res.data;
 }
 export function useSchedules() {
@@ -18,12 +18,13 @@ export function useSchedules() {
     data: schedulesData,
     isLoading: schedulesIsLoading,
     isError: schedulesIsError,
+    error: schedulesError,
     ...rest
   } = useQuery({
     queryKey: [SCHEDULES],
     queryFn: getSchedules,
   });
-  return { schedulesData, schedulesIsLoading, schedulesIsError, ...rest };
+  return { schedulesData, schedulesIsLoading, schedulesIsError, schedulesError, ...rest };
 }
 // const { schedulesData, schedulesIsLoading, schedulesIsError } = useSchedules();
 
@@ -52,28 +53,29 @@ export function useCreateSchedule() {
 // 여기서 payload는 객체이기 때문에, form도 객체로 내용 작성해야 함. (API 명세서에 있는 것처럼)
 
 // !- - - - 일정 상세 조회 - - - -
-export async function getScheduleById(id) {
-  const res = await api.get(`/schedules/${id}`);
+export async function getScheduleById(schedule_id) {
+  const res = await api.get(`/schedules/${schedule_id}`);
   return res.data;
 }
-export function useScheduleById(id) {
+export function useScheduleById(schedule_id) {
   const {
     data: scheduleByIdData,
     isLoading: scheduleByIdIsLoading,
     isError: scheduleByIdIsError,
+    error: scheduleByError,
     ...rest
   } = useQuery({
-    queryKey: [SCHEDULES, id],
-    queryFn: () => getScheduleById(id),
-    enabled: !!id, // id가 있을 때만 실행
+    queryKey: [SCHEDULES, schedule_id],
+    queryFn: () => getScheduleById(schedule_id),
+    enabled: !!schedule_id, // id가 있을 때만 실행
   });
-  return { scheduleByIdData, scheduleByIdIsLoading, scheduleByIdIsError, ...rest };
+  return { scheduleByIdData, scheduleByIdIsLoading, scheduleByIdIsError, scheduleByError, ...rest };
 }
 // const { scheduleByIdData, scheduleByIdIsLoading, scheduleByIdIsError } = useScheduleById(id);
 
 //  !- - - - 일정 수정 - - - -
-export async function updateSchedule(id, payload) {
-  const res = await api.patch(`/schedules/${id}`, payload);
+export async function updateSchedule(schedules_id, payload) {
+  const res = await api.patch(`/schedules/${schedules_id}`, payload);
   return res.data;
 }
 export function useUpdateSchedule() {
@@ -83,7 +85,7 @@ export function useUpdateSchedule() {
     error: updateScheduleError,
     ...rest
   } = useMutation({
-    mutationFn: ({ id, payload }) => updateSchedule(id, payload),
+    mutationFn: ({ schedules_id, payload }) => updateSchedule(schedules_id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [SCHEDULES] });
     },
@@ -102,8 +104,8 @@ export function useUpdateSchedule() {
 // })
 
 // ! - - - - 일정 삭제 - - - -
-export async function deleteSchedule(id) {
-  const res = await api.delete(`/schedules/${id}`);
+export async function deleteSchedule(schedule_id) {
+  const res = await api.delete(`/schedules/${schedule_id}`);
   return res.data;
 }
 export function useDeleteSchedule() {
@@ -122,24 +124,3 @@ export function useDeleteSchedule() {
 }
 // const { deleteScheduleMutate, deleteScheduleError } = useDeleteSchedule();
 // deleteScheduleMutate(id);
-
-//? 삭제됨 - - - - 일정 연계 할 일 조회 - - - -
-// export async function getScheduleTodos(id) {
-//   const res = await api.get(`/schedules/${id}/todos`);
-//   return res.data;
-// }
-// export function useScheduleTodos(id) {
-//   const {
-//     data: scheduleTodosData,
-//     isLoading: scheduleTodosIsLoading,
-//     isError: scheduleTodosIsError,
-//     ...rest
-//   } = useQuery({
-//     queryKey: [SCHEDULES, id, 'todos'],
-//     queryFn: () => getScheduleTodos(id),
-//     enabled: !!id,
-//   });
-//   return { scheduleTodosData, scheduleTodosIsLoading, scheduleTodosIsError, ...rest };
-// }
-// const { scheduleTodosData, scheduleTodosIsLoading, scheduleTodosIsError } = useScheduleTodos();
-// scheduleTodosData(id)

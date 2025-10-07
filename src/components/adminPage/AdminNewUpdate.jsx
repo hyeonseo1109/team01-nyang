@@ -25,7 +25,6 @@ ChartJS.register(
 
 export function AdminNewUpdate() {
   const { usersData } = useUsers();
-  console.log(usersData?.total);
 
   // 일주일치 담은 배열
   const weekWhile = Array.from({ length: 7 }, (_, i) => {

@@ -9,22 +9,23 @@ import { api } from './client';
 const TODOS = 'todos';
 
 // !- - - - 할 일 목록 조회 - - - -
-export async function getTodos(params = {}) {
+export async function getTodos() {
   // 쿼리: is_completed, schedule_id
-  const res = await api.get('/todos', { params });
+  const res = await api.get('/todos');
   return res.data;
 }
-export function useTodos(params) {
+export function useTodos() {
   const {
     data: todoData,
     isLoading: todoIsLoading,
     isError: todoIsError,
+    error: todoError,
     ...rest
   } = useQuery({
-    queryKey: [TODOS, params],
-    queryFn: () => getTodos(params),
+    queryKey: [TODOS],
+    queryFn: () => getTodos(),
   });
-  return { todoData, todoIsLoading, todoIsError, ...rest };
+  return { todoData, todoIsLoading, todoIsError, todoError, ...rest };
 }
 // const { todoData, todoIsError } = useTodos();   :   전체 할일 목록 조회
 // -- 꼭 다 가져오지 않아도 됨, 쓰고 싶은 것만 가져와서 쓰면 됨.
@@ -54,22 +55,23 @@ export function useCreateTodo() {
 // createTodoMutate(form);
 
 // !- - - - 할 일 상세 조회 - - - -
-export async function getTodoById(id) {
-  const res = await api.get(`/todos/${id}`);
+export async function getTodoById(todo_id) {
+  const res = await api.get(`/todos/${todo_id}`);
   return res.data;
 }
-export function useTodo(id) {
+export function useTodo(todo_id) {
   const {
     data: todoByIdData,
     isLoading: todoByIdIsLoading,
     isError: todoByIdIsError,
+    error: todoByIdError,
     ...rest
   } = useQuery({
-    queryKey: [TODOS, id],
-    queryFn: () => getTodoById(id),
-    enabled: !!id,
+    queryKey: [TODOS, todo_id],
+    queryFn: () => getTodoById(todo_id),
+    enabled: !!todo_id,
   });
-  return { todoByIdData, todoByIdIsLoading, todoByIdIsError, ...rest };
+  return { todoByIdData, todoByIdIsLoading, todoByIdIsError, todoByIdError, ...rest };
 }
 // const { todoByIdData } = useTodo(id);
 

@@ -19,33 +19,41 @@ export function useAllInquiries() {
     data: allInquiriesData,
     isLoading: allInquiriesIsLoading,
     isError: allInquiriesIsError,
+    error: allInquiriesError,
     ...rest
   } = useQuery({
     queryKey: [ADMIN_INQUIRIES],
     queryFn: getAllInquiries,
   });
-  return { allInquiriesData, allInquiriesIsLoading, allInquiriesIsError, ...rest };
+  return {
+    allInquiriesData,
+    allInquiriesIsLoading,
+    allInquiriesIsError,
+    allInquiriesError,
+    ...rest,
+  };
 }
 //const { allInquiriesData, allInquiriesIsLoading, allInquiriesIsError } = useAllInquiries();
 
 // !- - - - 내 문의 목록 조회 (쿼리: status=pending 등) - - - -
-export async function getInquiries(params) {
-  const res = await api.get('/inquiries/me', { params });
+export async function getInquiries() {
+  const res = await api.get('/inquiries/me');
   return res.data;
 }
-export function useInquiries(params) {
+export function useInquiries() {
   const {
     data: inquiriesData,
     isLoading: inquiriesIsLoading,
     isError: inquiriesIsError,
+    error: inquiriesError,
     ...rest
   } = useQuery({
-    queryKey: [INQUIRIES, params],
-    queryFn: () => getInquiries(params),
+    queryKey: [INQUIRIES],
+    queryFn: () => getInquiries(),
     staleTime: 1000 * 60 * 5,
     // 문의 달았을 때 createInquiry에서 캐시 초기화가 발생하기 때문에 새로고침돼서 바로바로 잘 나타나고, 그렇기에 오래 캐싱할 필요도 없음.
   });
-  return { inquiriesData, inquiriesIsLoading, inquiriesIsError, ...rest };
+  return { inquiriesData, inquiriesIsLoading, inquiriesIsError, inquiriesError, ...rest };
 }
 // const { inquiriesData, inquiriesIsLoading, inquiriesIsError } = useInquiries();   :   전체 조회
 // const { inquiriesData, inquiriesIsLoading, inquiriesIsError } = useInquiries({ status: "pending" });   :    pending 상태인 문의만 보여줌.
@@ -73,28 +81,29 @@ export function useCreateInquiry() {
 // createInquiryMutate({ "title": "문의 등록", "message": "문의 등록하겠습니다."})
 
 // !- - - - 문의 상세 조회 - - - -
-export async function getInquiryById(id) {
-  const res = await api.get(`/inquiries/${id}`);
+export async function getInquiryById(inquiry_id) {
+  const res = await api.get(`/inquiries/${inquiry_id}`);
   return res.data;
 }
-export function useInquiry(id) {
+export function useInquiry(inquiry_id) {
   const {
     data: inquiryByIdData,
     isLoading: inquiryByIdIsLoading,
     isError: inquiryByIdIsError,
+    error: inquiryByIdError,
     ...rest
   } = useQuery({
-    queryKey: [INQUIRIES, id],
-    queryFn: () => getInquiryById(id),
-    enabled: !!id,
+    queryKey: [INQUIRIES, inquiry_id],
+    queryFn: () => getInquiryById(inquiry_id),
+    enabled: !!inquiry_id,
   });
-  return { inquiryByIdData, inquiryByIdIsLoading, inquiryByIdIsError, ...rest };
+  return { inquiryByIdData, inquiryByIdIsLoading, inquiryByIdIsError, inquiryByIdError, ...rest };
 }
 // const { inquiryByIdData, inquiriesIsLoading, inquiriesIsError } = useInquiry(3);
 
-// !- - - - 문의 수정 (pending 상태일 때만 가능) - - - -
-export async function updateInquiry(id, payload) {
-  const res = await api.patch(`/inquiries/${id}`, payload);
+// !- - - - 관리자 문의 수정 - - - -
+export async function updateInquiry(inquiry_id, payload) {
+  const res = await api.patch(`/inquiries/${inquiry_id}`, payload);
   return res.data;
 }
 export function useUpdateInquiry() {
@@ -104,7 +113,7 @@ export function useUpdateInquiry() {
     error: updateInquiryError,
     ...rest
   } = useMutation({
-    mutationFn: ({ id, payload }) => updateInquiry(id, payload),
+    mutationFn: ({ inquiry_id, payload }) => updateInquiry(inquiry_id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [INQUIRIES] });
     },
@@ -114,9 +123,31 @@ export function useUpdateInquiry() {
 // const { updateInquiryMutate, updateInquiryError } = useUpdateInquiry();
 // updateInquiryMutate({ id: 3, payload: { "title": "문의 수정", "message": "문의 수정하겠습니다." }})
 
+// !- - - - 자기 문의 수정 (pending 상태일 때만 가능) - - - -
+export async function updateInquiryMe(inquiry_id, payload) {
+  const res = await api.patch(`/inquiries/me/${inquiry_id}`, payload);
+  return res.data;
+}
+export function useUpdateInquiryMe() {
+  const queryClient = useQueryClient();
+  const {
+    mutate: updateInquiryMeMutate,
+    error: updateInquiryMeError,
+    ...rest
+  } = useMutation({
+    mutationFn: ({ inquiry_id, payload }) => updateInquiryMe(inquiry_id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [INQUIRIES] });
+    },
+  });
+  return { updateInquiryMeMutate, updateInquiryMeError, ...rest };
+}
+// const { updateInquiryMutate, updateInquiryError } = useUpdateInquiry();
+// updateInquiryMutate({ id: 3, payload: { "title": "문의 수정", "message": "문의 수정하겠습니다." }})
+
 // !- - - - 문의 삭제 (pending 상태일 때만 가능) - - - -
-export async function deleteInquiry(id) {
-  const res = await api.delete(`/inquiries/${id}`);
+export async function deleteInquiry(inquiry_id) {
+  const res = await api.delete(`/inquiries/${inquiry_id}`);
   return res.data;
 }
 export function useDeleteInquiry() {
@@ -135,56 +166,3 @@ export function useDeleteInquiry() {
 }
 // const { deleteInquiryMutate, deleteInquiryError } = useDeleteInquiry();
 // deleteInquiryMutate(id)
-
-// ? 삭제 가능성 있음 - - - - 문의 상태 변경 - - - -
-// export async function updateInquiryStatus(id, payload) {
-//   const res = await api.patch(`/admin/inquiries/${id}/status`, payload);
-//   return res.data;
-// }
-// export function useUpdateInquiry() {
-//   const queryClient = useQueryClient();
-//   const {
-//     mutate: updateInquiryMutate,
-//     error: updateInquiryError,
-//     ...rest
-//   } = useMutation({
-//     mutationFn: ({ id, payload }) => updateInquiryStatus(id, payload),
-//     //얘는 updateUser와 달리 id와 payload를 받으니, 넘겨줄 때도 객체 형태로 id와 payload를 모두 넘겨줘야 함.
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: [ADMIN_INQUIRIES] });
-//     },
-//   });
-//   return { updateInquiryMutate, updateInquiryError, ...rest };
-// }
-// const { updateInquiryMutate, updateInquiryError } = useUpdateInquiry();
-// updateInquiryMutate({
-//   id: inquiryId,
-//   payload: { status: "in_progress" },
-// })
-
-// ? 삭제 가능성 있음 - - - - 관리자 답변 등록 / 수정 - - - -
-// export async function adminInquiriesReply(id, payload) {
-//   const res = await api.post(`/admin/inquiries/${id}/reply`, payload);
-//   return res.data;
-// }
-// export function useAdminInquiriesReply() {
-//   const queryClient = useQueryClient();
-//   const {
-//     mutate: adminInquiriesReplyMutate,
-//     error: adminInquiriesReplyError,
-//     ...rest
-//   } = useMutation({
-//     mutationFn: ({ id, payload }) => adminInquiriesReply(id, payload),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: [ADMIN_INQUIRIES] });
-//     },
-//   });
-//   return { adminInquiriesReplyMutate, adminInquiriesReplyError, ...rest };
-// }
-// const { adminInquiriesMutate, adminInquiriesError } = useAdminInquiriesReply()
-// adminInquiriesMutate({
-//  "id": 3,
-//  "payload": {
-//      "admin_reply": "오류 수정"
-//    }
-//  })

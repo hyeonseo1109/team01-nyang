@@ -39,41 +39,6 @@ export function useLogin() {
 // const { loginMutate, loginError } = useLogin();
 // const handleLoginSubmit =()=> { loginMutate(form) };
 
-// !- - - - 구글 소셜 로그인 - - - -
-export async function socialLogin(payload) {
-  const res = await api.post('/auth/social', payload);
-  return res.data;
-}
-export function useSocialLogin() {
-  const {
-    mutate: socialLoginMutate,
-    error: socialLoginError,
-    ...rest
-  } = useMutation({ mutationFn: socialLogin });
-  return { socialLoginMutate, socialLoginError, ...rest };
-}
-// const { socialLoginMutate, socialLoginError } = useSocialLogin();
-// socialLoginMutate(form)
-
-// !- - - - 토큰 리프레시로 액세스 재발급 (다시 불러오기) - - - -
-export async function refreshToken(payload) {
-  const res = await api.post('/auth/token/refresh', payload);
-  return res.data;
-}
-export function useRefreshToken() {
-  const {
-    mutate: refreshTokenMutate,
-    error: refreshTokenError,
-    ...rest
-  } = useMutation({ mutationFn: refreshToken });
-  return { refreshTokenMutate, refreshTokenError, ...rest };
-}
-// const { refreshTokenMutate, refreshTokenError } = useRefreshToken();
-// const handleRefresh = () => {
-//   const refreshToken = localStorage.getItem("refresh_token");
-//   refreshTokenMutate({ refresh_token: refreshToken });
-// };
-
 // !- - - - 로그아웃(현재 jti 블랙리스트 등록) - - - -
 export async function logout() {
   const res = await api.post('/auth/logout');
