@@ -18,6 +18,7 @@ export function useUsers() {
     data: usersData,
     isLoading: usersIsLoading,
     isError: usersIsError,
+    error: usersError,
     ...rest
   } = useQuery({
     queryKey: [ADMIN_USERS],
@@ -25,7 +26,7 @@ export function useUsers() {
     staleTime: 1000 * 60 * 5,
     // 유저 목록은 자주 바뀌지 않으니 짧게 캐싱해 두었음.
   });
-  return { usersData, usersIsLoading, usersIsError, ...rest };
+  return { usersData, usersIsLoading, usersIsError, usersError, ...rest };
 }
 // const  { usersData, usersIsLoading, usersIsError } = useUsers();   :   전체 목록
 
@@ -48,22 +49,20 @@ export function useUserSearch(search) {
     data: userSearchData,
     isLoading: userSearchIsLoading,
     isError: userSearchIsError,
+    error: userSearchError,
     ...rest
   } = useQuery({
     queryKey: [USER_SEARCH, search],
     queryFn: () => getUserSearch(search),
     enabled: !!search,
   });
-  return { userSearchData, userSearchIsLoading, userSearchIsError, ...rest };
+  return { userSearchData, userSearchIsLoading, userSearchIsError, userSearchError, ...rest };
 }
 //const {userSearchData, userSearchIsLoading, userSearchIsError } = userUserSearch(userId);
 
 // !- - - - 유저 계정 차단 (관리자) - - - -
 export async function updateUser({ user_id, is_active }) {
-  console.log('user_id:', user_id);
-  console.log('is_active:', is_active);
   const res = await api.patch(`/admin/users/${user_id}/status`, {}, { params: { is_active } });
-  console.log('Request URL:', res.config.url);
   return res.data;
 }
 export function useUpdateUser() {

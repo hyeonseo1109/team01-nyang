@@ -23,6 +23,7 @@ export function useNews(category) {
     data: newsData,
     isLoading: newsIsLoading,
     isError: newsIsError,
+    error: newsError,
     ...rest
   } = useQuery({
     queryKey: [NEWS, category],
@@ -30,7 +31,7 @@ export function useNews(category) {
     staleTime: 1000 * 60 * 5,
     //5분 동안은 캐시가 살아있어서, news를 재호출했을 때 캐시를 불러옴.
   });
-  return { newsData, newsIsLoading, newsIsError, ...rest };
+  return { newsData, newsIsLoading, newsIsError, newsError, ...rest };
 }
 // const { newsData, newsIsLoading, newsIsError } = useNews("politics");
 
@@ -44,6 +45,7 @@ export function useQuiz() {
     data: quizData,
     isLoading: quizIsLoading,
     isError: quizIsError,
+    error: quizError,
     refetch,
     ...rest
   } = useQuery({
@@ -51,7 +53,7 @@ export function useQuiz() {
     queryFn: getQuiz,
     //얘는 매번 랜덤으로 새로 문제 뽑아오게 staleTime: 0 기본값으로 두었음.
   });
-  return { quizData, quizIsLoading, quizIsError, refetch, ...rest };
+  return { quizData, quizIsLoading, quizIsError, refetch, quizError, ...rest };
 }
 // const { quizData, quizIsLoading, quizIsError } = useQuiz();
 
@@ -65,6 +67,7 @@ export function useBriefings() {
     data: briefingsData,
     isLoading: briefingsIsLoading,
     isError: briefingsIsError,
+    error: briefingsError,
     ...rest
   } = useQuery({
     queryKey: [BRIEFINGS],
@@ -72,7 +75,7 @@ export function useBriefings() {
     staleTime: 1000 * 60 * 5,
     // 브리핑은 아침/저녁에만 바뀌니까 실시간 반영 필요 없음.
   });
-  return { briefingsData, briefingsIsLoading, briefingsIsError, ...rest };
+  return { briefingsData, briefingsIsLoading, briefingsIsError, briefingsError, ...rest };
 }
 // const { briefingsData, briefingsIsLoading, briefingsIsError } = useBriefings();
 
@@ -86,12 +89,19 @@ export function useConversations() {
     data: conversationsData,
     isLoading: conversationsIsLoading,
     isError: conversationsIsError,
+    error: conversationsError,
     ...rest
   } = useQuery({
     queryKey: [CONVERSATIONS],
     queryFn: getConversations,
   });
-  return { conversationsData, conversationsIsLoading, conversationsIsError, ...rest };
+  return {
+    conversationsData,
+    conversationsIsLoading,
+    conversationsIsError,
+    conversationsError,
+    ...rest,
+  };
 }
 // const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
 
@@ -105,6 +115,7 @@ export function useFortune() {
     data: fortuneData,
     isLoading: fortuneIsLoading,
     isError: fortuneIsError,
+    error: fortuneError,
     ...rest
   } = useQuery({
     queryKey: [FORTUNE],
@@ -113,13 +124,13 @@ export function useFortune() {
     // staleTime: 1000 * 60 * 60 * 12,
     // 오늘의 운세는 하루 단위로 바뀌니 12시간을 고민하였으나, 자정이 지날 때 queryClient.invalidateQueries({queryKey: ["fortune"]})을 해줘야 함. (useEffect로 초기화함수를 Timeout 지정해서..)
   });
-  return { fortuneData, fortuneIsLoading, fortuneIsError, ...rest };
+  return { fortuneData, fortuneIsLoading, fortuneIsError, fortuneError, ...rest };
 }
 // const { fortuneData, fortuneIsLoading, fortuneIsError } = useFortune();
 
 // !- - - - 현재 날씨 조회 - - - -
 export async function getWeather() {
-  const res = await api.get('/weather');
+  const res = await api.get('/weather/');
   return res.data;
 }
 export function useWeather() {
@@ -127,13 +138,14 @@ export function useWeather() {
     data: weatherData,
     isLoading: weatherIsLoading,
     isError: weatherIsError,
+    error: weatherError,
     ...rest
   } = useQuery({
     queryKey: [WEATHER],
     queryFn: getWeather,
     staleTime: 1000 * 60 * 1,
   });
-  return { weatherData, weatherIsLoading, weatherIsError, ...rest };
+  return { weatherData, weatherIsLoading, weatherIsError, weatherError, ...rest };
 }
 // const { weatherData, weatherIsLoading, weatherIsError } = useWeather();
 
@@ -147,32 +159,19 @@ export function useWeatherForecast() {
     data: weatherForecastData,
     isLoading: weatherForecastIsLoading,
     isError: weatherForecastIsError,
+    error: weatherForecastError,
     ...rest
   } = useQuery({
     queryKey: ['weatherForecast'],
     queryFn: getWeatherForecast,
     staleTime: 1000 * 60 * 30,
   });
-  return { weatherForecastData, weatherForecastIsLoading, weatherForecastIsError, ...rest };
+  return {
+    weatherForecastData,
+    weatherForecastIsLoading,
+    weatherForecastIsError,
+    weatherForecastError,
+    ...rest,
+  };
 }
-// const { weatherData, weatherIsLoading, weatherIsError } = useWeather();
-
-//? 삭제 가능성 있음- - - - 5일 날씨 예보 조회 - - - -
-// export async function getWeatherForecast() {
-//   const res = await api.get('/weather/forecast');
-//   return res.data;
-// }
-// export function useWeatherForecast() {
-//   const {
-//     data: weatherForecastData,
-//     isLoading: weatherForecastIsLoading,
-//     isError: weatherForecastIsError,
-//     ...rest
-//   } = useQuery({
-//     queryKey: ['weatherForecast'],
-//     queryFn: getWeatherForecast,
-//     staleTime: 1000 * 60 * 30,
-//   });
-//   return { weatherForecastData, weatherForecastIsLoading, weatherForecastIsError, ...rest };
-// }
 // const { weatherForecastData, weatherForecastIsLoading, weatherForecastIsError } = useWeather();
