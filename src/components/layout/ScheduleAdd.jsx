@@ -9,7 +9,7 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
             <div key={item.id} className="border-b border-[#555] pb-3 w-full">
               <div className="flex flex-col justify-center items-center gap-[-2rem] w-full">
                 {/* 날짜묶음 */}
-                <div className="flex lg:flex-row flex-col opacity-70">
+                <div className="flex lg:flex-row flex-col text-white">
                   {/* 시작 날짜/시간 */}
                   <div className="flex gap-2 items-center text-[0.8rem]">
                     <span className="font-medium whitespace-nowrap">
@@ -51,10 +51,10 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
                 </div>
 
                 {/* 제목 */}
-                <span className="flex justify-center mt-1">{item.title}</span>
+                <span className="flex justify-center mt-1 font-semibold">{item.title}</span>
 
                 {/* 메모 */}
-                {item.memo && <span className="text-[#1b4567] text-mt">{item.memo}</span>}
+                {item.memo && <span className="text-[#888] text-xs">{item.memo}</span>}
               </div>
 
               {/* 수정/삭제 버튼 */}
