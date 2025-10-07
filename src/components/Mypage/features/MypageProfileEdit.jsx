@@ -18,7 +18,7 @@ export default function MypageProfileEdit({ me, onChange, onLogout, onNotify }) 
   useEffect(() => {
     if (me) {
       setUsername(me.username || '');
-      setBirthdate(me.birthdate || '');
+      setBirthdate(me.birthday || '');
       setProfileImage(me.profile_image || '');
     }
   }, [me]);
