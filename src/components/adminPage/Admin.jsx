@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '../ui/Button';
 import { Input } from '../ui/Input';
 import { IoSearch } from 'react-icons/io5';
@@ -30,8 +30,6 @@ export default function Admin() {
             (u) => new Date(u.last_login_at) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
           )
         : baseData;
-
-  useEffect(() => {});
 
   const tableHead = [
     'id',
