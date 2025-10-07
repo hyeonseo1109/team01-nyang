@@ -1,6 +1,11 @@
 import Label from './common/Label';
+import { useDeleteMyAccount } from '../../api/users';
+import { useLogout } from '../../api/auth';
 
 export default function Leave({ onCancel }) {
+  const { deleteMyAccountMutate } = useDeleteMyAccount();
+  const { logoutMutate } = useLogout();
+
   return (
     <div className="space-y-3">
       <Label>회원탈퇴</Label>
@@ -14,7 +19,12 @@ export default function Leave({ onCancel }) {
         <button
           type="button"
           onClick={() => {
-            window.location.href = 'http://localhost:5173/';
+            deleteMyAccountMutate(undefined, {
+              onSettled: () => {
+                logoutMutate();
+                window.location.href = '/';
+              },
+            });
           }}
         >
           확인
