@@ -52,15 +52,15 @@ export default function AdminMypage() {
         >
           ✕
         </button>
-        <div className="flex flex-col justify-start items-center h-full gap-5">
+        <div className="flex flex-col justify-start items-center h-full gap-5 w-full">
           <div className="text-2xl font-bold w-full justify-center flex pt-3">관리자 페이지</div>
-          <div className="flex gap-4 w-full items-center border-t border-b py-3 border-[#444]">
+          <div className="flex gap-4 w-full items-center border-t border-b py-3 border-[#444] lg:flex-row flex-col">
             <img
               className="w-20 h-20 border rounded-[50%] border-gray-600 aspect-[1/1]"
               src="/adminProfile.png"
               alt="관리자 아바타" //추가
             />
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full lg:items-start items-center">
               <p className="text-[1.2rem] font-bold">관리자님 ㅎㅇ?</p>
               <p className="text-[0.9rem] text-[#999]">{user.email}</p>
             </div>

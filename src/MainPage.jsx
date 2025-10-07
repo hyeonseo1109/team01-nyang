@@ -5,7 +5,6 @@ import AdminMypage from './components/adminPage/AdminMypage';
 import { useOpenAdminPage } from './store/useOpenAdminPage';
 import { useOpenAdminDashboard } from './store/useOpenAdminDashboard';
 import { useMainPage } from './store/useMainPage';
-import Admin from './components/adminPage/Admin';
 import TodayWeather from './components/weather/TodayWeather';
 import FiveDayWeather from './components/weather/FiveDayWeather';
 import TodayFortune from './components/TodayFortune';
@@ -22,7 +21,7 @@ import { AdminNewUpdate } from './components/adminPage/AdminNewUpdate';
 import GlareEffect from './components/GlareEffect';
 import AnalogClock from './components/AnalogClock';
 import { useUser } from './store/useUser';
-// import AnalogClock from './components/AnalogClock';
+import Admin from './components/adminPage/Admin';
 
 export default function MainPage() {
   const { openAdminPage, setOpenAdminPage } = useOpenAdminPage();
@@ -80,7 +79,7 @@ export default function MainPage() {
               {/* 본문 윗부분 왼오 */}
               <div className="grid grid-cols-[3fr_2fr] gap-4 min-h-0 min-w-0">
                 {/* 본문 윗부분 왼 */}
-                <div className="bg-[#22222295] shadow-3d rounded-lg p-6 flex flex-col overflow-y-auto min-w-0">
+                <div className="bg-[#22222295] shadow-3d rounded-lg p-6 flex flex-col overflow-y-auto custom-scroll min-w-0">
                   {openAdminDashboard ? <AdminNewUpdate /> : <News />}
                 </div>
 

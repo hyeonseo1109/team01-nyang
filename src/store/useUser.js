@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { getMyProfile } from '../api/users';
 import { queryClient } from '../queryClient';
+import { useOpenMyPage } from './useOpenMypage';
+import { useOpenAdminPage } from './useOpenAdminPage';
+import { useMainPage } from './useMainPage';
+import { useOpenAdminDashboard } from './useOpenAdminDashboard';
 
 export const useUser = create((set) => ({
   user: null,
@@ -22,5 +26,11 @@ export const useUser = create((set) => ({
     }
   },
 
-  clearUser: () => set({ user: null }),
+  clearUser: () => {
+    set({ user: null });
+    useOpenMyPage.getState().setOpenMyPage(false);
+    useOpenAdminPage.getState().setOpenAdminPage(false);
+    useMainPage.getState().setPageMode('main');
+    useOpenAdminDashboard.getState().setOpenAdminDashboard(false);
+  },
 }));
