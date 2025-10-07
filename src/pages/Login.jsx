@@ -76,8 +76,8 @@ export function Login() {
 
   const footer = () => {
     return (
-      <div>
-        <div className="buttons flex flex-col buttons w-full gap-2 pt-3">
+      <div className="buttons flex flex-col w-full pt-3">
+        <div className="flex flex-col gap-2">
           <LoginButton
             type="submit"
             variant={onButton ? 'common' : 'cancel'}
@@ -158,7 +158,7 @@ export function Login() {
           />
         </form>
       </LoginModal>
-      <LoginModal openModal={isModal} title={modal} footer={close()}></LoginModal>
+      <LoginModal openModal={isModal} title={modal} popup={true} footer={close()}></LoginModal>
     </div>
   );
 }

@@ -69,7 +69,7 @@ export function PwConfirm() {
         setIsModal(true);
         setIsInput(false);
         setIsEmail(true);
-        setTimeout(() => setIsModal(false), 1000);
+        setTimeout(() => setIsModal(false), 2000);
       },
       onError: (error) => {
         setModal(error.response?.data?.detail || '이메일 확인 중 오류가 발생했습니다.');
@@ -84,7 +84,7 @@ export function PwConfirm() {
 
   const footer = () => {
     return (
-      <div className="flex flex-col buttons w-full gap-2 pt-3">
+      <div className="flex flex-col w-full gap-2 pt-3">
         <LoginButton
           type="submit"
           variant={onButton ? 'common' : 'cancel'}
@@ -193,7 +193,7 @@ export function PwConfirm() {
         </form>
       </LoginModal>
 
-      <LoginModal openModal={isModal} title={modal} footer={close()}></LoginModal>
+      <LoginModal openModal={isModal} title={modal} popup={true} footer={close()}></LoginModal>
     </div>
   );
 }

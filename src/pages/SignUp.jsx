@@ -138,7 +138,7 @@ export function SignUp() {
 
   const footer = () => {
     return (
-      <div className="flex flex-col buttons w-full gap-2 pt-6">
+      <div className="flex flex-col w-full gap-2 pt-6">
         <LoginButton
           type="submit"
           variant={onButton ? 'common' : 'cancel'}
@@ -228,7 +228,7 @@ export function SignUp() {
               value={emailCode}
               onChange={(e) => {
                 setEmailCode(e.target.value);
-              }} //state 업데이트
+              }}
               disabled={isCodeInput}
             />
             <button
@@ -346,7 +346,13 @@ export function SignUp() {
         </form>
       </LoginModal>
 
-      <LoginModal openModal={isModal} title={modal === 'consent' ? '' : modal} footer={close()}>
+      <LoginModal
+        openModal={isModal}
+        title={modal === 'consent' ? '' : modal}
+        popup={true}
+        modal={modal}
+        footer={close()}
+      >
         {modal === 'consent' ? (
           <>
             <h1 className="text-neutral-300 text-[20px] pb-7 font-bold">{CONTENT.title}</h1>
