@@ -35,7 +35,7 @@ export default function MainPage() {
   const handleBackToMain = () => setPageMode('main');
 
   const CONTENT_MAP = {
-    admin: <Admin />,
+    ...(isSuper && { admin: <Admin /> }),
     five: (
       <>
         <div className="absolute top-2 right-2">
@@ -80,12 +80,12 @@ export default function MainPage() {
               <div className="grid grid-cols-[3fr_2fr] gap-4 min-h-0 min-w-0">
                 {/* 본문 윗부분 왼 */}
                 <div className="bg-[#22222295] shadow-3d rounded-lg p-6 flex flex-col overflow-y-auto custom-scroll min-w-0">
-                  {openAdminDashboard ? <AdminNewUpdate /> : <News />}
+                  {isSuper && openAdminDashboard ? <AdminNewUpdate /> : <News />}
                 </div>
 
                 {/* 본문 윗부분 오 */}
                 <div className="flex items-center justify-center rounded-lg bg-[#22222295] shadow-3d p-6 overflow-y-auto min-w-0 custom-scroll">
-                  {openAdminDashboard ? <AdminInquiries /> : <TodayWeather />}
+                  {isSuper && openAdminDashboard ? <AdminInquiries /> : <TodayWeather />}
                 </div>
               </div>
 
@@ -145,7 +145,9 @@ export default function MainPage() {
                 </div>
               )}
               <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
-              <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
+              {isSuper && (
+                <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
+              )}
             </div>
           </div>
         </div>

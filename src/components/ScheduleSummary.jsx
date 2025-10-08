@@ -17,9 +17,9 @@ export default function ScheduleSummary() {
     return () => clearInterval(timer);
   }, []);
 
-  // useEffect(() => {
-  //   console.log(conversationsData);
-  // }, [conversationsData]);
+  useEffect(() => {
+    console.log(conversationsData);
+  }, [conversationsData]);
 
   return (
     <>

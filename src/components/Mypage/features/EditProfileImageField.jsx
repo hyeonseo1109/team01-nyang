@@ -14,11 +14,16 @@ export default function EditProfileImageField({ value, onPreview, onApply, savin
 
   const handleFile = (e) => {
     const file = e.target.files?.[0] ?? null;
+    // file = { name: 'cat.png', type: 'image/png', size: 12345 }
+    console.log('전체 File 객체:', file);
+    console.log('파일명:', file.name);
+    console.log('타입:', file.type);
+    console.log('크기:', file.size);
     if (!file) return;
 
+    setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
-    setSelectedFile(file);
     onPreview?.(url);
   };
 
