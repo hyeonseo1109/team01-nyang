@@ -5,73 +5,79 @@ export default function ScheduleAdd({ list, onDelete, onEdit }) {
         <p className="text-[#555] text-center py-4">등록된 일정이 없습니다.</p>
       ) : (
         <div className="overflow-y-auto custom-scroll space-y-2 flex-1 min-h-0">
-          {list.map((item) => (
-            <div key={item.id} className="border-b border-[#555] pb-3 w-full">
-              <div className="flex flex-col justify-center items-center gap-[-2rem] w-full">
-                {/* 날짜묶음 */}
-                <div className="flex lg:flex-row flex-col text-white">
-                  {/* 시작 날짜/시간 */}
-                  <div className="flex gap-2 items-center text-[0.8rem]">
-                    <span className="font-medium whitespace-nowrap">
-                      {item.dateStart &&
-                        new Date(item.dateStart)
-                          .toLocaleDateString('ko-KR', {
-                            month: 'numeric',
-                            day: 'numeric',
-                          })
-                          .replace(/. /, '/')
-                          .slice(0, -1)}
-                    </span>
-                    {!item.all_day && item.timeStart && (
-                      <span className="whitespace-nowrap">{item.timeStart}</span>
+          {list.map((item) => {
+            const isDifferentDate = item.dateStart !== item.dateEnd;
+            const isDifferentTime = !item.all_day && item.timeStart !== item.timeEnd;
+            const showEndTime = isDifferentDate || isDifferentTime;
+            
+            return (
+              <div key={item.id} className="border-b border-[#555] pb-3 w-full">
+                <div className="flex flex-col justify-center items-center gap-[-2rem] w-full">
+                  {/* 날짜묶음 */}
+                  <div className="flex lg:flex-row flex-col text-white">
+                    {/* 시작 날짜/시간 */}
+                    <div className="flex gap-2 items-center text-[0.8rem]">
+                      <span className="font-medium whitespace-nowrap">
+                        {item.dateStart &&
+                          new Date(item.dateStart)
+                            .toLocaleDateString('ko-KR', {
+                              month: 'numeric',
+                              day: 'numeric',
+                            })
+                            .replace(/. /, '/')
+                            .slice(0, -1)}
+                      </span>
+                      {!item.all_day && item.timeStart && (
+                        <span className="whitespace-nowrap">{item.timeStart}</span>
+                      )}
+                    </div>
+                    {showEndTime && (
+                      <>
+                        <div className="text-center font-semibold text-[0.8rem] mx-1">~</div>
+                        <div className="flex gap-2 items-center">
+                          {item.dateStart !== item.dateEnd && (
+                            <span className="font-medium whitespace-nowrap text-[0.8rem]">
+                              {item.dateEnd &&
+                                new Date(item.dateEnd)
+                                  .toLocaleDateString('ko-KR', {
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                  })
+                                  .replace(/. /, '/')
+                                  .slice(0, -1)}
+                            </span>
+                          )}
+                          {!item.all_day && item.timeEnd && (
+                            <span className="whitespace-nowrap text-[0.8rem]">{item.timeEnd}</span>
+                          )}
+                        </div>
+                      </>
                     )}
                   </div>
-                  {(item.dateStart !== item.dateEnd || !item.all_day) && (
-                    <>
-                      <div className="text-center font-semibold text-[0.8rem] mx-1">~</div>
-                      <div className="flex gap-2 items-center">
-                        {item.dateStart !== item.dateEnd && (
-                          <span className="font-medium whitespace-nowrap text-[0.8rem]">
-                            {item.dateEnd &&
-                              new Date(item.dateEnd)
-                                .toLocaleDateString('ko-KR', {
-                                  month: 'numeric',
-                                  day: 'numeric',
-                                })
-                                .replace(/. /, '/')
-                                .slice(0, -1)}
-                          </span>
-                        )}
-                        {!item.all_day && item.timeEnd && (
-                          <span className="whitespace-nowrap text-[0.8rem]">{item.timeEnd}</span>
-                        )}
-                      </div>
-                    </>
-                  )}
+
+                  {/* 제목 */}
+                  <span className="flex justify-center mt-1 text-white font-semibold">{item.title}</span>
+
+                  {/* 메모 */}
+                  {item.memo && <span className="text-[#888] text-xs">{item.memo}</span>}
                 </div>
 
-                {/* 제목 */}
-                <span className="flex justify-center mt-1 font-semibold">{item.title}</span>
-
-                {/* 메모 */}
-                {item.memo && <span className="text-[#888] text-xs">{item.memo}</span>}
+                {/* 수정/삭제 버튼 */}
+                <div className="text-xs flex justify-center mt-2 font-semibold text-[#888]">
+                  <button
+                    onClick={() => onEdit(item)}
+                    className="hover:text-[#1b4567] mr-3"
+                  >
+                    수정
+                  </button>
+                  <span className="mr-3">/</span>
+                  <button onClick={() => onDelete(item.id)} className="hover:text-red-700">
+                    삭제
+                  </button>
+                </div>
               </div>
-
-              {/* 수정/삭제 버튼 */}
-              <div className="text-xs flex justify-center mt-2 font-semibold text-[#888]">
-                <button
-                  onClick={() => onEdit(item)}
-                  className="hover:text-[#1b4567] mr-3"
-                >
-                  수정
-                </button>
-                <span className="mr-3">/</span>
-                <button onClick={() => onDelete(item.id)} className="hover:text-red-700">
-                  삭제
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
