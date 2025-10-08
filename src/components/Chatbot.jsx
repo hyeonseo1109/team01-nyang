@@ -11,21 +11,28 @@ export default function Chatbot() {
     error: schedulesError,
   } = useSchedules();
 
-  const { todoData = [], todoIsLoading, todoIsError, error: todosError } = useTodos();
+  const {
+    todoData = { todos: [], total: 0 },
+    todoIsLoading,
+    todoIsError,
+    error: todosError,
+  } = useTodos();
 
   const { toggleTodoCompleteMutate } = useToggleTodoComplete();
-
   const { briefingsData } = useBriefings();
 
   const today = dayjs().format('YYYY-MM-DD');
 
-  const todaySchedules = schedulesData.filter((item) =>
-    dayjs(today).isBetween(item.start_time, item.end_time, 'day', '[]'),
-  );
+  const todaySchedules =
+    schedulesData?.schedules?.filter((item) =>
+      dayjs(today).isBetween(item.start_time, item.end_time, 'day', '[]'),
+    ) || [];
+
+  const todos = Array.isArray(todoData?.todos) ? todoData.todos : [];
 
   const sortedTodos = [
-    ...todoData.filter((t) => !t.is_completed),
-    ...todoData.filter((t) => t.is_completed),
+    ...todos.filter((t) => !t.is_completed),
+    ...todos.filter((t) => t.is_completed),
   ];
 
   const toggleTodo = (id) => {
@@ -82,7 +89,7 @@ export default function Chatbot() {
                   type="checkbox"
                   checked={item.is_completed}
                   onChange={() => toggleTodo(item.id)}
-                  className="w-5 h-5 accent-[#2d5b81]"
+                  className="w-5 h-5"
                 />
                 <label
                   htmlFor={`todo-${item.id}`}
