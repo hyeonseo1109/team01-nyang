@@ -98,35 +98,35 @@ export default function PasswordChangeBox() {
           <div className="font-semibold text-white">비밀번호 변경</div>
 
           <div className="grid gap-2">
-            <div className="pw-wrap">
+            <div className="pw-wrap [&_.text-\\[12px\\].mt-1.select-none]:hidden">
               <LoginInputPassword
                 placeholder="현재 비밀번호"
                 value={curPw}
                 onChange={(e) => setCurPw(e.target.value)}
                 onBlur={() => setErrCur(validateCur(curPw))}
-                error={errCur}
+                error={errCur || ' '}
                 disabled={savingPw}
               />
             </div>
 
-            <div className="pw-wrap">
+            <div className="pw-wrap [&_.text-\\[12px\\].mt-1.select-none]:hidden">
               <LoginInputPassword
                 placeholder="새로운 비밀번호"
                 value={newPw}
                 onChange={(e) => setNewPw(e.target.value)}
                 onBlur={() => setErrNew(validateNew(newPw))}
-                error={errNew}
+                error={errNew || ' '}
                 disabled={savingPw}
               />
             </div>
 
-            <div className="flex-1 pw-wrap">
+            <div className="flex-1 pw-wrap [&_.text-\\[12px\\].mt-1.select-none]:hidden">
               <LoginInputPassword
                 placeholder="새로운 비밀번호 확인"
                 value={newPw2}
                 onChange={(e) => setNewPw2(e.target.value)}
                 onBlur={() => setErrNew2(validateNew2(newPw2))}
-                error={errNew2}
+                error={errNew2 || ' '}
                 disabled={savingPw}
               />
             </div>
