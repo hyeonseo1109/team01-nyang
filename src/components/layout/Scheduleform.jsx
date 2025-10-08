@@ -43,28 +43,27 @@ export default function ScheduleForm({
   const handleAdd = (e) => {
     e.preventDefault();
 
-    const { dateStart, timeStart, dateEnd, timeEnd, title, memo } = form;
+    const { dateStart, timeStart, dateEnd, timeEnd, title } = form;
 
     if (!dateStart || !title) {
-      setErrors('시작 날짜와 제목은 필수입니다.');
+      setErrors("시작 날짜와 제목은 필수입니다.");
       return;
     }
 
     const finalDateEnd = dateEnd || dateStart;
-    const isAllDayInput = !timeStart && !timeEnd;
+    const hasTimeStart = timeStart && timeStart.trim() !== '';
+    const hasTimeEnd = timeEnd && timeEnd.trim() !== '';
+    const isAllDayInput = !hasTimeStart && !hasTimeEnd;
 
     if (!isAllDayInput) {
-      if (!timeStart || !timeEnd) {
-        setErrors('시작/종료 시간을 모두 입력해주세요.');
-        return;
-      }
+      if (hasTimeStart && hasTimeEnd) {
+        const start_time = toISO(dateStart, timeStart);
+        const end_time = toISO(finalDateEnd, timeEnd);
 
-      const start_time = toISO(dateStart, timeStart);
-      const end_time = toISO(finalDateEnd, timeEnd); // 변경: finalDateEnd 사용
-
-      if (new Date(start_time) >= new Date(end_time)) {
-        setErrors('종료시간은 시작시간보다 뒤여야 합니다.');
-        return;
+        if (new Date(start_time) >= new Date(end_time)) {
+          setErrors("종료시간은 시작시간보다 뒤여야 합니다.");
+          return;
+        }
       }
     }
 
@@ -83,13 +82,11 @@ export default function ScheduleForm({
         <VscChromeClose />
       </button>
 
-      {/* 일정 리스트 */}
       <div className="flex-1 overflow-hidden flex flex-col min-h-0">
         <div className="text-center py-2 font-semibold mb-2">
           {isEditing ? '일정 수정' : '일정 리스트'}
         </div>
 
-        {/* 날짜 필터 */}
         <div className="px-2 mb-2 flex gap-2 items-center lg:flex-row flex-col flex-shrink-0">
           <input
             type="date"
@@ -121,7 +118,6 @@ export default function ScheduleForm({
 
       <form onSubmit={handleAdd} className="space-y-3 flex-shrink-0">
         <div className="text-center py-2 font-semibold">일정추가</div>
-        {/* 시작 날짜/시간 */}
         <div className="space-y-1">
           <label className="text-sm font-medium">시작</label>
           <div className="grid grid-cols-2 gap-2">

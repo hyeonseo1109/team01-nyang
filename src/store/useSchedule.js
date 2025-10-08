@@ -42,12 +42,19 @@ export const useSchedule = create((set, get) => ({
         start_time = toISO(src.dateStart, "00:00");
         end_time = toISO(finalDateEnd, "23:59");
       } else {
-        if (!hasTimeStart || !hasTimeEnd) return state;
+        let useStartTime = src.timeStart;
+        let useEndTime = src.timeEnd;
         
-        start_time = toISO(src.dateStart, src.timeStart);
-        end_time = toISO(finalDateEnd, src.timeEnd);
+        if (!hasTimeEnd && hasTimeStart) {
+          useEndTime = src.timeStart;
+        }
         
-        if (new Date(start_time) >= new Date(end_time)) return state;
+        start_time = toISO(src.dateStart, useStartTime);
+        end_time = toISO(finalDateEnd, useEndTime);
+        
+        if (hasTimeStart && hasTimeEnd) {
+          if (new Date(start_time) >= new Date(end_time)) return state;
+        }
       }
 
       const base = {
@@ -55,8 +62,9 @@ export const useSchedule = create((set, get) => ({
         memo: src.memo || "",
         dateStart: src.dateStart,
         dateEnd: finalDateEnd,
-        timeStart: isAllDay ? "" : src.timeStart,
-        timeEnd: isAllDay ? "" : src.timeEnd,
+        timeStart: isAllDay ? "" : (src.timeStart || ""),
+        timeEnd: isAllDay ? "" : (src.timeEnd || src.timeStart || ""),
+        start_time,
         end_time,
         all_day: isAllDay,
       };
@@ -86,23 +94,14 @@ export const useSchedule = create((set, get) => ({
 
   startEdit: (item) =>
     set(() => {
-      const st = new Date(item.start_time);
-      const et = new Date(item.end_time);
-      const pad = (n) => String(n).padStart(2, "0");
-
-      const dateStart = `${st.getFullYear()}-${pad(st.getMonth() + 1)}-${pad(st.getDate())}`;
-      const timeStart = `${pad(st.getHours())}:${pad(st.getMinutes())}`;
-      const dateEnd = `${et.getFullYear()}-${pad(et.getMonth() + 1)}-${pad(et.getDate())}`;
-      const timeEnd = `${pad(et.getHours())}:${pad(et.getMinutes())}`;
-
       return {
         form: {
-          dateStart,
-          timeStart: item.all_day ? "" : timeStart,
-          dateEnd,
-          timeEnd: item.all_day ? "" : timeEnd,
+          dateStart: item.dateStart,
+          timeStart: item.all_day ? "" : item.timeStart,
+          dateEnd: item.all_day ? "" : item.dateEnd,
+          timeEnd: item.all_day ? "" : item.timeEnd,
           title: item.title,
-          memo: item.memo ?? "",
+          memo: item.memo || "",
         },
         isEditing: true,
         editingId: item.id,
