@@ -1,20 +1,35 @@
-// src/Mypage/features/EditProfileImageField.jsx
+import { getPresignedUrl, uploadToS3 } from '../../../api/presignedURL';
+import { updateProfileImage } from '../../../api/users';
+import { useState } from 'react';
 import Label from '../common/Label';
 
-export default function EditProfileImageField({
-  value,
-  onChangeValue,
-  onPreview,
-  onApply,
-  saving,
-}) {
-  function handleFile(e) {
+export default function EditProfileImageField({ value, onPreview, onApply, saving }) {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+
+  const handleFile = (e) => {
     const file = e.target.files?.[0] ?? null;
     if (!file) return;
+
     const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    setSelectedFile(file);
     onPreview?.(url);
-    onChangeValue(url);
-  }
+  };
+
+  const handleApply = async () => {
+    if (!selectedFile) return;
+
+    try {
+      const { upload_url, file_url } = await getPresignedUrl(selectedFile.name, selectedFile.type);
+      await uploadToS3(upload_url, selectedFile);
+      await updateProfileImage(file_url);
+      onApply?.(file_url);
+    } catch (e) {
+      console.error('업로드 실패:', e);
+      alert('업로드에 실패했습니다.');
+    }
+  };
 
   return (
     <div className="rounded-xl border border-white/10 p-4 space-y-2 overflow-x-hidden">
@@ -22,10 +37,10 @@ export default function EditProfileImageField({
 
       <div className="flex flex-wrap items-center gap-2">
         <input
-          className="input min-w-0 flex-1"
-          value={value}
+          className="input flex-1 min-w-0"
+          value={value || previewUrl}
           placeholder="https://..."
-          onChange={(e) => onChangeValue(e.target.value)}
+          readOnly
         />
       </div>
 
@@ -43,7 +58,7 @@ export default function EditProfileImageField({
 
         <button
           className="btn inline-flex items-center h-10 px-4 whitespace-nowrap cursor-pointer max-w-full"
-          onClick={onApply}
+          onClick={handleApply}
           disabled={saving}
         >
           적용

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import EditNicknameField from './EditNicknameField';
 import EditBirthdateField from './EditBirthdateField';
 import EditProfileImageField from './EditProfileImageField';
-import Leave from '../Leave';
 
 import { useUpdateMyProfile, useDeleteMyAccount } from '../../../api/users';
 import { useUser } from '../../../store/useUser';
@@ -18,7 +17,7 @@ export default function MypageProfileEdit({ me, onChange, onNotify }) {
   const [profileImage, setProfileImage] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
 
-  const [showLeave, setShowLeave] = useState(false);
+  const [_, setShowLeave] = useState(false);
 
   useEffect(() => {
     if (me) {
@@ -62,23 +61,29 @@ export default function MypageProfileEdit({ me, onChange, onNotify }) {
   };
 
   const applyNickname = () => safeUpdate({ username }, '닉네임이 적용되었습니다.');
-  const applyBirthdate = () => safeUpdate({ birthday: birthdate }, '생년월일이 적용되었습니다.');
-  const applyImage = () => safeUpdate({ profile_image: profileImage }, '이미지가 적용되었습니다.');
+  const applyBirthdate = () => safeUpdate({ birthdate }, '생년월일이 적용되었습니다.');
 
-  if (showLeave) {
-    return (
-      <div className="text-white">
-        <Leave onCancel={() => setShowLeave(false)} />
-      </div>
-    );
-  }
+  const handleImageApplied = (newImageUrl) => {
+    setProfileImage(newImageUrl); // state 업데이트
+    if (onChange) {
+      // 전체 user 객체 업데이트
+      onChange({ ...me, profile_image: newImageUrl });
+    }
+    if (onNotify) {
+      onNotify('프로필 이미지가 변경되었습니다.', '완료');
+    }
+  };
+
+  const handleImagePreview = (previewUrl) => {
+    setProfileImage(previewUrl); // 임시로 미리보기 표시
+  };
 
   return (
     <div className="space-y-2 text-white">
       <EditProfileImageField
         value={profileImage}
-        onChangeValue={setProfileImage}
-        onApply={applyImage}
+        onPreview={handleImagePreview}
+        onApply={handleImageApplied}
         saving={savingProfile}
       />
 

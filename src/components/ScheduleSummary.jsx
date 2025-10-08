@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-// import { useConversations } from '../api/external';
-import { conversationsData } from '../api/dummyData/dummySummary';
+import { useConversations } from '../api/external';
+// import { conversationsData } from '../api/dummyData/dummySummary';
 
 export default function ScheduleSummary() {
-  // const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
+  const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
   // api 현재 500에러, 복구 시 윗 줄 주석 해제, 아래 두 줄 삭제
-  const [conversationsIsLoading] = useState(false);
-  const [conversationsIsError] = useState(false);
+  // const [conversationsIsLoading] = useState(false);
+  // const [conversationsIsError] = useState(false);
 
   const [page, setPage] = useState(0);
 
@@ -16,6 +16,10 @@ export default function ScheduleSummary() {
     }, 7000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    console.log(conversationsData);
+  }, [conversationsData]);
 
   return (
     <>
