@@ -1,6 +1,25 @@
 import Label from './common/Label';
+import { useDeleteMyAccount } from '../../api/users';
+import { useLogout } from '../../api/auth';
 
 export default function Leave({ onCancel }) {
+  const { deleteMyAccountMutate } = useDeleteMyAccount();
+  const { logoutMutate } = useLogout();
+
+  const onConfirm = () => {
+    // 성공시에만 로그아웃 → /signup
+    deleteMyAccountMutate(undefined, {
+      onSuccess: () => {
+        logoutMutate(undefined, {
+          onSettled: () => window.location.replace('/signup'),
+        });
+      },
+      onError: (err) => {
+        alert(err?.response?.data?.message || err?.message || '탈퇴 실패');
+      },
+    });
+  };
+
   return (
     <div className="space-y-3">
       <Label>회원탈퇴</Label>
@@ -11,12 +30,7 @@ export default function Leave({ onCancel }) {
         <button className="btn-secondary" onClick={onCancel}>
           취소
         </button>
-        <button
-          type="button"
-          onClick={() => {
-            window.location.href = 'http://localhost:5173/';
-          }}
-        >
+        <button type="button" onClick={onConfirm}>
           확인
         </button>
       </div>

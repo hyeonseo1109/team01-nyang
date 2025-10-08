@@ -6,6 +6,9 @@ export default function TicketCard({
   expandedId,
   setExpandedId,
 
+  isAdmin = false,
+  onDeleteTicket,
+
   editingId,
   editTitle,
   editBody,
@@ -21,7 +24,13 @@ export default function TicketCard({
 }) {
   const isOpen = expandedId === ticket.id;
   const isEditing = editingId === ticket.id;
-  const isPending = ticket?.status === '처리중';
+  const STATUS_LABEL = { pending: '처리중', resolved: '완료' };
+  const status = ticket?.status ?? '';
+  const statusLabel = STATUS_LABEL[status] ?? status;
+  const isPending = ticket?.status === 'pending';
+  const canUserEdit = !isReplyTab && isPending;
+  const canUserDelete = !isReplyTab && isPending;
+  const canAdminDelete = !!isAdmin || !!isReplyTab; // 관리자 탭이면 항상 삭제 가능
 
   const resultText = ticket.answer ?? '완료된 문의입니다.';
   const replyPlaceholder = '사용자에게 보낼 답변을 입력하세요.'; // 완료건은 입력창 자체를 렌더하지 않음
@@ -53,12 +62,36 @@ export default function TicketCard({
       >
         <div className="flex items-baseline justify-between gap-3">
           <div className="text-sm font-semibold">
-            [{ticket.status}] {titleText}
+            [{statusLabel}] {titleText}
           </div>
           <div className="text-xs shrink-0">{ticket.time}</div>
         </div>
         <div className="text-sm mt-1 line-clamp-2 ">{bodyText}</div>
       </button>
+
+      {(canUserEdit || canUserDelete || canAdminDelete) && (
+        <div className="mt-2 flex justify-end gap-3">
+          {canUserEdit && (
+            <button
+              className="text-xs underline"
+              onClick={() => {
+                if (!isOpen) setExpandedId(ticket.id);
+                startEdit(ticket);
+              }}
+            >
+              수정
+            </button>
+          )}
+          {(canUserDelete || canAdminDelete) && (
+            <button
+              className="text-xs underline text-red-400"
+              onClick={() => onDeleteTicket && onDeleteTicket(ticket)}
+            >
+              삭제
+            </button>
+          )}
+        </div>
+      )}
 
       {/* 바디 */}
       <div
@@ -113,22 +146,8 @@ export default function TicketCard({
                     영업시간은 <b>09:00 ~ 18:00</b> 입니다. 조금만 기다려주세요.
                   </div>
 
-                  {!isReplyTab && (
-                    <div className="mt-3 flex justify-end">
-                      <button
-                        className="text-xs underline"
-                        onClick={() => {
-                          if (!isOpen) setExpandedId(ticket.id);
-                          startEdit(ticket);
-                        }}
-                      >
-                        수정
-                      </button>
-                    </div>
-                  )}
-
                   {/* 관리자 답변 영역: 패널 내부에 있어 패널 닫히면 같이 숨김 */}
-                  {isReplyTab && (
+                  {isAdmin && isReplyTab && (
                     <div className="mt-3 p-3 border rounded bg-neutral-900 border-white/10">
                       <div className="text-xs mb-2">관리자 답변</div>
                       <textarea
@@ -144,7 +163,7 @@ export default function TicketCard({
                         onKeyDown={(event) => {
                           if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
                             const trimmed = (replyDrafts[ticket.id] ?? '').trim();
-                            if (trimmed) submitReply(ticket);
+                            if (trimmed) submitReply(ticket.id);
                           }
                         }}
                       />
@@ -160,7 +179,7 @@ export default function TicketCard({
                           type="button"
                           className="btn"
                           disabled={!(replyDrafts[ticket.id] ?? '').trim()}
-                          onClick={() => submitReply(ticket)}
+                          onClick={() => submitReply(ticket.id)}
                         >
                           확인
                         </button>

@@ -1,6 +1,6 @@
 // src/components/Mypage/Mypage.jsx
 import { useEffect, useMemo, useState } from 'react';
-import { getMeMock, updateMeMock } from '../../mockData';
+import { useGetMyProfile, useUpdateMyProfile } from '../../api/users';
 
 import MypageHeaderBar from './features/MypageHeaderBar';
 import MypageMain from './features/MypageMain';
@@ -12,7 +12,8 @@ import Contact from './Contact/Contact';
 import { useTicketsStore } from '../../store/useTicketsStore';
 
 export default function MyPage({ open, onClose }) {
-  const [me, setMe] = useState(null);
+  const { getMyProfileData } = useGetMyProfile();
+  const me = getMyProfileData;
   const [mode, setMode] = useState('main'); // 'main' | 'profile' | 'password' | 'leave'
 
   // 공통 알림 모달
@@ -62,24 +63,12 @@ export default function MyPage({ open, onClose }) {
   }
 
   useEffect(() => {
-    if (!open) return;
-    let mounted = true;
-    (async () => {
-      const data = await getMeMock();
-      if (mounted) setMe(data);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [open]);
-
-  useEffect(() => {
     if (!open) setMode('main');
   }, [open]);
 
-  async function handleChangeProfile(patch) {
-    const next = await updateMeMock(patch);
-    setMe(next);
+  const { updateMyProfileMutate } = useUpdateMyProfile();
+  function handleChangeProfile(patch) {
+    updateMyProfileMutate(patch);
   }
 
   const showBack = useMemo(() => mode !== 'main', [mode]);
@@ -107,16 +96,6 @@ export default function MyPage({ open, onClose }) {
   function notify(msg, title) {
     openModal({ title: title || '알림', message: msg });
   }
-  function confirmLeave() {
-    openModal({
-      title: '탈퇴',
-      message: '탈퇴 처리. 감사합니다.',
-      onConfirm: () => {
-        setMe(null);
-        setMode('main');
-      },
-    });
-  }
 
   // body
   function renderBody() {
@@ -126,7 +105,7 @@ export default function MyPage({ open, onClose }) {
           me={me}
           onEdit={goProfile}
           onPassword={goPassword}
-          onContact={handleContact} // ← 여기서 Contact 모달 오픈
+          onContact={handleContact}
           onLogout={handleLogout}
         />
       );
@@ -147,7 +126,7 @@ export default function MyPage({ open, onClose }) {
       return <MypagePasswordChangeEdit onDone={goMain} onNotify={notify} />;
     }
     if (mode === 'leave') {
-      return <Leave onConfirm={confirmLeave} onCancel={goMain} />;
+      return <Leave onCancel={goMain} />;
     }
     return <div className="text-white">잘못된 상태입니다.</div>;
   }
@@ -192,10 +171,10 @@ export default function MyPage({ open, onClose }) {
               onClose={onClose}
               showBack={showBack}
               onBack={goMain}
-              username={me ? me.username : undefined}
-              email={me ? me.email : undefined}
-              birthdate={me ? me.birthdate : undefined}
-              image={me ? me.profile_image : undefined}
+              username={me?.username}
+              email={me?.email}
+              birthdate={me?.birthday ? String(me.birthday).slice(0, 10) : undefined}
+              image={me?.profile_image}
             />
           </div>
 
@@ -218,7 +197,6 @@ export default function MyPage({ open, onClose }) {
         </div>
       ) : null}
 
-      {/* ★ 고객센터 모달 (Contact.jsx) */}
       <Contact
         open={contactOpen}
         tab={contactTab}
@@ -228,7 +206,7 @@ export default function MyPage({ open, onClose }) {
         setTickets={setTickets}
         expandedId={expandedId}
         setExpandedId={setExpandedId}
-        isAdmin={false}
+        isAdmin={me?.is_superuser === true}
         adminOnlyReply={false}
       />
     </div>
