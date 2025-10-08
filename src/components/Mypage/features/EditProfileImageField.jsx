@@ -1,11 +1,16 @@
 import { getPresignedUrl, uploadToS3 } from '../../../api/presignedURL';
-import { updateProfileImage } from '../../../api/users';
-import { useState } from 'react';
+import { updateProfileImage, useGetMyProfile } from '../../../api/users';
+import { useEffect, useState } from 'react';
 import Label from '../common/Label';
 
 export default function EditProfileImageField({ value, onPreview, onApply, saving }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
+
+  const { getMyProfileData } = useGetMyProfile();
+  useEffect(() => {
+    console.log(getMyProfileData);
+  }, [getMyProfileData]);
 
   const handleFile = (e) => {
     const file = e.target.files?.[0] ?? null;
