@@ -12,10 +12,11 @@ const BRIEFINGS = 'briefings';
 const CONVERSATIONS = 'conversations';
 const FORTUNE = 'fortune';
 const WEATHER = 'weather';
+const WEATHER_FORECAST = 'weatherForecast';
 
 // !- - - - 카테고리별 최신 뉴스 헤드라인 및 링크 가져오기 - - - -
 export async function getNews(category) {
-  const res = await api.get('/news', { params: { category } });
+  const res = await api.get('/news/', { params: { category } });
   return res.data;
 }
 export function useNews(category) {
@@ -129,49 +130,35 @@ export function useFortune() {
 // const { fortuneData, fortuneIsLoading, fortuneIsError } = useFortune();
 
 // !- - - - 현재 날씨 조회 - - - -
+export async function postLocation(lat, lon) {
+  const res = await api.post('/location', { lat, lon });
+  return res.data;
+}
+
+// 🔹 오늘의 날씨 조회 (서버에서 DB 위치 기반)
 export async function getWeather() {
-  const res = await api.get('/weather/');
+  const res = await api.get('/weather');
   return res.data;
 }
 export function useWeather() {
-  const {
-    data: weatherData,
-    isLoading: weatherIsLoading,
-    isError: weatherIsError,
-    error: weatherError,
-    ...rest
-  } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: [WEATHER],
     queryFn: getWeather,
-    staleTime: 1000 * 60 * 1,
   });
-  return { weatherData, weatherIsLoading, weatherIsError, weatherError, ...rest };
+  return { data, isLoading, isError, error };
 }
 // const { weatherData, weatherIsLoading, weatherIsError } = useWeather();
 
 // !- - - - 5일 날씨 예보 조회 (lat/lon 추가) - - - -
-export async function getFiveDayWeather(lat, lon) {
-  const res = await api.get('/weather/forecast', { params: { lat, lon } });
+export async function getWeatherForecast() {
+  const res = await api.get('/weather/forecast');
   return res.data;
 }
 export function useWeatherForecast() {
-  const {
-    data: weatherForecastData,
-    isLoading: weatherForecastIsLoading,
-    isError: weatherForecastIsError,
-    error: weatherForecastError,
-    ...rest
-  } = useQuery({
-    queryKey: ['weatherForecast'],
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: [WEATHER_FORECAST],
     queryFn: getWeatherForecast,
-    staleTime: 1000 * 60 * 30,
   });
-  return {
-    weatherForecastData,
-    weatherForecastIsLoading,
-    weatherForecastIsError,
-    weatherForecastError,
-    ...rest,
-  };
+  return { data, isLoading, isError, error };
 }
 // const { weatherForecastData, weatherForecastIsLoading, weatherForecastIsError } = useWeather();
