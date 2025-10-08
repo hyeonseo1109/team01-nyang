@@ -21,7 +21,7 @@ export const useUser = create((set) => ({
       });
       set({ user: userProfile, isLoading: false });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       set({ user: null, isLoading: false });
     }
   },

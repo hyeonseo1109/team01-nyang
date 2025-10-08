@@ -9,11 +9,15 @@ import { useLogin } from '../api/auth';
 import { LoginInputPassword } from '../components/ui/LoginInputPassword';
 import Header from '../components/ui/Header';
 import { useQueryClient } from '@tanstack/react-query';
+import Button from '../components/ui/Button';
+import toast, { Toaster } from 'react-hot-toast';
 
 export function Login() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const openModal = true;
+  const [modal, setModal] = useState('');
+  const [isModal, setIsModal] = useState(false);
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -25,7 +29,6 @@ export function Login() {
 
   const { loginMutate } = useLogin();
   const { getUser } = useUser();
-  // const { socialLoginMutate, socialLoginError } = useSocialLogin();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -34,26 +37,40 @@ export function Login() {
       password: true,
     });
 
-    // try {
-    //   await login({ email: form.email, password: form.password });
-    //   navigate('/main');
-    // } catch (err) {
-    //   console.log(err);
-    //   alert('이메일 또는 비밀번호가 올바르지 않습니다.1111');
-    // }
-
     loginMutate(form, {
       onSuccess: async () => {
-        alert('로그인 성공');
         queryClient.invalidateQueries({ queryKey: ['myProfile'] });
         await getUser();
-        navigate('/main');
+        toast.success('로그인 성공', {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+        setTimeout(() => navigate('/main'), 1000);
       },
-      onError: () => {
-        alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+      onError: (error) => {
+        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
+        setIsModal(true);
       },
     });
   }
+  const close = () => {
+    return (
+      <div className="mt-6">
+        <Button
+          variant="common"
+          size="md"
+          onClick={() => {
+            setIsModal(false);
+          }}
+        >
+          닫기
+        </Button>
+      </div>
+    );
+  };
 
   const errors = newError(form);
 
@@ -62,21 +79,13 @@ export function Login() {
   const onButton = noError && mustFilled;
 
   const googleLogin = () => {
-    // socialLoginMutate(undefined, {
-    //   onSuccess: async () => {
-    //     await getUser();
-    //     navigate('/main');
-    //   },
-    //   onError: () => {
-    //     alert('오류가 발생했습니다.');
-    //   },
-    // });
+    window.location.href = `${import.meta.env.VITE_BASE_URL}auth/google/login`;
   };
 
   const footer = () => {
     return (
-      <div>
-        <div className="buttons flex flex-col buttons w-full gap-2 pt-3">
+      <div className="buttons flex flex-col w-full pt-3">
+        <div className="flex flex-col gap-2">
           <LoginButton
             type="submit"
             variant={onButton ? 'common' : 'cancel'}
@@ -90,7 +99,7 @@ export function Login() {
             className="flex justify-center items-center h-[40px] bg-[#131314] hover:bg-[#e3e3e31f]/[0.08] rounded-[0.6rem]"
             onClick={() => googleLogin()}
           >
-            <img className="w-6" src=".\src\assets\pngegg.png" alt="google" />
+            <img className="w-6" src="/pngegg.png" alt="google" />
             구글로 시작하기
           </button>
         </div>
@@ -139,8 +148,8 @@ export function Login() {
               value={form.email}
               onChange={(e) => {
                 setForm((email) => ({ ...email, email: e.target.value }));
-              }} //state 업데이트
-              onBlur={() => setTouched((t) => ({ ...t, email: true }))} //유효성검사 메세지 출력
+              }}
+              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
               error={touched.email ? errors.email : ''}
             />
           </div>
@@ -157,6 +166,7 @@ export function Login() {
           />
         </form>
       </LoginModal>
+      <LoginModal openModal={isModal} title={modal} popup={true} footer={close()}></LoginModal>
     </div>
   );
 }

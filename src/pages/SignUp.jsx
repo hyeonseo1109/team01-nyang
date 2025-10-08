@@ -32,7 +32,6 @@ export function SignUp() {
     confirm: '',
   });
   const [emailCode, setEmailCode] = useState('');
-  // const code = '1q2w3e4r';
 
   const [touched, setTouched] = useState({
     email: false,
@@ -45,10 +44,8 @@ export function SignUp() {
   const [isCodeInput, setIsCodeInput] = useState(true);
   const [isEmailInput, setIsEmailInput] = useState(false);
   const [isFormInput, setIsFormInput] = useState(true);
-  const [isSendModal, setIsSendModal] = useState(false);
-  const [modalConfirm, setModalConfirm] = useState('');
-  const [isModalConfirm, setIsModalConfirm] = useState(false);
-  const [isConsent, setIsConsent] = useState(false);
+  const [modal, setModal] = useState('');
+  const [isModal, setIsModal] = useState(false);
 
   const errors = newError(form);
 
@@ -56,7 +53,7 @@ export function SignUp() {
 
   const forms =
     form.email.length &&
-    form.password.length &&
+    form.name.length &&
     form.birth.length &&
     form.password.length &&
     form.confirm.length;
@@ -97,47 +94,51 @@ export function SignUp() {
         navigate('/');
       },
       onError: () => {
-        setModalConfirm('오류');
-        setIsModalConfirm(true);
+        setModal('오류가 발생했습니다.');
+        setIsModal(true);
       },
     });
   }
 
   const emailSend = () => {
-    // const payload = { email: form.email };
+    setModal('인증번호 보내는 중...');
+    setIsModal(true);
     resendMutate(form.email, {
       onSuccess: () => {
+        setIsModal(true);
+        setModal('인증번호를 발송했습니다.');
+        setTimeout(() => setIsModal(false), 2000);
         setIsEmailInput(true);
         setIsCodeInput(false);
-        setIsSendModal(true);
       },
-      onError: () => alert('실패했당..'),
+      onError: (error) => {
+        setIsModal(true);
+        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
+      },
     });
   };
 
   const codeConfirm = () => {
-    // if (emailCode === code) {
-    //   setModalConfirm('인증되었습니다.');
-    //   setIsModalConfirm(true);
-    //   setIsFormInput(false);
-    // } else {
-    //   setModalConfirm('인증번호가 틀립니다.');
-    //   setIsModalConfirm(true);
-    // }
-
     const payload = { code: emailCode, email: form.email };
     verifyMutate(payload, {
       onSuccess: () => {
-        alert('인증 성공~');
+        setModal('인증되었습니다.');
+        setTimeout(() => setIsModal(false), 2000);
+        setIsModal(true);
         setIsFormInput(false);
+        setIsCodeInput(true);
       },
-      onError: () => alert('인증 실패'),
+      onError: (error) => {
+        setModal(error.response?.data?.detail || '오류가 발생했습니다.');
+        setIsModal(true);
+        setIsEmailInput(false);
+      },
     });
   };
 
   const footer = () => {
     return (
-      <div className="flex flex-col buttons w-full gap-2 pt-6">
+      <div className="flex flex-col w-full gap-2 pt-6">
         <LoginButton
           type="submit"
           variant={onButton ? 'common' : 'cancel'}
@@ -164,9 +165,7 @@ export function SignUp() {
           variant="common"
           size="md"
           onClick={() => {
-            setIsSendModal(false);
-            setIsModalConfirm(false);
-            setIsConsent(false);
+            setIsModal(false);
           }}
         >
           닫기
@@ -229,7 +228,7 @@ export function SignUp() {
               value={emailCode}
               onChange={(e) => {
                 setEmailCode(e.target.value);
-              }} //state 업데이트
+              }}
               disabled={isCodeInput}
             />
             <button
@@ -336,7 +335,10 @@ export function SignUp() {
             <button
               type="button"
               className="text-[12px] text-blue-500"
-              onClick={() => setIsConsent(true)}
+              onClick={() => {
+                setIsModal(true);
+                setModal('consent');
+              }}
             >
               자세히보기
             </button>
@@ -344,21 +346,23 @@ export function SignUp() {
         </form>
       </LoginModal>
 
-      <LoginModal openModal={isSendModal} footer={close()}>
-        인증번호를 발송했습니다.
-      </LoginModal>
-
-      <LoginModal openModal={isModalConfirm} footer={close()}>
-        {modalConfirm}
-      </LoginModal>
-
-      <LoginModal openModal={isConsent} footer={close()}>
-        <h1 className="text-neutral-300 text-[20px] pb-7 font-bold">{CONTENT.title}</h1>
-        <ul className="text-neutral-300 flex flex-col gap-[10px] text-[13px] list-disc ">
-          {CONTENT.items.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
+      <LoginModal
+        openModal={isModal}
+        title={modal === 'consent' ? '' : modal}
+        popup={true}
+        modal={modal}
+        footer={close()}
+      >
+        {modal === 'consent' ? (
+          <>
+            <h1 className="text-neutral-300 text-[20px] pb-7 font-bold">{CONTENT.title}</h1>
+            <ul className="text-neutral-300 flex flex-col gap-[10px] text-[13px] list-disc ">
+              {CONTENT.items.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </>
+        ) : null}
       </LoginModal>
     </div>
   );

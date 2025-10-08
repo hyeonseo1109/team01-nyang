@@ -28,7 +28,7 @@ export function LoginInput({
           type={type}
           onChange={onChange}
           onBlur={onBlur}
-          className="text-neutral-100 border px-3 rounded-sm h-[30px] border-gray-400 w-full"
+          className="text-neutral-100 border px-3 rounded-sm h-[30px] border-gray-400 w-full [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-200"
           disabled={disabled}
           {...rest}
         />

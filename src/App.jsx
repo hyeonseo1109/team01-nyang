@@ -10,30 +10,45 @@ import LoadingPage from './pages/LoadingPage';
 // import Admin from './components/Admin';
 import { useUser } from './store/useUser';
 import { useEffect } from 'react';
+import GoogleCallback from './pages/GoogleCallback';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const { getUser } = useUser();
 
   useEffect(() => {
     getUser();
+
+    const handleBeforeUnload = () => {
+      navigator.sendBeacon(`${import.meta.env.VITE_BASE_URL}/auth/logout`);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, [getUser]);
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/pwconfirm" element={<PwConfirm />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route
-        path="/main"
-        element={
-          <PrivateRoute>
-            <MainPage />
-          </PrivateRoute>
-        }
-      />
+    <>
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/pwconfirm" element={<PwConfirm />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/auth/google/callback" element={<GoogleCallback />}></Route>
+        <Route
+          path="/main"
+          element={
+            <PrivateRoute>
+              <MainPage />
+            </PrivateRoute>
+          }
+        />
 
-      <Route path="/loading" element={<LoadingPage />} />
-      <Route path="/*" element={<ErrorPage />} />
-    </Routes>
+        <Route path="/loading" element={<LoadingPage />} />
+        <Route path="/*" element={<ErrorPage />} />
+      </Routes>
+    </>
   );
 }
 
