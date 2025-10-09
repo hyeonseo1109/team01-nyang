@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import TodoList from './TodoList';
-import { 
-  useTodos, 
-  useCreateTodo, 
-  useUpdateTodo, 
-  useDeleteTodo, 
-  useToggleTodoComplete 
+import {
+  useTodos,
+  useCreateTodo,
+  useUpdateTodo,
+  useDeleteTodo,
+  useToggleTodoComplete,
 } from '../../api/todos';
 
 export default function Todo({ setOpenTodo }) {
@@ -28,62 +28,62 @@ export default function Todo({ setOpenTodo }) {
 
   const handleAdd = (e) => {
     e.preventDefault();
-    
+
     if (!form.title.trim()) return;
 
     if (isEditing && editingId !== null) {
       updateTodoMutate(
         {
-          id: editingId,
+          todo_id: editingId,
           payload: {
-            content: form.title,
-          }
+            title: form.title,
+          },
         },
         {
           onSuccess: () => {
             setForm({ title: '', memo: '' });
             setIsEditing(false);
             setEditingId(null);
-          }
-        }
+          },
+        },
       );
     } else {
       createTodoMutate(form, {
         onSuccess: () => {
           setForm({ title: '', memo: '' });
-        }
+        },
       });
     }
   };
 
-  const handleDelete = (id) => {
-    deleteTodoMutate(id, {
+  const handleDelete = (todo_id) => {
+    deleteTodoMutate(todo_id, {
       onSuccess: () => {
-        if (editingId === id) {
+        if (editingId === todo_id) {
           setIsEditing(false);
           setEditingId(null);
           setForm({ title: '', memo: '' });
         }
-      }
+      },
     });
   };
 
-  const handleToggle = (id) => {
-    const todo = list.find(item => item.id === id);
+  const handleToggle = (todo_id) => {
+    const todo = list.find((item) => item.id === todo_id);
     if (!todo) return;
 
     updateTodoMutate({
-      id,
+      todo_id,
       payload: {
-        is_completed: !todo.is_completed
-      }
+        is_completed: !todo.is_completed,
+      },
     });
   };
 
   const handleEdit = (item) => {
-    setForm({ 
-      title: item.content || item.title, 
-      memo: item.memo || '' 
+    setForm({
+      title: item.content || item.title,
+      memo: item.memo || '',
     });
     setIsEditing(true);
     setEditingId(item.id);
@@ -119,10 +119,10 @@ export default function Todo({ setOpenTodo }) {
         onAdd={handleAdd}
         onCancelEdit={handleCancelEdit}
         isEditing={isEditing}
-        list={list.map(item => ({
+        list={list.map((item) => ({
           ...item,
           title: item.content || item.title,
-          completed: item.is_completed || item.completed
+          completed: item.is_completed || item.completed,
         }))}
         handleDelete={handleDelete}
         onToggle={handleToggle}

@@ -124,10 +124,8 @@ export default function ScheduleForm({
     }
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('정말 삭제하시겠습니까?')) {
-      deleteScheduleMutate(id);
-    }
+ const handleDelete = (id) => {
+    deleteScheduleMutate(id);
   };
 
   const handleEdit = (item) => {
