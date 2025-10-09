@@ -66,6 +66,7 @@ npm run preview
 
 
 ## 프로젝트 구조
+<pre>
 oz-union-fe-12-team1/
 ├── public/              # 정적 파일
 ├── src/
@@ -87,7 +88,7 @@ oz-union-fe-12-team1/
 ├── package.json
 ├── vite.config.js
 └── README.md
-
+</pre>
 
 
 ================================
