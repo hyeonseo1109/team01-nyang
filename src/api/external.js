@@ -149,13 +149,10 @@ export async function patchUserLocation(lat, lon) {
 export async function getWeather(coords = DEFAULT_LOCATION) {
   try {
     const res = await api.get('/weather/', {
-      params: {
-        latitude: coords.lat,
-        longitude: coords.lon,
-      },
+      params: { latitude: coords.lat, longitude: coords.lon },
     });
 
-    const raw = res.data?.data?.weather ?? {};
+    const raw = res.data?.data?.weather || {};
 
     return {
       city: getKoreanCityName(raw.city ?? '서울'),
@@ -169,16 +166,15 @@ export async function getWeather(coords = DEFAULT_LOCATION) {
       description: raw.description ?? '-',
     };
   } catch (err) {
-    console.error('🌦️ getWeather API error:', err);
+    console.error('🌦️ getWeather error:', err);
     throw err;
   }
 }
-
 export function useWeather(coords = DEFAULT_LOCATION) {
   return useQuery({
-    queryKey: [WEATHER, JSON.stringify(coords)],
+    queryKey: [WEATHER, coords],
     queryFn: () => getWeather(coords),
-    staleTime: 1000 * 60 * 10, // 10분 캐시
+    staleTime: 1000 * 60 * 10,
   });
 }
 
@@ -186,23 +182,17 @@ export function useWeather(coords = DEFAULT_LOCATION) {
 export async function getWeatherForecast(coords = DEFAULT_LOCATION) {
   try {
     const res = await api.get('/weather/forecast', {
-      params: {
-        latitude: coords.lat,
-        longitude: coords.lon,
-      },
+      params: { latitude: coords.lat, longitude: coords.lon },
     });
 
-    const forecasts = Array.isArray(res.data?.data?.forecast?.forecasts)
-      ? res.data.data.forecast.forecasts
-      : [];
-
-    if (forecasts.length === 0) return [];
+    const forecasts = res.data?.data?.forecast?.forecasts || [];
+    if (!Array.isArray(forecasts) || forecasts.length === 0) return [];
 
     const groupedByDate = forecasts.reduce((acc, item) => {
       const localTime = dayjs.utc(item.time).tz('Asia/Seoul');
       const date = localTime.format('YYYY-MM-DD');
       if (!acc[date]) acc[date] = [];
-      acc[date].push({ ...item, localDate: date });
+      acc[date].push(item);
       return acc;
     }, {});
 
@@ -227,11 +217,10 @@ export async function getWeatherForecast(coords = DEFAULT_LOCATION) {
     throw err;
   }
 }
-
 export function useWeatherForecast(coords = DEFAULT_LOCATION) {
   return useQuery({
-    queryKey: [WEATHER_FORECAST, JSON.stringify(coords)],
+    queryKey: [WEATHER_FORECAST, coords],
     queryFn: () => getWeatherForecast(coords),
-    staleTime: 1000 * 60 * 60 * 3, // 3시간 캐시
+    staleTime: 1000 * 60 * 60 * 3,
   });
 }

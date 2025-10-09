@@ -6,26 +6,27 @@ import { getKoreanCityName } from '../../utils/weatherCityMap';
 
 export default function TodayWeather() {
   const [coords, setCoords] = useState(DEFAULT_LOCATION);
-  const [isPermissionGranted, setIsPermissionGranted] = useState(false);
 
   useEffect(() => {
+    const updateLocation = async (lat, lon) => {
+      setCoords({ lat, lon });
+      try {
+        await patchUserLocation(lat, lon);
+      } catch (err) {
+        console.warn('위치 정보 서버 저장 실패:', err);
+      }
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          setCoords({ lat: latitude, lon: longitude });
-          setIsPermissionGranted(true);
-          patchUserLocation(latitude, longitude);
-        },
+        (pos) => updateLocation(pos.coords.latitude, pos.coords.longitude),
         () => {
           console.log('위치 권한 거부 → 기본값(서울) 사용');
-          setIsPermissionGranted(false);
           setCoords(DEFAULT_LOCATION);
         },
       );
     } else {
       console.log('Geolocation 미지원 → 기본값(서울) 사용');
-      setIsPermissionGranted(false);
       setCoords(DEFAULT_LOCATION);
     }
   }, []);
@@ -50,36 +51,25 @@ export default function TodayWeather() {
 
   if (!d) return <div className="text-neutral-400 text-center">날씨 정보가 없습니다.</div>;
 
-  const iconKey = mapIconCode(d.weather_icon || '');
-  const Icon = weatherIconMap[iconKey] || weatherIconMap.cloudy;
+  const Icon = weatherIconMap[mapIconCode(d.weather_icon || '')] || weatherIconMap.cloudy;
   const cityName = getKoreanCityName(d.city);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-6 p-4">
       <div className="flex flex-wrap items-center justify-center gap-6 text-center">
-        <div className="relative">
-          <Icon className="w-24 h-24 sm:w-28 sm:h-28 text-blue-300" strokeWidth={1.5} />
-        </div>
-
+        <Icon className="w-24 h-24 sm:w-28 sm:h-28 text-blue-300" strokeWidth={1.5} />
         <div className="flex flex-col items-center sm:items-end">
           <div className="flex items-baseline gap-2">
-            <div className="text-5xl sm:text-4xl font-extrabold leading-none">
-              {d.current_temp ?? '-'}°
-            </div>
-            <div className="text-sm sm:text-base text-neutral-400 font-medium mt-1">
-              {cityName || '서울'}
-            </div>
+            <div className="text-5xl sm:text-4xl font-extrabold">{d.current_temp ?? '-'}°</div>
+            <div className="text-sm sm:text-base text-neutral-400 mt-1">{cityName}</div>
           </div>
-
           <div className="text-sm sm:text-base text-neutral-300 mt-1 whitespace-nowrap">
             <span className="text-red-400 font-bold">최고 {d.max_temp ?? '-'}°</span> /{' '}
             <span className="text-blue-400 font-bold">최저 {d.min_temp ?? '-'}°</span>
           </div>
-
           <div className="text-sm text-neutral-400 mt-1">{d.description ?? '-'}</div>
         </div>
       </div>
-
       <div className="grid grid-cols-3 gap-3 w-full max-w-md">
         {[
           { k: '습도', v: d.humidity != null ? `${d.humidity}%` : '-' },
@@ -88,10 +78,10 @@ export default function TodayWeather() {
         ].map((it) => (
           <div
             key={it.k}
-            className="rounded-2xl bg-neutral-800/70 border border-neutral-700 px-3 py-3 flex flex-col items-center justify-center text-center"
+            className="rounded-2xl bg-neutral-800/70 border border-neutral-700 px-3 py-3 flex flex-col items-center"
           >
             <div className="text-sm text-neutral-400">{it.k}</div>
-            <div className="text-base font-semibold leading-tight">{it.v}</div>
+            <div className="text-base font-semibold">{it.v}</div>
           </div>
         ))}
       </div>

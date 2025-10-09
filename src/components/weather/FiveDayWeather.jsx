@@ -34,21 +34,23 @@ export default function FiveDayWeather() {
   const [coords, setCoords] = useState(DEFAULT_LOCATION);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) =>
-          setCoords({
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-          }),
-        () => {
-          console.log('위치 권한 없음 → 기본값(서울) 사용');
-          setCoords(DEFAULT_LOCATION);
-        },
-      );
-    } else {
+    if (!navigator.geolocation) {
+      console.log('Geolocation 미지원 → 기본값(서울) 사용');
       setCoords(DEFAULT_LOCATION);
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) =>
+        setCoords({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        }),
+      () => {
+        console.log('위치 권한 거부 → 기본값(서울) 사용');
+        setCoords(DEFAULT_LOCATION);
+      },
+    );
   }, []);
 
   const { data, isLoading, isError, error: apiError } = useWeatherForecast(coords);
@@ -67,12 +69,13 @@ export default function FiveDayWeather() {
         {apiError?.response?.data?.message || apiError?.message}
       </div>
     );
-  if (!data || !Array.isArray(data) || data.length === 0)
+
+  if (!Array.isArray(data) || data.length === 0)
     return <div className="text-neutral-400 text-center">날씨 정보가 없습니다.</div>;
 
-  const labels = data.map((d) => (d?.date ? dayjs(d.date).format('MM/DD') : '-'));
-  const maxTemps = data.map((d) => d?.temp_max ?? null);
-  const minTemps = data.map((d) => d?.temp_min ?? null);
+  const labels = data.map((d) => (d.date ? dayjs(d.date).format('MM/DD') : '-'));
+  const maxTemps = data.map((d) => d.temp_max ?? null);
+  const minTemps = data.map((d) => d.temp_min ?? null);
 
   const chartData = {
     labels,
