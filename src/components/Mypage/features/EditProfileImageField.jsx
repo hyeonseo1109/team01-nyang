@@ -1,24 +1,15 @@
 import { getPresignedUrl, uploadToS3 } from '../../../api/presignedURL';
-import { updateProfileImage, useGetMyProfile } from '../../../api/users';
-import { useEffect, useState } from 'react';
+import { updateProfileImage } from '../../../api/users';
+import { useState } from 'react';
 import Label from '../common/Label';
 
 export default function EditProfileImageField({ value, onPreview, onApply, saving }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
 
-  const { getMyProfileData } = useGetMyProfile();
-  useEffect(() => {
-    console.log(getMyProfileData);
-  }, [getMyProfileData]);
-
   const handleFile = (e) => {
     const file = e.target.files?.[0] ?? null;
-    // file = { name: 'cat.png', type: 'image/png', size: 12345 }
-    console.log('전체 File 객체:', file);
-    console.log('파일명:', file.name);
-    console.log('타입:', file.type);
-    console.log('크기:', file.size);
+    // ex:  file = { name: 'cat.png', type: 'image/png', size: 12345 }
     if (!file) return;
 
     setSelectedFile(file);
