@@ -64,6 +64,14 @@ export function useUpdateMyProfile() {
 //   email: "newEmail@example.com",
 // })
 
+// !- - - - 프로필사진 수정용 유저 정보 수정 - - - -
+export async function updateProfileImage(fileUrl) {
+  const res = await api.patch('/users/me', {
+    profile_image: fileUrl,
+  });
+  return res.data;
+}
+
 // !- - - - 사용자 삭제 - - - -
 export async function deleteMyAccount() {
   const res = await api.delete('/users/me');

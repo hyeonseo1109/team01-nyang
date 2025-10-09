@@ -26,11 +26,20 @@ ChartJS.register(
 export function AdminNewUpdate() {
   const { usersData } = useUsers();
 
+  function getKSTDateString(daysAgo = 0) {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   // 일주일치 담은 배열
   const weekWhile = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
-    return date.toISOString().slice(0, 10);
+    return getKSTDateString(6 - i);
   });
 
   // 그날그날 전체회원수
