@@ -86,8 +86,17 @@ export function useUpdateSchedule() {
     ...rest
   } = useMutation({
     mutationFn: ({ schedules_id, payload }) => updateSchedule(schedules_id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [SCHEDULES] });
+    onSuccess: (updatedData, { schedules_id }) => {
+      // 1️⃣ 수정한 스케줄 상세 캐시에 바로 반영
+      queryClient.setQueryData([SCHEDULES, schedules_id], updatedData);
+
+      // 2️⃣ 전체 목록 캐시에 반영
+      queryClient.setQueryData([SCHEDULES], (oldData) => {
+        if (!oldData) return [updatedData]; // 목록이 없을 경우
+        return oldData.map((schedule) =>
+          schedule.id === schedules_id ? updatedData : schedule
+        );
+      });
     },
   });
   return { updateScheduleMutate, updateScheduleError, ...rest };
