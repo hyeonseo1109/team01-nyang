@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { weatherIconMap, mapDescription } from '../../utils/weatherIcons';
 import { useWeatherForecast } from '../../api/external';
+import { DEFAULT_LOCATION } from './location';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,17 +31,44 @@ ChartJS.register(
 );
 
 export default function FiveDayWeather() {
-  const { data, isLoading, isError, error: apiError } = useWeatherForecast();
+  const [coords, setCoords] = useState(DEFAULT_LOCATION);
 
-  if (isLoading) return <div className="text-neutral-400">날씨 불러오는 중...</div>;
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) =>
+          setCoords({
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+          }),
+        () => {
+          console.log('위치 권한 없음 → 기본값(서울) 사용');
+          setCoords(DEFAULT_LOCATION);
+        },
+      );
+    } else {
+      setCoords(DEFAULT_LOCATION);
+    }
+  }, []);
+
+  const { data, isLoading, isError, error: apiError } = useWeatherForecast(coords);
+
+  if (isLoading)
+    return (
+      <div className="text-neutral-400 flex items-center justify-center h-full">
+        🌥️ 5일간 날씨 불러오는 중...
+      </div>
+    );
   if (isError)
     return (
-      <div className="text-red-400">
-        날씨 불러오기 실패 ({apiError?.response?.data?.message || apiError?.message})
+      <div className="text-red-400 text-center p-4">
+        ❌ 5일 날씨 불러오기 실패
+        <br />
+        {apiError?.response?.data?.message || apiError?.message}
       </div>
     );
   if (!data || !Array.isArray(data) || data.length === 0)
-    return <div className="text-neutral-400">날씨 정보가 없습니다.</div>;
+    return <div className="text-neutral-400 text-center">날씨 정보가 없습니다.</div>;
 
   const labels = data.map((d) => (d?.date ? dayjs(d.date).format('MM/DD') : '-'));
   const maxTemps = data.map((d) => d?.temp_max ?? null);
@@ -52,10 +82,10 @@ export default function FiveDayWeather() {
         data: maxTemps,
         borderColor: '#f87171',
         backgroundColor: '#f87171',
-        tension: 0.3,
+        tension: 0.25,
         pointBackgroundColor: '#f87171',
         pointBorderColor: '#fff',
-        pointBorderWidth: 2,
+        pointBorderWidth: 3,
         pointRadius: 5,
       },
       {
@@ -63,14 +93,25 @@ export default function FiveDayWeather() {
         data: minTemps,
         borderColor: '#60a5fa',
         backgroundColor: '#60a5fa',
-        tension: 0.3,
+        tension: 0.25,
         pointBackgroundColor: '#60a5fa',
         pointBorderColor: '#fff',
-        pointBorderWidth: 2,
+        pointBorderWidth: 3,
         pointRadius: 5,
       },
     ],
   };
+
+  const annotations = {};
+  for (let i = 1; i < labels.length; i++) {
+    annotations[`divider${i}`] = {
+      type: 'line',
+      xMin: i - 0.5,
+      xMax: i - 0.5,
+      borderColor: 'rgba(64,64,64,0.5)',
+      borderWidth: 1,
+    };
+  }
 
   const options = {
     responsive: true,
@@ -82,13 +123,19 @@ export default function FiveDayWeather() {
         color: '#fff',
         anchor: 'end',
         align: 'bottom',
-        offset: 6,
-        font: { weight: 'bold', size: 12 },
-        formatter: (v) => (v != null ? `${v}°` : '-'),
+        offset: 15,
+        clip: false,
+        font: { weight: 'bold', size: 14 },
+        formatter: (value) => `${value}°`,
       },
+      annotation: { annotations },
     },
     scales: {
-      x: { offset: true, ticks: { display: false }, grid: { display: false } },
+      x: {
+        offset: true,
+        ticks: { display: false },
+        grid: { display: false },
+      },
       y: { display: false },
     },
   };
@@ -102,7 +149,8 @@ export default function FiveDayWeather() {
           </div>
         ))}
       </div>
-      <div className="w-full max-w-[815px] h-[250px] mt-0">
+
+      <div className="w-full max-w-[815px] h-[250px] mt-[-8px]">
         <Line data={chartData} options={options} />
       </div>
     </div>
