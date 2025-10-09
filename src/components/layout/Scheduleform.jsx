@@ -1,6 +1,7 @@
 import ScheduleList from './ScheduleList';
 import { useSchedule } from '../../store/useSchedule';
-import { useState } from 'react';
+import { useSchedules, useCreateSchedule, useUpdateSchedule, useDeleteSchedule } from '../../api/schedules';
+import { useState, useMemo } from 'react';
 import { VscChromeClose } from 'react-icons/vsc';
 
 export default function ScheduleForm({
@@ -9,11 +10,38 @@ export default function ScheduleForm({
   openAdminPage,
   openSchedule,
 }) {
-  const { form, list, isEditing, setForm, addSchedule, deleteSchedule, startEdit, cancelEdit } =
-    useSchedule();
+  const { form, isEditing, editingId, setForm, resetForm, startEdit, cancelEdit } = useSchedule();
+  
+  const { schedulesData, schedulesIsLoading } = useSchedules();
+  const { createScheduleMutate } = useCreateSchedule();
+  const { updateScheduleMutate } = useUpdateSchedule();
+  const { deleteScheduleMutate } = useDeleteSchedule();
 
   const [errors, setErrors] = useState('');
   const [filterDate, setFilterDate] = useState('');
+
+  const list = useMemo(() => {
+    if (!schedulesData?.schedules) return [];
+    
+    return schedulesData.schedules.map((item) => {
+      const startDate = new Date(item.start_time);
+      const endDate = new Date(item.end_time);
+      const pad = (n) => String(n).padStart(2, "0");
+
+      return {
+        id: item.id,
+        title: item.title,
+        memo: item.description || "",
+        dateStart: `${startDate.getFullYear()}-${pad(startDate.getMonth() + 1)}-${pad(startDate.getDate())}`,
+        timeStart: item.all_day ? "" : `${pad(startDate.getHours())}:${pad(startDate.getMinutes())}`,
+        dateEnd: `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}`,
+        timeEnd: item.all_day ? "" : `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`,
+        start_time: item.start_time,
+        end_time: item.end_time,
+        all_day: item.all_day,
+      };
+    });
+  }, [schedulesData]);
 
   const filteredList = filterDate
     ? list.filter((item) => filterDate >= item.dateStart && filterDate <= item.dateEnd)
@@ -29,7 +57,7 @@ export default function ScheduleForm({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm({ [name]: value });
     setErrors('');
   };
 
@@ -43,7 +71,7 @@ export default function ScheduleForm({
   const handleAdd = (e) => {
     e.preventDefault();
 
-    const { dateStart, timeStart, dateEnd, timeEnd, title } = form;
+    const { dateStart, timeStart, dateEnd, timeEnd, title, memo } = form;
 
     if (!dateStart || !title) {
       setErrors("시작 날짜와 제목은 필수입니다.");
@@ -55,22 +83,62 @@ export default function ScheduleForm({
     const hasTimeEnd = timeEnd && timeEnd.trim() !== '';
     const isAllDayInput = !hasTimeStart && !hasTimeEnd;
 
-    if (!isAllDayInput) {
+    let start_time, end_time;
+
+    if (isAllDayInput) {
+      start_time = toISO(dateStart, "00:00");
+      end_time = toISO(finalDateEnd, "23:59");
+    } else {
       if (hasTimeStart && hasTimeEnd) {
-        const start_time = toISO(dateStart, timeStart);
-        const end_time = toISO(finalDateEnd, timeEnd);
+        start_time = toISO(dateStart, timeStart);
+        end_time = toISO(finalDateEnd, timeEnd);
 
         if (new Date(start_time) >= new Date(end_time)) {
           setErrors("종료시간은 시작시간보다 뒤여야 합니다.");
           return;
         }
+      } else {
+        let useEndTime = timeEnd;
+        if (!hasTimeEnd && hasTimeStart) {
+          useEndTime = timeStart;
+        }
+        start_time = toISO(dateStart, timeStart);
+        end_time = toISO(finalDateEnd, useEndTime);
       }
     }
 
-    addSchedule(form);
+    const payload = {
+      title: title.trim(),
+      start_time,
+      end_time,
+      description: memo || "",
+      all_day: isAllDayInput,
+    };
+
+    if (isEditing && editingId) {
+      updateScheduleMutate({ schedules_id: editingId, payload });
+      resetForm();
+    } else {
+      createScheduleMutate(payload);
+      resetForm();
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      deleteScheduleMutate(id);
+    }
+  };
+
+  const handleEdit = (item) => {
+    startEdit(item);
   };
 
   const onBack = () => setOpenSchedule(false);
+
+  if (schedulesIsLoading) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <div className="rounded-xl bg-[#1c1c1c] border border-[#333] p-4 space-y-3 h-full flex flex-col relative overflow-hidden">
@@ -110,8 +178,8 @@ export default function ScheduleForm({
             openAdminPage={openAdminPage}
             openSchedule={openSchedule}
             list={showList}
-            handleDelete={deleteSchedule}
-            handleEdit={startEdit}
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
           />
         </div>
       </div>
