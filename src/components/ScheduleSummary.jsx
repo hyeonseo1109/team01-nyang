@@ -29,7 +29,7 @@ export default function ScheduleSummary() {
           ? '로딩 중입니다.'
           : conversationsIsError
             ? '에러 발생'
-            : conversationsData.data.summary[page]}
+            : conversationsData?.data.summary[page]}
       </div>
     </>
   );
