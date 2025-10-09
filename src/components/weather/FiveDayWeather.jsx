@@ -1,9 +1,6 @@
 import dayjs from 'dayjs';
 import { weatherIconMap, mapDescription } from '../../utils/weatherIcons';
-import useLocation from '../../hook/useLocation';
-import { useFiveDayWeather } from '../../api/external';
-import { DEFAULT_LOCATION } from './location';
-
+import { useWeatherForecast } from '../../api/external';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,10 +28,7 @@ ChartJS.register(
 );
 
 export default function FiveDayWeather() {
-  const { location, error } = useLocation();
-  const coords = location || DEFAULT_LOCATION;
-
-  const { data, isLoading, isError, error: apiError } = useFiveDayWeather(coords);
+  const { data, isLoading, isError, error: apiError } = useWeatherForecast();
 
   if (isLoading) return <div className="text-neutral-400">날씨 불러오는 중...</div>;
   if (isError)
@@ -43,7 +37,7 @@ export default function FiveDayWeather() {
         날씨 불러오기 실패 ({apiError?.response?.data?.message || apiError?.message})
       </div>
     );
-  if (!data || data.length === 0)
+  if (!data || !Array.isArray(data) || data.length === 0)
     return <div className="text-neutral-400">날씨 정보가 없습니다.</div>;
 
   const labels = data.map((d) => (d?.date ? dayjs(d.date).format('MM/DD') : '-'));
@@ -78,17 +72,6 @@ export default function FiveDayWeather() {
     ],
   };
 
-  const annotations = {};
-  for (let i = 1; i < labels.length; i++) {
-    annotations[`divider${i}`] = {
-      type: 'line',
-      xMin: i - 0.5,
-      xMax: i - 0.5,
-      borderColor: 'rgba(64,64,64,0.5)',
-      borderWidth: 1,
-    };
-  }
-
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -101,9 +84,8 @@ export default function FiveDayWeather() {
         align: 'bottom',
         offset: 6,
         font: { weight: 'bold', size: 12 },
-        formatter: (v) => (v !== null ? `${v}°` : '-'),
+        formatter: (v) => (v != null ? `${v}°` : '-'),
       },
-      annotation: { annotations },
     },
     scales: {
       x: { offset: true, ticks: { display: false }, grid: { display: false } },
@@ -113,12 +95,6 @@ export default function FiveDayWeather() {
 
   return (
     <div className="flex flex-col items-center w-full">
-      {error && (
-        <div className="text-neutral-400 text-sm mb-2">
-          현재 위치 확인이 어려워 서울 날씨로 대신합니다.
-        </div>
-      )}
-
       <div className="flex w-full max-w-[800px]">
         {data.map((d, i) => (
           <div key={i} className="flex-1 border-r border-neutral-700/50 last:border-r-0">
@@ -126,7 +102,6 @@ export default function FiveDayWeather() {
           </div>
         ))}
       </div>
-
       <div className="w-full max-w-[815px] h-[250px] mt-0">
         <Line data={chartData} options={options} />
       </div>

@@ -106,9 +106,9 @@ export function useConversations() {
 }
 // const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
 
-// !- - - - 오늘의 운세 (생일 필요) - - - -
-export async function getFortune(birthdate) {
-  const res = await api.get('/gemini/fortune', { params: { birthdate } });
+// !- - - - 오늘의 운세 - - - -
+export async function getFortune() {
+  const res = await api.get('/gemini/fortune');
   return res.data;
 }
 export function useFortune() {
@@ -129,15 +129,18 @@ export function useFortune() {
 }
 // const { fortuneData, fortuneIsLoading, fortuneIsError } = useFortune();
 
-// !- - - - 현재 날씨 조회 - - - -
-export async function postLocation(lat, lon) {
-  const res = await api.post('/location', { lat, lon });
+// !- - - - 사용자 위치 - - - -
+export async function patchUserLocation(lat, lon) {
+  const res = await api.patch('/user-locations/', {
+    latitude: lat,
+    longitude: lon,
+  });
   return res.data;
 }
 
-// 🔹 오늘의 날씨 조회 (서버에서 DB 위치 기반)
+// !- - - - 오늘의 날씨 - - - -
 export async function getWeather() {
-  const res = await api.get('/weather');
+  const res = await api.get('/weather/');
   return res.data;
 }
 export function useWeather() {
@@ -149,9 +152,9 @@ export function useWeather() {
 }
 // const { weatherData, weatherIsLoading, weatherIsError } = useWeather();
 
-// !- - - - 5일 날씨 예보 조회 (lat/lon 추가) - - - -
+// !- - - - 5일 날씨 예보 조회 - - - -
 export async function getWeatherForecast() {
-  const res = await api.get('/weather/forecast');
+  const res = await api.get('weather/forecast');
   return res.data;
 }
 export function useWeatherForecast() {
