@@ -49,7 +49,11 @@ export default function MypageProfileEdit({ me, onChange, onNotify }) {
     setSavingProfile(true);
     updateMyProfileMutate(payload, {
       onSuccess: (next) => {
-        onChange?.(next);
+        const merged = { ...(me || {}), ...(next || {}) };
+        if (payload && 'birthday' in payload) {
+          merged.birthday = payload.birthday; // YYYY-MM-DD 보장
+        }
+        onChange?.(merged);
         onNotify?.(okMsg, '완료');
       },
       onError: (err) => {
