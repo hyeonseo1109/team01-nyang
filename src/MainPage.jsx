@@ -67,10 +67,11 @@ export default function MainPage() {
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
-      <main className="flex-1 bg-[#090909] p-4 min-h-0 overflow-hidden overflow-x-auto">
+      {/* 스크롤바 공간 예약으로 미세 흔들림 방지 */}
+      <main className="flex-1 bg-[#090909] p-4 min-h-0 overflow-hidden overflow-x-auto [scrollbar-gutter:stable_both-edges]">
         {/* 본문 vs 마이페이지 */}
         <div className="grid h-full grid-cols-[4fr_1fr] gap-4 min-w-0">
-          {/* 헤더 vs 본문*/}
+          {/* 헤더 vs 본문 */}
           <div className="grid grid-rows-[auto_1fr] gap-4 min-h-0 min-w-0">
             <Header isSuper={isSuper} />
 
@@ -98,86 +99,110 @@ export default function MainPage() {
                 </div>
 
                 {/* 대시보드 = 본문 아랫부분 오 */}
-                <div className="flex items-center justify-center rounded-lg bg-[#22222295] p-6 relative overflow-x-auto custom-scroll w-full h-full shadow-3d min-w-0 ">
+                <div className="flex items-center justify-center rounded-lg bg-[#22222295] p-6 relative overflow-x-auto custom-scroll w-full h-full shadow-3d min-w-0">
                   {CONTENT_MAP[pageMode]}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 마이페이지 영역 */}
+          {/* 우측 사이드 (버튼/요약/마이페이지 인라인 렌더링 for lg) */}
           <div className="relative flex flex-col bg-[#22222295] shadow-3d rounded-lg min-w-0">
-            <div className="flex-1 min-h-0">
-              {pageMode === 'todo' || pageMode === 'schedule' ? (
-                <div
-                  className={`
-                    transition-opacity duration-500 ease-in-out opacity-100 pointer-events-auto
-                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1c] backdrop-blur-md rounded-lg z-30
-                    lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
-                  `}
-                >
-                  <div className="h-full p-6 overflow-y-auto custom-scroll">
-                    {pageMode === 'todo' && <Todo setOpenTodo={handleBackToMain} />}
-                    {pageMode === 'schedule' && (
-                      <ScheduleForm
-                        setOpenSchedule={handleBackToMain}
-                        openAdminDashboard={openAdminDashboard}
-                        openAdminPage={openAdminPage}
-                        openSchedule={true}
-                      />
-                    )}
+            <div className="flex-1 p-6 min-h-0">
+              {/* lg 이상에서는 MyPage/AdminMypage가 열리면 이 기본 패널을 숨김 */}
+              {pageMode !== 'todo' &&
+                pageMode !== 'schedule' &&
+                !openMyPage &&
+                !(isSuper && openAdminPage) && (
+                  <div className="flex flex-col justify-between h-full">
+                    <span className="text-lg font-medium text-white flex flex-col gap-4 w-full whitespace-nowrap ">
+                      <Button size="lgfree" variant="common" onClick={() => setPageMode('todo')}>
+                        Todo List
+                      </Button>
+                      <Button
+                        size="lgfree"
+                        variant="common"
+                        onClick={() => setPageMode('schedule')}
+                      >
+                        일정 리스트
+                      </Button>
+                      <Button size="lgfree" variant="common" onClick={() => setPageMode('five')}>
+                        5일 날씨
+                      </Button>
+                      <Button size="lgfree" variant="common" onClick={() => setPageMode('fortune')}>
+                        오늘의 운세
+                      </Button>
+                      <Button size="lgfree" variant="common" onClick={() => setPageMode('quiz')}>
+                        QUIZ
+                      </Button>
+                      <Button size="lgfree" variant="common">
+                        푸쉬 설정
+                      </Button>
+                    </span>
+                    <div className="transition-opacity duration-500 ease-in-out opacity-0 lg:opacity-100">
+                      <ScheduleSummary />
+                    </div>
                   </div>
-                </div>
-              ) : openMyPage ? (
-                <div
-                  className={`
-                    transition-opacity duration-500 ease-in-out opacity-100 pointer-events-auto
-                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1c] backdrop-blur-md rounded-lg z-30
-                    lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
-                  `}
-                >
-                  <div className="absolute top-2 right-2">
-                    <BackButton onClose={() => setOpenMyPage(false)} />
-                  </div>
-                  <div className="h-full p-6 overflow-y-auto custom-scroll">
-                    <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
-                  </div>
-                </div>
-              ) : (
-                <div className="p-6 h-full flex flex-col justify-between">
-                  <span className="text-lg font-medium text-white flex flex-col gap-4 w-full whitespace-nowrap ">
-                    <Button size="lgfree" variant="common" onClick={() => setPageMode('todo')}>
-                      Todo List
-                    </Button>
-                    <Button size="lgfree" variant="common" onClick={() => setPageMode('schedule')}>
-                      일정 리스트
-                    </Button>
-                    <Button size="lgfree" variant="common" onClick={() => setPageMode('five')}>
-                      5일 날씨
-                    </Button>
-                    <Button size="lgfree" variant="common" onClick={() => setPageMode('fortune')}>
-                      오늘의 운세
-                    </Button>
-                    <Button size="lgfree" variant="common" onClick={() => setPageMode('quiz')}>
-                      QUIZ
-                    </Button>
-                    <Button size="lgfree" variant="common">
-                      푸쉬 설정
-                    </Button>
-                  </span>
-                  <div className="transition-opacity duration-700 ease-in-out opacity-0 lg:opacity-100">
-                    <ScheduleSummary />
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
 
-            {isSuper && (
-              <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
-            )}
+              {/* 🔹 작은 화면 전용: todo/schedule 패널은 fixed 오버레이(레이아웃 간섭 제거) */}
+              <div
+                className={`
+                  transition-opacity ease-in-out
+                  ${pageMode === 'todo' || pageMode === 'schedule' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+                  fixed top-0 right-0 h-full w-[360px] bg-[#1c1c1c] backdrop-blur-md rounded-l-lg shadow-2xl z-50
+                  lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
+                `}
+              >
+                <div className="h-full lg:p-0 p-6 overflow-y-auto custom-scroll">
+                  {pageMode === 'todo' && <Todo setOpenTodo={handleBackToMain} />}
+                  {pageMode === 'schedule' && (
+                    <ScheduleForm
+                      setOpenSchedule={handleBackToMain}
+                      openAdminDashboard={openAdminDashboard}
+                      openAdminPage={openAdminPage}
+                      openSchedule={true}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* 🔹 큰 화면 전용: MyPage/AdminMypage를 '우측 패널 내부'에 인라인 렌더 */}
+              <div className="hidden lg:block h-full">
+                {openMyPage && <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />}
+                {isSuper && openAdminPage && (
+                  <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </main>
+
+      {/* 🔹 작은 화면 전용: MyPage/AdminMypage는 우측 360px 오버레이로 */}
+      {openMyPage && (
+        <div className="fixed inset-0 z-[1000] pointer-events-auto lg:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setOpenMyPage(false)} />
+          <div
+            className="absolute right-0 top-0 h-full w-[360px] bg-[#1c1c1c] shadow-2xl rounded-l-lg p-6 overflow-y-auto custom-scroll"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MyPage open={true} onClose={() => setOpenMyPage(false)} />
+          </div>
+        </div>
+      )}
+
+      {isSuper && openAdminPage && (
+        <div className="fixed inset-0 z-[1000] pointer-events-auto lg:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setOpenAdminPage(false)} />
+          <div
+            className="absolute right-0 top-0 h-full w-[360px] bg-[#1c1c1c] shadow-2xl rounded-l-lg p-6 overflow-y-auto custom-scroll"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <AdminMypage open={true} onClose={() => setOpenAdminPage(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
