@@ -7,6 +7,7 @@ import { api } from './client';
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 const TODOS = 'todos';
+const CONVERSATIONS = 'conversations';
 
 // !- - - - 할 일 목록 조회 - - - -
 export async function getTodos() {
@@ -47,6 +48,7 @@ export function useCreateTodo() {
     mutationFn: createTodo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TODOS] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { createTodoMutate, createTodoError, ...rest };
@@ -92,6 +94,7 @@ export function useUpdateTodo() {
       const { todo_id } = variables;
       queryClient.invalidateQueries({ queryKey: [TODOS] });
       queryClient.invalidateQueries({ queryKey: [TODOS, todo_id] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { updateTodoMutate, updateTodoError, ...rest };
@@ -107,7 +110,7 @@ export function useUpdateTodo() {
 
 // !- - - - 할 일 삭제 - - - -
 export async function deleteTodo(todo_id) {
-  const res = await api.delete(`/todos/${todo_id}`);
+  const res = await api.delete(`/todos/${todo_id}?hard=true`);
   return res.data;
 }
 export function useDeleteTodo() {
@@ -120,6 +123,7 @@ export function useDeleteTodo() {
     mutationFn: deleteTodo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TODOS] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { deleteTodoMutate, deleteTodoError, ...rest };
@@ -142,6 +146,7 @@ export function useToggleTodoComplete() {
     mutationFn: ({ todo_id, payload }) => toggleTodoComplete(todo_id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TODOS] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { toggleTodoCompleteMutate, toggleTodoCompleteError, ...rest };

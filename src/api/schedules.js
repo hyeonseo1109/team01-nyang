@@ -7,6 +7,7 @@ import { api } from './client';
 // 3. 구조분해할당으로 데이터 꺼내오는 법
 
 const SCHEDULES = 'schedules';
+const CONVERSATIONS = 'conversations';
 
 // !- - - - 일정 목록 조회 - - - -
 export async function getSchedules() {
@@ -43,6 +44,7 @@ export function useCreateSchedule() {
     mutationFn: createSchedule,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [SCHEDULES] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { createScheduleMutate, createScheduleError, ...rest };
@@ -88,6 +90,7 @@ export function useUpdateSchedule() {
     mutationFn: ({ schedules_id, payload }) => updateSchedule(schedules_id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [SCHEDULES] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { updateScheduleMutate, updateScheduleError, ...rest };
@@ -118,6 +121,7 @@ export function useDeleteSchedule() {
     mutationFn: deleteSchedule,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [SCHEDULES] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { deleteScheduleMutate, deleteScheduleError, ...rest };
