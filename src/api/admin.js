@@ -19,6 +19,7 @@ export function useUsers() {
     isLoading: usersIsLoading,
     isError: usersIsError,
     error: usersError,
+    refetch,
     ...rest
   } = useQuery({
     queryKey: [ADMIN_USERS],
@@ -26,7 +27,7 @@ export function useUsers() {
     staleTime: 1000 * 60 * 5,
     // 유저 목록은 자주 바뀌지 않으니 짧게 캐싱해 두었음.
   });
-  return { usersData, usersIsLoading, usersIsError, usersError, ...rest };
+  return { usersData, usersIsLoading, usersIsError, usersError, refetch, ...rest };
 }
 // const  { usersData, usersIsLoading, usersIsError } = useUsers();   :   전체 목록
 
@@ -77,6 +78,7 @@ export function useUpdateUser() {
     // mutate에서 받은 인자를 그대로 updateUser에 전달함.
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [ADMIN_USERS] });
+      queryClient.invalidateQueries({ queryKey: [USER_SEARCH] });
     },
   });
   return { updateUserMutate, updateUserError, ...rest };
@@ -108,6 +110,7 @@ export function useDeleteUser() {
     // 즉 객체로 쓰지 않고 숫자 id 자체를 넘기면 됨.
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [ADMIN_USERS] });
+      queryClient.invalidateQueries({ queryKey: [USER_SEARCH] });
     },
   });
   return { deleteUserMutate, deleteUserError, ...rest };
