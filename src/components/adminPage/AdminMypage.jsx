@@ -63,6 +63,10 @@ export default function AdminMypage() {
             <div className="flex flex-col w-full lg:items-start items-center">
               <p className="text-[1.2rem] font-bold">관리자님 ㅎㅇ?</p>
               <p className="text-[0.9rem] text-[#999]">{user.email}</p>
+              <div>
+                <input type="file" accept="image/*" className="border" placeholder="파일 선택" />
+                <button className="border">적용</button>
+              </div>
             </div>
           </div>
           <div className="w-full border rounded-xl px-5 py-8 gap-10 flex flex-col border-[#444]">
