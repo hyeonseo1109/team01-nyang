@@ -67,8 +67,21 @@ export default function MyPage({ open, onClose }) {
   }, [open]);
 
   const { updateMyProfileMutate } = useUpdateMyProfile();
+  const [meLocal, setMeLocal] = useState(me);
+  useEffect(() => {
+    setMeLocal(me);
+  }, [me]);
   function handleChangeProfile(patch) {
-    updateMyProfileMutate(patch);
+    // 1) 즉시 UI 반영
+    setMeLocal((prev) => ({ ...(prev || {}), ...(patch || {}) }));
+    // 2) 서버 반영
+    updateMyProfileMutate(patch, {
+      onSuccess: (next) => {
+        // 서버 응답 병합. birthday 누락 방지
+        const merged = { ...(meLocal || {}), ...(next || {}), ...(patch || {}) };
+        setMeLocal(merged);
+      },
+    });
   }
 
   const showBack = useMemo(() => mode !== 'main', [mode]);
@@ -102,7 +115,7 @@ export default function MyPage({ open, onClose }) {
     if (mode === 'main') {
       return (
         <MypageMain
-          me={me}
+          me={meLocal}
           onEdit={goProfile}
           onPassword={goPassword}
           onContact={handleContact}
@@ -113,7 +126,7 @@ export default function MyPage({ open, onClose }) {
     if (mode === 'profile') {
       return (
         <MypageProfileEdit
-          me={me}
+          me={meLocal}
           onChange={handleChangeProfile}
           onLogout={handleLogout}
           onLeave={goLeave}
@@ -173,7 +186,7 @@ export default function MyPage({ open, onClose }) {
               onBack={goMain}
               username={me?.username}
               email={me?.email}
-              birthdate={me?.birthday ? String(me.birthday).slice(0, 10) : undefined}
+              birthday={me?.birthday ? String(me.birthday).slice(0, 10) : undefined}
               image={me?.profile_image}
             />
           </div>

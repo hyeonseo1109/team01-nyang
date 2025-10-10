@@ -1,10 +1,10 @@
 // src/Mypage/features/Profile.jsx
 import fallbackAvatar from '../../../assets/ProfileNormal.jpg';
 
-export default function Profile({ username, email, birthdate, image }) {
+export default function Profile({ username, email, birthday, image }) {
   const name = username || '';
   const mail = email || '';
-  const bday = birthdate || '';
+  const bday = birthday || '';
   const img = image || fallbackAvatar;
 
   return (
