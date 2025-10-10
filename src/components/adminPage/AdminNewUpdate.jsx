@@ -27,13 +27,6 @@ ChartJS.register(
 export function AdminNewUpdate() {
   const { usersData, refetch } = useUsers();
 
-  console.log('🔍 전체 usersData:', usersData);
-  console.log('🔍 오늘 날짜 (로컬):', getKSTDateString(0));
-  console.log(
-    '🔍 유저들 created_at 샘플:',
-    usersData?.users.slice(0, 3).map((u) => u.created_at),
-  );
-
   function getKSTDateString(daysAgo = 0) {
     const date = new Date();
     date.setDate(date.getDate() - daysAgo);
