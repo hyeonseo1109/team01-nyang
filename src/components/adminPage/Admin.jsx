@@ -20,7 +20,7 @@ export default function Admin() {
   const { updateUserMutate } = useUpdateUser();
   const { deleteUserMutate } = useDeleteUser();
 
-  const baseData = debouncedValue ? (userSearchData?.users ?? []) : (usersData?.users ?? []);
+  const baseData = debouncedValue ? (userSearchData ?? []) : (usersData?.users ?? []);
 
   const searchedUser =
     mode === 'block'

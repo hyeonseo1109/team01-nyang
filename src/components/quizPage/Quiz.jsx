@@ -12,15 +12,13 @@ export function Quiz() {
   const data = quizData?.data;
 
   const handleBack = (idx) => {
-    const alphabetIdx = String.fromCharCode(65 + idx);
-
     // 아무것도 선택 안 했을 때
     if (selectOption === undefined) {
       return 'bg-[#2d5b81] hover:bg-[#1b4567] cursor-pointer';
     }
     // 선택한 옵션만 색상 변경
     if (selectOption === idx) {
-      return alphabetIdx === data.answer
+      return data.options[idx] === data.answer
         ? 'bg-[#379e3b] hover:bg-[#267c29] cursor-pointer'
         : 'bg-[#bf4b4b] hover:bg-[#a73939] cursor-pointer';
     }
@@ -29,9 +27,8 @@ export function Quiz() {
   };
 
   const handleOptionClick = (idx) => {
-    const alphabetIdx = String.fromCharCode(65 + idx);
     setSelectOption(idx);
-    if (alphabetIdx === data.answer) {
+    if (data.options[idx] === data.answer) {
       setMessage('정답입니다!');
     } else {
       setMessage('아쉽지만 오답이네요.. 다른 답을 골라볼까요?');
