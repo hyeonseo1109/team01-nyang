@@ -76,8 +76,8 @@ export function useTodo(todo_id) {
 // const { todoByIdData } = useTodo(id);
 
 // !- - - - 할 일 수정 - - - -
-export async function updateTodo(id, payload) {
-  const res = await api.patch(`/todos/${id}`, payload);
+export async function updateTodo(todo_id, payload) {
+  const res = await api.patch(`/todos/${todo_id}`, payload);
   return res.data;
 }
 export function useUpdateTodo() {
@@ -87,9 +87,11 @@ export function useUpdateTodo() {
     error: updateTodoError,
     ...rest
   } = useMutation({
-    mutationFn: ({ id, payload }) => updateTodo(id, payload),
-    onSuccess: () => {
+    mutationFn: ({ todo_id, payload }) => updateTodo(todo_id, payload),
+    onSuccess: (_, variables) => {
+      const { todo_id } = variables;
       queryClient.invalidateQueries({ queryKey: [TODOS] });
+      queryClient.invalidateQueries({ queryKey: [TODOS, todo_id] });
     },
   });
   return { updateTodoMutate, updateTodoError, ...rest };
@@ -104,8 +106,8 @@ export function useUpdateTodo() {
 // });
 
 // !- - - - 할 일 삭제 - - - -
-export async function deleteTodo(id) {
-  const res = await api.delete(`/todos/${id}`);
+export async function deleteTodo(todo_id) {
+  const res = await api.delete(`/todos/${todo_id}`);
   return res.data;
 }
 export function useDeleteTodo() {
@@ -126,8 +128,8 @@ export function useDeleteTodo() {
 // deleteTodoMutate(id);
 
 // !- - - - 할 일 완료 처리 토글 - - - -
-export async function toggleTodoComplete(id, payload) {
-  const res = await api.post(`/todos/${id}/complete`, payload);
+export async function toggleTodoComplete(todo_id, payload) {
+  const res = await api.post(`/todos/${todo_id}/complete`, payload);
   return res.data;
 }
 export function useToggleTodoComplete() {
@@ -137,7 +139,7 @@ export function useToggleTodoComplete() {
     error: toggleTodoCompleteError,
     ...rest
   } = useMutation({
-    mutationFn: ({ id, payload }) => toggleTodoComplete(id, payload),
+    mutationFn: ({ todo_id, payload }) => toggleTodoComplete(todo_id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TODOS] });
     },

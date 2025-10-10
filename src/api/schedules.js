@@ -105,7 +105,7 @@ export function useUpdateSchedule() {
 
 // ! - - - - 일정 삭제 - - - -
 export async function deleteSchedule(schedule_id) {
-  const res = await api.delete(`/schedules/${schedule_id}`);
+  const res = await api.delete(`/schedules/${schedule_id}?hard=true`);
   return res.data;
 }
 export function useDeleteSchedule() {
