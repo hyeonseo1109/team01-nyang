@@ -112,7 +112,7 @@ export default function MainPage() {
                 <div
                   className={`
                     transition-opacity duration-500 ease-in-out opacity-100 pointer-events-auto
-                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1cc2] backdrop-blur-md rounded-l-lg shadow-2xl z-30
+                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1c] backdrop-blur-md rounded-lg z-30
                     lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
                   `}
                 >
@@ -132,7 +132,7 @@ export default function MainPage() {
                 <div
                   className={`
                     transition-opacity duration-500 ease-in-out opacity-100 pointer-events-auto
-                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1cc2] backdrop-blur-md rounded-l-lg shadow-2xl z-30
+                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1c] backdrop-blur-md rounded-lg z-30
                     lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
                   `}
                 >
