@@ -8,7 +8,7 @@ export default function MypageHeaderBar({
   onBack,
   username,
   email,
-  birthdate,
+  birthday,
   image,
 }) {
   let leftArea = <div className="w-[72px]" />;
@@ -20,7 +20,7 @@ export default function MypageHeaderBar({
     );
   }
 
-  const showProfile = Boolean(username || email || birthdate || image);
+  const showProfile = Boolean(username || email || birthday || image);
 
   return (
     <div className="flex flex-col gap-3">
@@ -37,7 +37,7 @@ export default function MypageHeaderBar({
         <div>
           <div className="border-t border-white/10" />
           <div className="h-3" aria-hidden="true" />
-          <Profile username={username} email={email} birthdate={birthdate} image={image} />
+          <Profile username={username} email={email} birthday={birthday} image={image} />
           <div className="h-3" aria-hidden="true" />
           <div className="border-b border-white/10" />
         </div>
