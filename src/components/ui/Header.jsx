@@ -10,7 +10,6 @@ export default function Header({ isSuper }) {
   const { setOpenAdminDashboard } = useOpenAdminDashboard();
   return (
     <header className="h-[2rem] flex items-center justify-between px-4">
-      {/* <h1 className="text-lg font-medium">Logo</h1> */}
       <img src="/public/lineHeartTitle.png" className="h-full" />
 
       {isSuper ? (
