@@ -117,7 +117,7 @@ export default function ScheduleForm({
 
     if (isEditing && editingId) {
       updateScheduleMutate({ schedules_id: editingId, payload });
-      resetForm();
+      cancelEdit();
     } else {
       createScheduleMutate(payload);
       resetForm();
