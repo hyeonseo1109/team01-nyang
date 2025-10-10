@@ -52,9 +52,7 @@ export function useUpdateMyProfile() {
     ...rest
   } = useMutation({
     mutationFn: updateMyProfile,
-    onSuccess: () =>
-      // mutation(요청)이 성공했을 때 실행되는 콜백 함수.
-      queryClient.invalidateQueries({ queryKey: [MY_PROFILE] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [MY_PROFILE] }),
   });
   return { updateMyProfileMutate, updateMyProfileError, ...rest };
 }
@@ -70,6 +68,20 @@ export async function updateProfileImage(fileUrl) {
     profile_image: fileUrl,
   });
   return res.data;
+}
+export function useUpdateProfileImage() {
+  const queryClient = useQueryClient();
+  const {
+    mutate: updateProfileImageMutate,
+    error: updateProfileImageError,
+    ...rest
+  } = useMutation({
+    mutationFn: updateProfileImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [MY_PROFILE] });
+    },
+  });
+  return { updateProfileImageMutate, updateProfileImageError, ...rest };
 }
 
 // !- - - - 사용자 삭제 - - - -

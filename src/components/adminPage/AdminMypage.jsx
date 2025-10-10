@@ -9,15 +9,20 @@ import { useUser } from '../../store/useUser';
 import { useLogout } from '../../api/auth';
 import { VscAccount, VscChromeClose } from 'react-icons/vsc';
 import { MdOutlineMailOutline } from 'react-icons/md';
+import { getPresignedUrl, uploadToS3 } from '../../api/presignedURL';
+import { useUpdateProfileImage } from '../../api/users';
 
 export default function AdminMypage() {
   const { openAdminPage, setOpenAdminPage } = useOpenAdminPage();
   const { openAdminDashboard, setOpenAdminDashboard } = useOpenAdminDashboard();
+  const [selectedFile, setSelectedFile] = useState();
+  const { updateProfileImageMutate } = useUpdateProfileImage();
+  const [previewUrl, setPreviewUrl] = useState('');
 
   const { clearUser } = useUser();
   const { logoutMutate } = useLogout();
 
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   const handleLogout = () => {
     logoutMutate(undefined, {
@@ -38,6 +43,30 @@ export default function AdminMypage() {
 
   const handleBackToMain = () => setPageMode('main');
 
+  const handleFile = (e) => {
+    const file = e.target.files?.[0] ?? null;
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    if (!file) return;
+    setSelectedFile(file);
+  };
+
+  const handleApply = async () => {
+    if (!selectedFile) return;
+    try {
+      const { upload_url, file_url } = await getPresignedUrl(selectedFile.name, selectedFile.type);
+      await uploadToS3(upload_url, selectedFile);
+      updateProfileImageMutate(file_url, {
+        onSuccess: () => {
+          setUser({ ...user, profile_image: file_url });
+        },
+      });
+    } catch (e) {
+      console.error('업로드 실패:', e);
+      alert('업로드에 실패했습니다.');
+    }
+  };
+
   return (
     <>
       <PinkCard open={openAdminPage} onClose={() => setOpenAdminPage(false)}>
@@ -53,23 +82,62 @@ export default function AdminMypage() {
           ✕
         </button>
         <div className="flex flex-col justify-start items-center h-full gap-5 w-full">
-          <div className="text-2xl font-bold w-full justify-center flex pt-3">관리자 페이지</div>
-          <div className="flex gap-4 w-full items-center border-t border-b py-3 border-[#444] lg:flex-row flex-col">
-            <img
-              className="w-20 h-20 border rounded-[50%] border-gray-600 aspect-[1/1]"
-              src="/adminProfile.png"
-              alt="관리자 아바타" //추가
-            />
-            <div className="flex flex-col w-full lg:items-start items-center">
-              <p className="text-[1.2rem] font-bold">관리자님 ㅎㅇ?</p>
-              <p className="text-[0.9rem] text-[#999]">{user.email}</p>
-              <div>
-                <input type="file" accept="image/*" className="border" placeholder="파일 선택" />
-                <button className="border">적용</button>
+          <div className="text-2xl font-bold w-full justify-center flex pt-3 flex-col ">
+            관리자 페이지
+          </div>
+          <div className=" border-t border-b border-[#444] py-5 flex flex-col gap-5">
+            <div className="flex gap-4 w-full items-center lg:flex-row flex-col">
+              {!user.profile_image ? (
+                <img
+                  className="w-20 h-20 border rounded-[50%] border-gray-600 aspect-[1/1]"
+                  src="/adminProfile.png"
+                  alt="관리자 프로필"
+                />
+              ) : (
+                <img
+                  className="w-20 h-20 border rounded-[50%] border-gray-600 aspect-[1/1]"
+                  src={user.profile_image}
+                  alt="관리자 프로필"
+                />
+              )}
+              <div className="flex flex-col w-full lg:items-start items-center">
+                <p className="text-[1.2rem] font-bold">관리자님 ㅎㅇ?</p>
+                <p className="text-[0.9rem] text-[#999]">{user.email}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-2 ">
+                <input
+                  className="input flex-1 min-w-0 text-[#999]"
+                  value={previewUrl}
+                  placeholder="https://..."
+                  readOnly
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <input
+                  id="profile-file"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleFile}
+                />
+                <label htmlFor="profile-file" className="btn cursor-pointer w-full sm:w-auto">
+                  파일선택
+                </label>
+
+                <button
+                  className="btn inline-flex items-center h-10 px-4 whitespace-nowrap cursor-pointer max-w-full"
+                  onClick={handleApply}
+                >
+                  적용
+                </button>
               </div>
             </div>
           </div>
-          <div className="w-full border rounded-xl px-5 py-8 gap-10 flex flex-col border-[#444]">
+          <div className="w-full border rounded-xl px-5 lg:py-8 py-3 lg:gap-10 flex flex-col border-[#444]">
             <div className="flex flex-col gap-2">
               <p className="text-sm text-[#999]">[회원정보]</p>
               <button
