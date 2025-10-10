@@ -24,7 +24,7 @@ AI를 활용한 개인 비서 웹 애플리케이션
 - **Phython** 3.13 + **FastAPI**
 - DB - **PostgreSQL** + **Tortoise ORM**
 - Infra - **Docker Compose** (API, DB, Redis, PgAdmin 통합 관리)
-- CI/CI - **GitHub Actions** (Mypy 타입 검사, 코드 품질 체크)
+- CI/CD - **GitHub Actions** (Mypy 타입 검사, 코드 품질 체크)
 - 외부 API - OpenWeather, Gemini, RSS(Naver), AWS S3
 - 기타: Redis(토큰 블랙리스트), Excel 기반 퀴즈 데이터
 
