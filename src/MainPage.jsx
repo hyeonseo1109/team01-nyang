@@ -105,16 +105,16 @@ export default function MainPage() {
             </div>
           </div>
 
-          {/* 마이페이지 */}
+          {/* 마이페이지 영역 */}
           <div className="relative flex flex-col bg-[#22222295] shadow-3d rounded-lg min-w-0">
             <div className="flex-1 min-h-0">
               {pageMode === 'todo' || pageMode === 'schedule' ? (
                 <div
                   className={`
-                      transition-opacity duration-500 ease-in-out opacity-100 pointer-events-auto
-                      absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1cc2] backdrop-blur-md rounded-l-lg shadow-2xl z-30
-                      lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
-                    `}
+                    transition-opacity duration-500 ease-in-out opacity-100 pointer-events-auto
+                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1cc2] backdrop-blur-md rounded-l-lg shadow-2xl z-30
+                    lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
+                  `}
                 >
                   <div className="h-full p-6 overflow-y-auto custom-scroll">
                     {pageMode === 'todo' && <Todo setOpenTodo={handleBackToMain} />}
@@ -126,6 +126,21 @@ export default function MainPage() {
                         openSchedule={true}
                       />
                     )}
+                  </div>
+                </div>
+              ) : openMyPage ? (
+                <div
+                  className={`
+                    transition-opacity duration-500 ease-in-out opacity-100 pointer-events-auto
+                    absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1cc2] backdrop-blur-md rounded-l-lg shadow-2xl z-30
+                    lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
+                  `}
+                >
+                  <div className="absolute top-2 right-2">
+                    <BackButton onClose={() => setOpenMyPage(false)} />
+                  </div>
+                  <div className="h-full p-6 overflow-y-auto custom-scroll">
+                    <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
                   </div>
                 </div>
               ) : (
@@ -157,7 +172,6 @@ export default function MainPage() {
               )}
             </div>
 
-            <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
             {isSuper && (
               <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
             )}
