@@ -68,57 +68,31 @@ export default function MainPage() {
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
       <main className="flex-1 bg-[#090909] p-4 min-h-0 overflow-hidden overflow-x-auto">
-        {/* 본문 vs 마이페이지 */}
         <div className="grid h-full grid-cols-[4fr_1fr] gap-4 min-w-0">
-          {/* 헤더 vs 본문*/}
           <div className="grid grid-rows-[auto_1fr] gap-4 min-h-0 min-w-0">
             <Header isSuper={isSuper} />
-
-            {/* 본문 - 위아래 1:2 비율 */}
             <div className="grid grid-rows-[1fr_2fr] gap-4 min-h-0 min-w-0">
-              {/* 본문 윗부분 왼오 */}
               <div className="grid grid-cols-[3fr_2fr] gap-4 min-h-0 min-w-0">
-                {/* 본문 윗부분 왼 */}
                 <div className="bg-[#22222295] shadow-3d rounded-lg p-6 flex flex-col overflow-y-auto custom-scroll min-w-0">
                   {isSuper && openAdminDashboard ? <AdminNewUpdate /> : <News />}
                 </div>
-
-                {/* 본문 윗부분 오 */}
                 <div className="flex items-center justify-center rounded-lg bg-[#22222295] shadow-3d p-6 overflow-y-auto min-w-0 custom-scroll">
                   {isSuper && openAdminDashboard ? <AdminInquiries /> : <TodayWeather />}
                 </div>
               </div>
-
-              {/* 본문 아랫부분 */}
               <div className="lg:grid grid-cols-[1fr_3fr] gap-4 min-h-0 min-w-0">
-                {/* 본문 아랫부분 왼 */}
                 <div className="hidden lg:flex bg-[#22222295] items-center justify-center shadow-3d rounded-lg relative overflow-hidden">
                   <AnalogClock />
                   <GlareEffect />
                 </div>
-
-                {/* 대시보드 = 본문 아랫부분 오 */}
-                <div className="flex items-center rounded-lg bg-[#22222295] p-6 relative overflow-x-auto custom-scroll w-full h-full shadow-3d min-w-0 ">
+                <div className="flex items-center justify-center rounded-lg bg-[#22222295] p-6 relative overflow-x-auto custom-scroll w-full h-full shadow-3d min-w-0 ">
                   {CONTENT_MAP[pageMode]}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* 마이페이지 */}
-          <div className="relative flex flex-col bg-[#22222295] shadow-3d rounded-lg overflow-hidden min-w-0">
-            <div className="flex-1  p-6 min-h-0">
-              {pageMode === 'todo' && <Todo setOpenTodo={handleBackToMain} />}
-
-              {pageMode === 'schedule' && (
-                <ScheduleForm
-                  setOpenSchedule={handleBackToMain}
-                  openAdminDashboard={openAdminDashboard}
-                  openAdminPage={openAdminPage}
-                  openSchedule={true}
-                />
-              )}
-
+          <div className="relative flex flex-col bg-[#22222295] shadow-3d rounded-lg min-w-0">
+            <div className="flex-1 p-6 min-h-0">
               {pageMode !== 'todo' && pageMode !== 'schedule' && (
                 <div className="flex flex-col justify-between h-full">
                   <span className="text-lg font-medium text-white flex flex-col gap-4 w-full whitespace-nowrap ">
@@ -146,6 +120,27 @@ export default function MainPage() {
                   </div>
                 </div>
               )}
+              <div
+                className={`
+                  transition-opacity ease-in-out
+                  ${pageMode === 'todo' || pageMode === 'schedule' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+                  absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1c] backdrop-blur-md rounded-l-lg shadow-2xl z-20
+                  lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
+                `}
+              >
+                <div className="h-full lg:p-0 p-6 overflow-y-auto custom-scroll">
+                  {pageMode === 'todo' && <Todo setOpenTodo={handleBackToMain} />}
+                  {pageMode === 'schedule' && (
+                    <ScheduleForm
+                      setOpenSchedule={handleBackToMain}
+                      openAdminDashboard={openAdminDashboard}
+                      openAdminPage={openAdminPage}
+                      openSchedule={true}
+                    />
+                  )}
+                </div>
+              </div>
+
               <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
               {isSuper && (
                 <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
