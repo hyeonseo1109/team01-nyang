@@ -7,7 +7,6 @@ export default function Briefing() {
   const { data, isLoading, isError, error } = useBriefings();
 
   if (isLoading) return <p className="text-sm text-neutral-400">브리핑 불러오는 중...</p>;
-
   if (isError)
     return (
       <p className="text-sm text-red-400">
@@ -27,7 +26,7 @@ export default function Briefing() {
     .trim();
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full overflow-y-auto custom-scroll p-2">
       <div className="flex justify-between items-center mb-4">
         <span className="px-3 py-1 rounded-lg bg-[#2d5b81] text-white text-xl font-medium">
           {typeLabel}
