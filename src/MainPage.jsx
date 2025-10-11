@@ -65,7 +65,6 @@ export default function MainPage() {
     ),
   };
 
-  // 관리자/마이페이지/패널 오버레이 노출 여부
   const showOverlay = openAdminPage || openMyPage || pageMode === 'todo' || pageMode === 'schedule';
 
   return (
@@ -108,10 +107,9 @@ export default function MainPage() {
             </div>
           </div>
 
-          {/* 오른쪽 칼럼 (마이페이지/관리자/패널) */}
+          {/* 마이페이지 */}
           <div className="relative flex flex-col bg-[#22222295] shadow-3d rounded-lg min-w-0">
             <div className="flex-1 p-6 min-h-0">
-              {/* 오버레이가 아닐 때만 오른쪽 메뉴/요약 보이기 */}
               {!showOverlay && (
                 <div className="flex flex-col justify-between h-full">
                   <span className="text-lg font-medium text-white flex flex-col gap-4 w-full whitespace-nowrap ">
@@ -140,7 +138,6 @@ export default function MainPage() {
                 </div>
               )}
 
-              {/* 공통 오버레이 컨테이너: <lg에서는 패널, lg 이상에서는 인라인 */}
               <div
                 className={`
                   transition-opacity ease-in-out
@@ -150,17 +147,14 @@ export default function MainPage() {
                 `}
               >
                 <div className="h-full lg:p-0 p-6 overflow-y-auto custom-scroll">
-                  {/* 1) 관리자 마이페이지 우선 */}
                   {isSuper && openAdminPage && (
                     <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
                   )}
 
-                  {/* 2) 일반 마이페이지 */}
                   {!openAdminPage && openMyPage && (
                     <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
                   )}
 
-                  {/* 3) Todo / Schedule 패널 */}
                   {!openAdminPage && !openMyPage && pageMode === 'todo' && (
                     <Todo setOpenTodo={() => setPageMode('main')} />
                   )}
@@ -176,8 +170,6 @@ export default function MainPage() {
                 </div>
               </div>
             </div>
-
-            {/* 별도 모달 렌더 제거 (오버레이 컨테이너에서 통합 처리) */}
           </div>
         </div>
       </main>
