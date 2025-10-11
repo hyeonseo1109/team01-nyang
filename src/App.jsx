@@ -28,6 +28,7 @@ function App() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [getUser]);
+
   return (
     <>
       <Toaster />
