@@ -55,35 +55,48 @@ export default function TodayWeather() {
   const cityName = getKoreanCityName(d.city);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full gap-6 p-4">
-      <div className="flex flex-wrap items-center justify-center gap-6 text-center">
-        <Icon className="w-24 h-24 sm:w-28 sm:h-28 text-blue-300" strokeWidth={1.5} />
-        <div className="flex flex-col items-center sm:items-end">
-          <div className="flex items-baseline gap-2">
-            <div className="text-5xl sm:text-4xl font-extrabold">{d.current_temp ?? '-'}°</div>
-            <div className="text-sm sm:text-base text-neutral-400 mt-1">{cityName}</div>
+    <div className="flex flex-col gap-4 w-full h-full min-h-0">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scroll">
+        <div className="w-full h-full p-3 grid grid-rows-[1fr_auto] gap-4">
+          <div className="flex flex-col lg:flex-row items-center gap-3 min-w-0 transition-all duration-300 ease-in-out">
+            <div className="relative shrink-0">
+              <Icon className="w-28 sm:w-32 h-auto text-blue-300" strokeWidth={1.5} />
+            </div>
+
+            <div className="lg:ml-auto pr-1 flex flex-col items-end justify-center flex-shrink min-w-0">
+              <div className="font-extrabold leading-none text-[clamp(1.5rem,5vw,3.5rem)] truncate">
+                {d.current_temp ?? '-'}°
+              </div>
+              <div className="text-xs sm:text-sm text-neutral-300 mt-1 text-right whitespace-nowrap">
+                <span className="text-red-400 font-bold">최고 {d.max_temp ?? '-'}°</span> /{' '}
+                <span className="text-blue-400 font-bold">최저 {d.min_temp ?? '-'}°</span>
+              </div>
+              <div className="text-sm text-neutral-400 mt-1">{cityName}</div>
+              <div className="text-sm text-neutral-400">{d.description ?? '-'}</div>
+            </div>
           </div>
-          <div className="text-sm sm:text-base text-neutral-300 mt-1 whitespace-nowrap">
-            <span className="text-red-400 font-bold">최고 {d.max_temp ?? '-'}°</span> /{' '}
-            <span className="text-blue-400 font-bold">최저 {d.min_temp ?? '-'}°</span>
-          </div>
-          <div className="text-sm text-neutral-400 mt-1">{d.description ?? '-'}</div>
-        </div>
-      </div>
-      <div className="grid grid-cols-3 gap-3 w-full max-w-md">
-        {[
-          { k: '습도', v: d.humidity != null ? `${d.humidity}%` : '-' },
-          { k: '강수량', v: d.precipitation != null ? `${d.precipitation} mm` : '-' },
-          { k: '미세먼지', v: d.pm10 != null ? `${d.pm10} ㎍/m³` : '-' },
-        ].map((it) => (
+
           <div
-            key={it.k}
-            className="rounded-2xl bg-neutral-800/70 border border-neutral-700 px-3 py-3 flex flex-col items-center"
+            className="transition-all duration-500 ease-in-out 
+              max-h-0 opacity-0 overflow-hidden 
+              lg:max-h-screen lg:opacity-100 lg:grid 
+              grid-cols-3 gap-3"
           >
-            <div className="text-sm text-neutral-400">{it.k}</div>
-            <div className="text-base font-semibold">{it.v}</div>
+            {[
+              { k: '습도', v: d.humidity != null ? `${d.humidity}%` : '-' },
+              { k: '강수량', v: d.precipitation != null ? `${d.precipitation} mm` : '-' },
+              { k: '미세먼지', v: d.pm10 != null ? `${d.pm10} ㎍/m³` : '-' },
+            ].map((it) => (
+              <div
+                key={it.k}
+                className="rounded-xl bg-neutral-800/70 border border-neutral-700 px-2 py-2 flex flex-col items-center justify-center"
+              >
+                <div className="text-[12px] text-neutral-400">{it.k}</div>
+                <div className="text-sm font-semibold leading-tight">{it.v}</div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
