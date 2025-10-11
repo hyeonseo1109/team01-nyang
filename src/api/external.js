@@ -157,10 +157,10 @@ export async function getWeather(coords = DEFAULT_LOCATION) {
     return {
       city: getKoreanCityName(raw.city ?? '서울'),
       current_temp: raw.temperature ?? null,
-      max_temp: raw.max_temp ?? null,
-      min_temp: raw.min_temp ?? null,
+      max_temp: raw.temp_max ?? null,
+      min_temp: raw.temp_min ?? null,
       humidity: raw.humidity ?? null,
-      precipitation: raw.precipitation ?? null,
+      precipitation: raw.rain_1h ?? null,
       pm10: raw.pm10 ?? null,
       weather_icon: raw.icon ?? null,
       description: raw.description ?? '-',
@@ -201,7 +201,14 @@ export async function getWeatherForecast(coords = DEFAULT_LOCATION) {
         const temps = items.map((d) => d.temperature);
         const max = Math.max(...temps);
         const min = Math.min(...temps);
+
         const { description, humidity, icon } = items[0];
+
+        const totalPrecipitation = items.reduce((sum, d) => {
+          const rain = d.rain_1h ?? d.precipitation ?? 0;
+          return sum + rain;
+        }, 0);
+
         return {
           date,
           temp_max: max.toFixed(1),
@@ -209,6 +216,7 @@ export async function getWeatherForecast(coords = DEFAULT_LOCATION) {
           description,
           humidity,
           icon,
+          precipitation: totalPrecipitation.toFixed(1),
         };
       })
       .slice(0, 5);
