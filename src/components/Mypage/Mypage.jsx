@@ -170,31 +170,23 @@ export default function MyPage({ open, onClose }) {
   if (!open) return null;
 
   return (
-    <div className="absolute inset-0 z-[40] pointer-events-auto">
-      {/* dim */}
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-
-      {/* panel */}
-      <div className="absolute inset-0 p-2 sm:p-3 md:p-4">
-        <div className="relative h-full w-full rounded-lg bg-[#121212] shadow-3d overflow-hidden flex flex-col">
-          {/* sticky header */}
-          <div className="sticky top-0 z-20 bg-[#121212] p-3 sm:p-4 border-b border-white/10">
-            <MypageHeaderBar
-              title="마이페이지"
-              onClose={onClose}
-              showBack={showBack}
-              onBack={goMain}
-              username={me?.username}
-              email={me?.email}
-              birthday={me?.birthday ? String(me.birthday).slice(0, 10) : undefined}
-              image={me?.profile_image}
-            />
-          </div>
-
-          {/* body */}
-          <div className="flex-1 overflow-auto custom-scroll p-2 sm:p-4">{renderBody()}</div>
-        </div>
+    <div className="h-full w-full rounded-lg bg-[#121212] shadow-3d overflow-hidden flex flex-col">
+      {/* sticky header */}
+      <div className="sticky top-0 z-20 bg-[#121212] p-3 sm:p-4 border-b border-white/10">
+        <MypageHeaderBar
+          title="마이페이지"
+          onClose={onClose}
+          showBack={showBack}
+          onBack={goMain}
+          username={me?.username}
+          email={me?.email}
+          birthday={me?.birthday ? String(me.birthday).slice(0, 10) : undefined}
+          image={me?.profile_image}
+        />
       </div>
+
+      {/* body */}
+      <div className="flex-1 overflow-auto custom-scroll p-2 sm:p-4">{renderBody()}</div>
 
       {/* 공통 알림 모달 */}
       {modal.open ? (

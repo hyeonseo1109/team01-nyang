@@ -65,12 +65,14 @@ export default function MainPage() {
     ),
   };
 
+  const showOverlay = openAdminPage || openMyPage || pageMode === 'todo' || pageMode === 'schedule';
+
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
       <main className="flex-1 bg-[#090909] p-4 min-h-0 overflow-hidden overflow-x-auto">
         {/* 본문 vs 마이페이지 */}
         <div className="grid h-full grid-cols-[4fr_1fr] gap-4 min-w-0">
-          {/* 헤더 vs 본문*/}
+          {/* 헤더 vs 본문 */}
           <div className="grid grid-rows-[auto_1fr] gap-4 min-h-0 min-w-0">
             <Header isSuper={isSuper} />
 
@@ -106,9 +108,9 @@ export default function MainPage() {
           </div>
 
           {/* 마이페이지 */}
-          <div className="relative flex flex-col bg-[#22222295] shadow-3d rounded-lg min-w-0">
+          <div className="relative flex flex-col bg-[#22222295] shadow-3d rounded-lg min-w-0 min-h-0">
             <div className="flex-1 p-6 min-h-0">
-              {pageMode !== 'todo' && pageMode !== 'schedule' && (
+              {!showOverlay && (
                 <div className="flex flex-col justify-between h-full">
                   <span className="text-lg font-medium text-white flex flex-col gap-4 w-full whitespace-nowrap ">
                     <Button size="lgfree" variant="common" onClick={() => setPageMode('todo')}>
@@ -135,19 +137,31 @@ export default function MainPage() {
                   </div>
                 </div>
               )}
+
               <div
                 className={`
                   transition-opacity ease-in-out
-                  ${pageMode === 'todo' || pageMode === 'schedule' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+                  ${showOverlay ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
                   absolute top-0 right-0 h-full w-[360px] bg-[#1c1c1c] backdrop-blur-md rounded-l-lg shadow-2xl z-20
                   lg:relative lg:top-auto lg:right-auto lg:w-full lg:h-full lg:bg-transparent lg:backdrop-blur-none lg:rounded-none lg:shadow-none lg:z-auto
                 `}
               >
                 <div className="h-full lg:p-0 p-6 overflow-y-auto custom-scroll">
-                  {pageMode === 'todo' && <Todo setOpenTodo={handleBackToMain} />}
-                  {pageMode === 'schedule' && (
+                  {isSuper && openAdminPage && (
+                    <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
+                  )}
+
+                  {!openAdminPage && openMyPage && (
+                    <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
+                  )}
+
+                  {!openAdminPage && !openMyPage && pageMode === 'todo' && (
+                    <Todo setOpenTodo={() => setPageMode('main')} />
+                  )}
+
+                  {!openAdminPage && !openMyPage && pageMode === 'schedule' && (
                     <ScheduleForm
-                      setOpenSchedule={handleBackToMain}
+                      setOpenSchedule={() => setPageMode('main')}
                       openAdminDashboard={openAdminDashboard}
                       openAdminPage={openAdminPage}
                       openSchedule={true}
@@ -155,11 +169,6 @@ export default function MainPage() {
                   )}
                 </div>
               </div>
-
-              <MyPage open={openMyPage} onClose={() => setOpenMyPage(false)} />
-              {isSuper && (
-                <AdminMypage open={openAdminPage} onClose={() => setOpenAdminPage(false)} />
-              )}
             </div>
           </div>
         </div>
