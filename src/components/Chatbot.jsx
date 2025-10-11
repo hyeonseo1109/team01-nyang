@@ -2,7 +2,8 @@ import dayjs from 'dayjs';
 import { useSchedules } from '../api/schedules';
 import { useTodos, useToggleTodoComplete } from '../api/todos';
 import { useBriefings } from '../api/external';
-
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
 export default function Chatbot() {
   const {
     schedulesData = [],
@@ -21,7 +22,7 @@ export default function Chatbot() {
   const { toggleTodoCompleteMutate } = useToggleTodoComplete();
   const { briefingsData } = useBriefings();
 
-  const today = dayjs().format('YYYY-MM-DD');
+  const today = dayjs();
 
   const todaySchedules =
     schedulesData?.schedules?.filter((item) =>
