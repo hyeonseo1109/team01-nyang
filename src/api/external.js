@@ -86,22 +86,29 @@ export function useBriefings() {
 
 // !- - - - 일정/할일 요약 대화 - - - -
 export async function getConversations() {
-  try {
-    const res = await api.get('/gemini/conversations', { withCredentials: true });
-    return res.data?.data || {};
-  } catch (err) {
-    console.error('💬 getConversations API error:', err);
-    throw err;
-  }
+  const res = await api.get('/gemini/conversations');
+  return res.data;
 }
 export function useConversations() {
-  return useQuery({
+  const {
+    data: conversationsData,
+    isLoading: conversationsIsLoading,
+    isError: conversationsIsError,
+    error: conversationsError,
+    ...rest
+  } = useQuery({
     queryKey: [CONVERSATIONS],
     queryFn: getConversations,
-    staleTime: 1000 * 60 * 10,
-    retry: false,
   });
+  return {
+    conversationsData,
+    conversationsIsLoading,
+    conversationsIsError,
+    conversationsError,
+    ...rest,
+  };
 }
+// const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
 
 // !- - - - 오늘의 운세 - - - -
 export async function getFortune() {

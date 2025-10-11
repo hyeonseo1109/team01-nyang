@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import { useSchedules } from '../api/schedules';
 import { useTodos, useToggleTodoComplete } from '../api/todos';
-import { useConversations } from '../api/external';
 import isBetween from 'dayjs/plugin/isBetween';
+
 dayjs.extend(isBetween);
 
 export default function Chatbot() {
@@ -21,12 +21,6 @@ export default function Chatbot() {
   } = useTodos();
 
   const { toggleTodoCompleteMutate } = useToggleTodoComplete();
-  const {
-    data: conversationsData,
-    isLoading: convoLoading,
-    isError: convoError,
-    error: convoErr,
-  } = useConversations();
 
   const today = dayjs();
   const todaySchedules =
@@ -48,46 +42,24 @@ export default function Chatbot() {
 
   const toggleTodo = (id, currentState) => toggleTodoCompleteMutate({ id, currentState });
 
-  if (schedulesIsLoading || todoIsLoading || convoLoading)
+  if (schedulesIsLoading || todoIsLoading)
     return <div className="text-neutral-400">불러오는 중...</div>;
 
-  if (schedulesIsError || todoIsError || convoError)
+  if (schedulesIsError || todoIsError)
     return (
       <div className="text-red-400">
         데이터 불러오기 실패
         <br />
-        {schedulesError?.message || ''} {todosError?.message || ''} {convoErr?.message || ''}
+        {schedulesError?.message || ''} {todosError?.message || ''}
       </div>
     );
 
-  const summary = conversationsData?.summary || conversationsData?.conversation;
-  const recommendations = conversationsData?.recommendations || [];
-
-  const hasData =
-    sortedTodos.length > 0 || todaySchedules.length > 0 || summary || recommendations.length > 0;
+  const hasData = sortedTodos.length > 0 || todaySchedules.length > 0;
 
   if (!hasData) return <div className="text-neutral-400">오늘 일정/할 일 데이터가 없습니다.</div>;
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      {summary && (
-        <div className="rounded-xl bg-neutral-800/60 border border-neutral-700 p-4">
-          <h3 className="text-lg font-semibold text-white mb-2">오늘의 요약 ✨</h3>
-          <p className="text-sm text-neutral-200 whitespace-pre-line">{summary}</p>
-        </div>
-      )}
-
-      {recommendations.length > 0 && (
-        <div className="rounded-xl bg-neutral-800/60 border border-neutral-700 p-4">
-          <h3 className="text-lg font-semibold text-white mb-2">추천 활동 💡</h3>
-          <ul className="list-disc list-inside space-y-1 text-sm text-neutral-200">
-            {recommendations.map((rec, idx) => (
-              <li key={idx}>{rec}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       <div className="grid grid-cols-2 gap-12 w-full">
         <div className="flex flex-col items-center">
           <h2 className="text-2xl font-semibold mb-6">오늘의 Todo</h2>
