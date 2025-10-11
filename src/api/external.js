@@ -1,10 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from './client';
+import { DEFAULT_LOCATION } from '../components/weather/location';
+import { getKoreanCityName } from '../utils/weatherCityMap';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 // 덩어리별 코드 순서(목차)
 // 1. api 요청 함수
 // 2. TanStack Query 훅
 // 3. 구조분해할당으로 데이터 꺼내오는 법
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const NEWS = 'news';
 const QUIZ = 'quiz';
@@ -12,10 +19,11 @@ const BRIEFINGS = 'briefings';
 const CONVERSATIONS = 'conversations';
 const FORTUNE = 'fortune';
 const WEATHER = 'weather';
+const WEATHER_FORECAST = 'weatherForecast';
 
 // !- - - - 카테고리별 최신 뉴스 헤드라인 및 링크 가져오기 - - - -
 export async function getNews(category) {
-  const res = await api.get(`/news/${category}`);
+  const res = await api.get('/news/', { params: { category } });
   return res.data;
 }
 export function useNews(category) {
@@ -105,7 +113,7 @@ export function useConversations() {
 }
 // const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
 
-// !- - - - 운세 조회 - - - -
+// !- - - - 오늘의 운세 - - - -
 export async function getFortune() {
   const res = await api.get('/gemini/fortune');
   return res.data;
@@ -128,50 +136,99 @@ export function useFortune() {
 }
 // const { fortuneData, fortuneIsLoading, fortuneIsError } = useFortune();
 
-// !- - - - 현재 날씨 조회 - - - -
-export async function getWeather() {
-  const res = await api.get('/weather/');
+// !- - - - 사용자 위치 - - - -
+export async function patchUserLocation(lat, lon) {
+  const res = await api.patch('/user-locations/', {
+    latitude: lat,
+    longitude: lon,
+  });
   return res.data;
 }
-export function useWeather() {
-  const {
-    data: weatherData,
-    isLoading: weatherIsLoading,
-    isError: weatherIsError,
-    error: weatherError,
-    ...rest
-  } = useQuery({
-    queryKey: [WEATHER],
-    queryFn: getWeather,
-    staleTime: 1000 * 60 * 1,
-  });
-  return { weatherData, weatherIsLoading, weatherIsError, weatherError, ...rest };
-}
-// const { weatherData, weatherIsLoading, weatherIsError } = useWeather();
 
-// !- - - - 5일 날씨 예보 조회 - - - -
-export async function getWeatherForecast() {
-  const res = await api.get('/weather/forecast');
-  return res.data;
+// !- - - - 오늘의 날씨 - - - -
+export async function getWeather(coords = DEFAULT_LOCATION) {
+  try {
+    const res = await api.get('/weather/', {
+      params: { latitude: coords.lat, longitude: coords.lon },
+    });
+
+    const raw = res.data?.data?.weather || {};
+
+    return {
+      city: getKoreanCityName(raw.city ?? '서울'),
+      current_temp: raw.temperature ?? null,
+      max_temp: raw.temp_max ?? null,
+      min_temp: raw.temp_min ?? null,
+      humidity: raw.humidity ?? null,
+      precipitation: raw.rain_1h ?? null,
+      pm10: raw.pm10 ?? null,
+      weather_icon: raw.icon ?? null,
+      description: raw.description ?? '-',
+    };
+  } catch (err) {
+    console.error('🌦️ getWeather error:', err);
+    throw err;
+  }
 }
-export function useWeatherForecast() {
-  const {
-    data: weatherForecastData,
-    isLoading: weatherForecastIsLoading,
-    isError: weatherForecastIsError,
-    error: weatherForecastError,
-    ...rest
-  } = useQuery({
-    queryKey: ['weatherForecast'],
-    queryFn: getWeatherForecast,
-    staleTime: 1000 * 60 * 30,
+export function useWeather(coords = DEFAULT_LOCATION) {
+  return useQuery({
+    queryKey: [WEATHER, coords],
+    queryFn: () => getWeather(coords),
+    staleTime: 1000 * 60 * 10,
   });
-  return {
-    weatherForecastData,
-    weatherForecastIsLoading,
-    weatherForecastIsError,
-    weatherForecastError,
-    ...rest,
-  };
 }
-// const { weatherForecastData, weatherForecastIsLoading, weatherForecastIsError } = useWeather();
+
+// !- - - - 5일 날씨 - - - -
+export async function getWeatherForecast(coords = DEFAULT_LOCATION) {
+  try {
+    const res = await api.get('/weather/forecast', {
+      params: { latitude: coords.lat, longitude: coords.lon },
+    });
+
+    const forecasts = res.data?.data?.forecast?.forecasts || [];
+    if (!Array.isArray(forecasts) || forecasts.length === 0) return [];
+
+    const groupedByDate = forecasts.reduce((acc, item) => {
+      const localTime = dayjs.utc(item.time).tz('Asia/Seoul');
+      const date = localTime.format('YYYY-MM-DD');
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(item);
+      return acc;
+    }, {});
+
+    return Object.entries(groupedByDate)
+      .map(([date, items]) => {
+        const temps = items.map((d) => d.temperature);
+        const max = Math.max(...temps);
+        const min = Math.min(...temps);
+
+        const { description, humidity, icon } = items[0];
+
+        const totalPrecipitation = items.reduce((sum, d) => {
+          const rain = d.rain_1h ?? d.precipitation ?? 0;
+          return sum + rain;
+        }, 0);
+
+        return {
+          date,
+          temp_max: max.toFixed(1),
+          temp_min: min.toFixed(1),
+          description,
+          humidity,
+          icon,
+          precipitation: totalPrecipitation.toFixed(1),
+        };
+      })
+      .slice(0, 5);
+  } catch (err) {
+    console.error('📅 getWeatherForecast error:', err);
+    throw err;
+  }
+}
+export function useWeatherForecast(coords = DEFAULT_LOCATION) {
+  return useQuery({
+    queryKey: [WEATHER_FORECAST, coords],
+    queryFn: () => getWeatherForecast(coords),
+    staleTime: 1000 * 60 * 60 * 3,
+  });
+}

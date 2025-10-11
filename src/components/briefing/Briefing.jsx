@@ -1,31 +1,42 @@
-import { useState } from 'react';
-import { dummyMorning, dummyEvening } from '../../api/dummyData/dummyBriefings';
+import { useBriefings } from '../../api/external';
 
 export default function Briefing() {
-  const [mode, setMode] = useState('morning'); // morning | evening
+  const { briefingsData, briefingsIsLoading, briefingsIsError, error } = useBriefings();
+
+  if (briefingsIsLoading) {
+    return <p className="text-sm text-neutral-400">브리핑 불러오는 중...</p>;
+  }
+
+  if (briefingsIsError) {
+    return (
+      <p className="text-sm text-red-400">
+        브리핑 불러오기 실패 ({error?.response?.data?.message || error?.message})
+      </p>
+    );
+  }
+
+  if (!briefingsData || !briefingsData.summary) {
+    return <p className="text-sm text-neutral-400">브리핑 데이터가 없습니다.</p>;
+  }
+
+  const typeLabel =
+    briefingsData.type === 'morning'
+      ? '아침 브리핑'
+      : briefingsData.type === 'afternoon'
+        ? '점심 브리핑'
+        : briefingsData.type === 'evening'
+          ? '저녁 브리핑'
+          : '브리핑';
 
   return (
     <div className="w-full">
-      <div className="flex gap-2 mb-3 ">
-        <button
-          onClick={() => setMode('morning')}
-          className={`transition-colors px-3 py-1 rounded-lg text-white ${mode === 'morning' ? 'bg-[#2d5b81] hover:bg-[#1b4567]' : 'bg-neutral-700 hover:bg-neutral-800'}`}
-        >
-          아침
-        </button>
-        <button
-          onClick={() => setMode('evening')}
-          className={`transition-colors px-3 py-1 rounded-lg  ${mode === 'evening' ? 'bg-[#2d5b81] hover:bg-[#1b4567]' : 'bg-neutral-700 hover:bg-neutral-800'}`}
-        >
-          저녁
-        </button>
+      <div className="mb-3">
+        <span className="px-3 py-1 rounded-lg bg-[#2d5b81] text-white text-sm font-medium">
+          {typeLabel}
+        </span>
       </div>
 
-      {mode === 'morning' ? (
-        <p className=" whitespace-pre-line">{dummyMorning.summary}</p>
-      ) : (
-        <p className=" whitespace-pre-line">{dummyEvening.summary}</p>
-      )}
+      <p className="whitespace-pre-line">{briefingsData.summary}</p>
     </div>
   );
 }

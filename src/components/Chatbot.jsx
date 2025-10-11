@@ -1,56 +1,86 @@
-import { useState, useEffect } from 'react';
-
 import dayjs from 'dayjs';
-import { dummySchedules } from '../api/dummyData/dummySchedules';
-import { dummyTodos } from '../api/dummyData/dummyTodos';
-
+import { useSchedules } from '../api/schedules';
+import { useTodos, useToggleTodoComplete } from '../api/todos';
+import { useBriefings } from '../api/external';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
 export default function Chatbot() {
-  const [schedules, setSchedules] = useState(null);
-  const [todos, setTodos] = useState(null);
+  const {
+    schedulesData = [],
+    schedulesIsLoading,
+    schedulesIsError,
+    error: schedulesError,
+  } = useSchedules();
 
-  useEffect(() => {
-    setSchedules(dummySchedules);
-    setTodos(dummyTodos);
-  }, []);
+  const {
+    todoData = { todos: [], total: 0 },
+    todoIsLoading,
+    todoIsError,
+    error: todosError,
+  } = useTodos();
 
-  if (schedules === null || todos === null) {
-    return null;
-  }
+  const { toggleTodoCompleteMutate } = useToggleTodoComplete();
+  const { briefingsData } = useBriefings();
 
-  const today = new Date().toISOString().split('T')[0];
-  const todaySchedules = schedules.filter((item) => item.date === today);
+  const today = dayjs();
 
-  const toggleTodo = (id) => {
-    setTodos((prev) =>
-      prev.map((todo) => (todo.id === id ? { ...todo, is_completed: !todo.is_completed } : todo)),
-    );
-  };
+  const todaySchedules =
+    schedulesData?.schedules?.filter((item) =>
+      dayjs(today).isBetween(item.start_time, item.end_time, 'day', '[]'),
+    ) || [];
+
+  const todos = Array.isArray(todoData?.todos) ? todoData.todos : [];
 
   const sortedTodos = [
     ...todos.filter((t) => !t.is_completed),
     ...todos.filter((t) => t.is_completed),
   ];
 
-  const hasData = todaySchedules.length > 0 || todos.length > 0;
+  const toggleTodo = (id) => {
+    toggleTodoCompleteMutate({
+      id,
+      payload: {},
+    });
+  };
 
+  if (schedulesIsLoading || todoIsLoading) {
+    return <div className="text-neutral-400">불러오는 중...</div>;
+  }
+
+  if (schedulesIsError || todoIsError) {
+    return (
+      <div className="text-red-400">
+        일정/할 일 불러오기 실패 <br />
+        {schedulesError?.response?.data?.message || schedulesError?.message}
+        {todosError?.response?.data?.message || todosError?.message}
+      </div>
+    );
+  }
+
+  const hasData = todaySchedules.length > 0 || sortedTodos.length > 0;
   if (!hasData) {
     return (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className=" px-6 py-4 rounded-2xl shadow relative max-w-sm mr-40">
-          <p className="text-2xl font-semibold ">일정/투두리스트가 없으신가요?</p>
-          <p className="text-xl text-gray-600">새로 등록해주세요!</p>
-          <div className="absolute right-[-12px] bottom-6 w-6 h-6  rotate-45"></div>
-        </div>
+      <div className="flex flex-col items-center justify-center h-full gap-4">
+        <p className="text-neutral-400">오늘 일정/할 일이 없습니다.</p>
+
+        {briefingsData?.recommendations && briefingsData.recommendations.length > 0 && (
+          <div className="rounded-xl bg-neutral-800/60 border border-neutral-700 p-4 w-[80%]">
+            <h3 className="text-lg font-semibold text-white mb-2">추천 활동 ✨</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-neutral-200">
+              {briefingsData.recommendations.map((rec, idx) => (
+                <li key={idx}>{rec}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="w-full grid grid-cols-2 gap-12  overflow-x-auto custom-scroll">
+    <div className="grid grid-cols-2 gap-12 w-full">
       <div className="flex flex-col items-center">
-        <h2 className="font-semibold text-2xl mb-6 text-center border-b-2 pb-2 w-[70%]">
-          오늘의 Todo
-        </h2>
+        <h2 className="text-2xl font-semibold mb-6">오늘의 Todo</h2>
         {sortedTodos.length > 0 ? (
           <ul className="space-y-3 w-[70%]">
             {sortedTodos.map((item) => (
@@ -60,7 +90,7 @@ export default function Chatbot() {
                   type="checkbox"
                   checked={item.is_completed}
                   onChange={() => toggleTodo(item.id)}
-                  className="w-5 h-5 accent-[#2d5b81]"
+                  className="w-5 h-5"
                 />
                 <label
                   htmlFor={`todo-${item.id}`}
@@ -72,20 +102,20 @@ export default function Chatbot() {
             ))}
           </ul>
         ) : (
-          <p className="text-center">오늘 할 일이 없습니다.</p>
+          <p>할 일이 없습니다.</p>
         )}
       </div>
 
       <div className="flex flex-col items-center">
-        <h2 className="font-semibold text-2xl mb-6 text-center border-b-2 border-gray-300 pb-2 w-[70%]">
-          오늘의 일정
-        </h2>
+        <h2 className="text-2xl font-semibold mb-6">오늘의 일정</h2>
         {todaySchedules.length > 0 ? (
           <ul className="text-lg space-y-4 w-[70%] pl-6">
             {todaySchedules.map((item) => (
               <li key={item.id} className="flex flex-col">
                 <span className="font-medium">
-                  {dayjs(item.date).format('YYYY-MM-DD HH:mm')} {item.all_day ? '[종일]' : ''}
+                  {dayjs(item.start_time).format('YYYY-MM-DD HH:mm')} ~{' '}
+                  {dayjs(item.end_time).format('YYYY-MM-DD HH:mm')}
+                  {item.all_day && ' [종일]'}
                 </span>
                 <span className="font-semibold">{item.title}</span>
                 {item.memo && <span className="text-sm">{item.memo}</span>}
@@ -93,7 +123,7 @@ export default function Chatbot() {
             ))}
           </ul>
         ) : (
-          <p className=" text-center w-full">오늘 일정이 없습니다.</p>
+          <p>오늘 일정이 없습니다.</p>
         )}
       </div>
     </div>
