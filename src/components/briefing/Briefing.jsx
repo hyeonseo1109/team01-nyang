@@ -21,12 +21,15 @@ export default function Briefing() {
   const { period, type, briefing, generated_at } = data;
   const typeLabel = `${period || type || '일일'} 브리핑`;
 
-  const cleanedBriefing = briefing.replace(/^#{1,3}\s*(아침|점심|저녁)\s*브리핑\s*/i, '').trim();
+  const cleanedBriefing = (briefing || '')
+    .replace(/^#{1,3}\s*(아침|점심|저녁)\s*브리핑\s*/gim, '')
+    .replace(/^\s*(아침|점심|저녁)\s*브리핑\s*/gim, '')
+    .trim();
 
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-4">
-        <span className="px-3 py-1 rounded-lg bg-[#2d5b81] text-white text-sm font-medium">
+        <span className="px-3 py-1 rounded-lg bg-[#2d5b81] text-white text-xl font-medium">
           {typeLabel}
         </span>
         <span className="text-xs text-neutral-500">
@@ -41,7 +44,7 @@ export default function Briefing() {
         components={{
           p: (props) => (
             <p
-              className="text-sm leading-relaxed text-neutral-200 whitespace-pre-line mb-3"
+              className="text-base leading-relaxed text-neutral-200 whitespace-pre-line mb-3"
               {...props}
             />
           ),

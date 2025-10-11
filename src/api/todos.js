@@ -148,8 +148,8 @@ export function useToggleTodoComplete() {
   } = useMutation({
     mutationFn: ({ id, currentState }) => toggleTodoComplete(id, currentState),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: [TODOS] });
+      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
     },
   });
   return { toggleTodoCompleteMutate, toggleTodoCompleteError, ...rest };

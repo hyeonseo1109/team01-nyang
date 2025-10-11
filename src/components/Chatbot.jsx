@@ -30,9 +30,15 @@ export default function Chatbot() {
 
   const today = dayjs();
   const todaySchedules =
-    schedulesData?.schedules?.filter((item) =>
-      dayjs(today).isBetween(item.start_time, item.end_time, 'day', '[]'),
-    ) || [];
+    schedulesData?.schedules?.filter((item) => {
+      const start = dayjs(item.start_time);
+      const end = dayjs(item.end_time);
+      return (
+        today.isSame(start, 'day') ||
+        today.isSame(end, 'day') ||
+        today.isBetween(start, end, null, '[]')
+      );
+    }) || [];
 
   const todos = Array.isArray(todoData?.todos) ? todoData.todos : [];
   const sortedTodos = [
