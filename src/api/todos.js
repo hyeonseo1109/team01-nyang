@@ -132,10 +132,13 @@ export function useDeleteTodo() {
 // deleteTodoMutate(id);
 
 // !- - - - 할 일 완료 처리 토글 - - - -
-export async function toggleTodoComplete(todo_id, payload) {
-  const res = await api.post(`/todos/${todo_id}/complete`, payload);
+export async function toggleTodoComplete(todo_id, currentState) {
+  const res = await api.patch(`/todos/${todo_id}`, {
+    is_completed: !currentState,
+  });
   return res.data;
 }
+
 export function useToggleTodoComplete() {
   const queryClient = useQueryClient();
   const {
@@ -143,10 +146,10 @@ export function useToggleTodoComplete() {
     error: toggleTodoCompleteError,
     ...rest
   } = useMutation({
-    mutationFn: ({ todo_id, payload }) => toggleTodoComplete(todo_id, payload),
+    mutationFn: ({ id, currentState }) => toggleTodoComplete(id, currentState),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [TODOS] });
-      queryClient.invalidateQueries({ queryKey: [CONVERSATIONS] });
+      queryClient.invalidateQueries({ queryKey: ['todos'] });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
   });
   return { toggleTodoCompleteMutate, toggleTodoCompleteError, ...rest };

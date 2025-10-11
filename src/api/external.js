@@ -65,53 +65,43 @@ export function useQuiz() {
 }
 // const { quizData, quizIsLoading, quizIsError } = useQuiz();
 
-// !- - - - 브리핑 조회 (morning/evening) - - - -
+// !- - - - 브리핑 조회 (morning/afternoon/evening) - - - -
 export async function getBriefings() {
-  const res = await api.get('/gemini/briefings');
-  return res.data;
+  try {
+    const res = await api.get('/gemini/briefings', { withCredentials: true });
+    return res.data?.data || {};
+  } catch (err) {
+    console.error('📰 getBriefings API error:', err);
+    throw err;
+  }
 }
 export function useBriefings() {
-  const {
-    data: briefingsData,
-    isLoading: briefingsIsLoading,
-    isError: briefingsIsError,
-    error: briefingsError,
-    ...rest
-  } = useQuery({
+  return useQuery({
     queryKey: [BRIEFINGS],
     queryFn: getBriefings,
-    staleTime: 1000 * 60 * 5,
-    // 브리핑은 아침/저녁에만 바뀌니까 실시간 반영 필요 없음.
+    staleTime: 1000 * 60 * 10,
+    retry: false,
   });
-  return { briefingsData, briefingsIsLoading, briefingsIsError, briefingsError, ...rest };
 }
-// const { briefingsData, briefingsIsLoading, briefingsIsError } = useBriefings();
 
 // !- - - - 일정/할일 요약 대화 - - - -
 export async function getConversations() {
-  const res = await api.get('/gemini/conversations');
-  return res.data;
+  try {
+    const res = await api.get('/gemini/conversations', { withCredentials: true });
+    return res.data?.data || {};
+  } catch (err) {
+    console.error('💬 getConversations API error:', err);
+    throw err;
+  }
 }
 export function useConversations() {
-  const {
-    data: conversationsData,
-    isLoading: conversationsIsLoading,
-    isError: conversationsIsError,
-    error: conversationsError,
-    ...rest
-  } = useQuery({
+  return useQuery({
     queryKey: [CONVERSATIONS],
     queryFn: getConversations,
+    staleTime: 1000 * 60 * 10,
+    retry: false,
   });
-  return {
-    conversationsData,
-    conversationsIsLoading,
-    conversationsIsError,
-    conversationsError,
-    ...rest,
-  };
 }
-// const { conversationsData, conversationsIsLoading, conversationsIsError } = useConversations();
 
 // !- - - - 오늘의 운세 - - - -
 export async function getFortune() {
