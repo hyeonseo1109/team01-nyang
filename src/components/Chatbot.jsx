@@ -55,11 +55,10 @@ export default function Chatbot() {
     );
 
   const hasData = sortedTodos.length > 0 || todaySchedules.length > 0;
-
   if (!hasData) return <div className="text-neutral-400">오늘 일정/할 일 데이터가 없습니다.</div>;
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full h-full overflow-y-auto custom-scroll p-2">
       <div className="grid grid-cols-2 gap-12 w-full">
         <div className="flex flex-col items-center">
           <h2 className="text-2xl font-semibold mb-6">오늘의 Todo</h2>
