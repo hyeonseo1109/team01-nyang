@@ -115,26 +115,22 @@ export function useConversations() {
 
 // !- - - - 오늘의 운세 - - - -
 export async function getFortune() {
-  const res = await api.get('/gemini/fortune');
-  return res.data;
+  try {
+    console.log('🪄 getFortune called');
+    const res = await api.get('/gemini/fortune');
+    return res.data;
+  } catch (err) {
+    console.error('🔮 getFortune API error:', err);
+    throw err;
+  }
 }
 export function useFortune() {
-  const {
-    data: fortuneData,
-    isLoading: fortuneIsLoading,
-    isError: fortuneIsError,
-    error: fortuneError,
-    ...rest
-  } = useQuery({
+  return useQuery({
     queryKey: [FORTUNE],
     queryFn: getFortune,
-    // 생일이 있을 때만 실행
-    // staleTime: 1000 * 60 * 60 * 12,
-    // 오늘의 운세는 하루 단위로 바뀌니 12시간을 고민하였으나, 자정이 지날 때 queryClient.invalidateQueries({queryKey: ["fortune"]})을 해줘야 함. (useEffect로 초기화함수를 Timeout 지정해서..)
+    staleTime: 1000 * 60 * 60 * 6,
   });
-  return { fortuneData, fortuneIsLoading, fortuneIsError, fortuneError, ...rest };
 }
-// const { fortuneData, fortuneIsLoading, fortuneIsError } = useFortune();
 
 // !- - - - 사용자 위치 - - - -
 export async function patchUserLocation(lat, lon) {
@@ -201,13 +197,9 @@ export async function getWeatherForecast(coords = DEFAULT_LOCATION) {
         const temps = items.map((d) => d.temperature);
         const max = Math.max(...temps);
         const min = Math.min(...temps);
-
         const { description, humidity, icon } = items[0];
 
-        const totalPrecipitation = items.reduce((sum, d) => {
-          const rain = d.rain_1h ?? d.precipitation ?? 0;
-          return sum + rain;
-        }, 0);
+        const totalPrecipitation = items.reduce((sum, d) => sum + (d.rain_3h ?? 0), 0);
 
         return {
           date,
@@ -225,6 +217,7 @@ export async function getWeatherForecast(coords = DEFAULT_LOCATION) {
     throw err;
   }
 }
+
 export function useWeatherForecast(coords = DEFAULT_LOCATION) {
   return useQuery({
     queryKey: [WEATHER_FORECAST, coords],
