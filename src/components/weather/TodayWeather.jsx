@@ -76,12 +76,7 @@ export default function TodayWeather() {
             </div>
           </div>
 
-          <div
-            className="transition-all duration-500 ease-in-out 
-              max-h-0 opacity-0 overflow-hidden 
-              lg:max-h-screen lg:opacity-100 lg:grid 
-              grid-cols-3 gap-3"
-          >
+          <div className="transition-all duration-500 ease-in-out max-h-none opacity-100 overflow-visible lg:max-h-screen lg:opacity-100 lg:grid grid-cols-3 gap-3">
             {[
               { k: '습도', v: d.humidity != null ? `${d.humidity}%` : '-' },
               { k: '강수량', v: d.precipitation != null ? `${d.precipitation} mm` : '-' },
