@@ -79,7 +79,7 @@ export function Login() {
   const onButton = noError && mustFilled;
 
   const googleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_BASE_URL}auth/google/login`;
+    window.location.href = `${import.meta.env.VITE_BASE_URL}/auth/google/login`;
   };
 
   const footer = () => {

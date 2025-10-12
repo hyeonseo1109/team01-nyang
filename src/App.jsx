@@ -18,15 +18,6 @@ function App() {
 
   useEffect(() => {
     getUser();
-
-    const handleBeforeUnload = () => {
-      navigator.sendBeacon(`${import.meta.env.VITE_BASE_URL}/auth/logout`);
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
   }, [getUser]);
 
   return (
