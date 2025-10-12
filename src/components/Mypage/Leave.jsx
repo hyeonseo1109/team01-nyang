@@ -11,7 +11,7 @@ export default function Leave({ onCancel }) {
     deleteMyAccountMutate(undefined, {
       onSuccess: () => {
         logoutMutate(undefined, {
-          onSettled: () => window.location.replace('/signup'),
+          onSettled: () => window.location.replace('/'),
         });
       },
       onError: (err) => {
