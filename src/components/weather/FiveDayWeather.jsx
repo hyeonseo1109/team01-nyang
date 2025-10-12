@@ -119,17 +119,17 @@ export default function FiveDayWeather() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    layout: { padding: { bottom: 20 } },
+    layout: { padding: { bottom: 20, top: 20 } },
     plugins: {
       legend: { display: false },
       datalabels: {
         color: '#fff',
-        anchor: 'end',
-        align: 'bottom',
-        offset: 15,
-        clip: false,
         font: { weight: 'bold', size: 14 },
         formatter: (value) => `${value}°`,
+        align: (context) => (context.datasetIndex === 0 ? 'top' : 'bottom'),
+        anchor: (context) => (context.datasetIndex === 0 ? 'end' : 'start'),
+        offset: 8,
+        clip: false,
       },
       annotation: { annotations },
     },
@@ -139,7 +139,11 @@ export default function FiveDayWeather() {
         ticks: { display: false },
         grid: { display: false },
       },
-      y: { display: false },
+      y: {
+        display: false,
+        suggestedMax: Math.max(...maxTemps) + 3,
+        suggestedMin: Math.min(...minTemps) - 2,
+      },
     },
   };
 
