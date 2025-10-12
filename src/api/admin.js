@@ -43,7 +43,6 @@ export async function getUserSearch(search) {
   const res = await api.get(`/admin/users/search`, {
     params: { search },
   });
-  console.log(res.data);
   return res.data;
 }
 export function useUserSearch(search) {
