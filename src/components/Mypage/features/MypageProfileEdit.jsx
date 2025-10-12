@@ -7,7 +7,7 @@ import { useUpdateMyProfile, useDeleteMyAccount } from '../../../api/users';
 import { useUser } from '../../../store/useUser';
 import { useLogout } from '../../../api/auth';
 
-export default function MypageProfileEdit({ me, onChange, onNotify }) {
+export default function MypageProfileEdit({ me, onChange, onNotify, onLeave }) {
   const nameRef = useRef(null);
   const { updateMyProfileMutate } = useUpdateMyProfile();
   useDeleteMyAccount();
@@ -17,7 +17,7 @@ export default function MypageProfileEdit({ me, onChange, onNotify }) {
   const [profileImage, setProfileImage] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
 
-  const [_, setShowLeave] = useState(false);
+  // const [_, setShowLeave] = useState(false);
 
   useEffect(() => {
     if (me) {
@@ -110,7 +110,7 @@ export default function MypageProfileEdit({ me, onChange, onNotify }) {
         <button
           className=" h-5 px-1 whitespace-nowrap sm:shrink-0 cursor-pointer bg-transparent text-xs underline underline-offset-2 decoration-1 text-gray-400 hover:text-gray-200"
           type="button"
-          onClick={() => setShowLeave(true)}
+          onClick={() => onLeave()}
         >
           회원탈퇴
         </button>
